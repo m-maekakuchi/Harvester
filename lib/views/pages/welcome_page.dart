@@ -43,7 +43,7 @@ class TopPage extends ConsumerWidget {
                     )
                   ),
                   onPressed: () {
-                    ref.read(authViewModelProvider.notifier).signInWithGoogle();
+                    // ref.read(authViewModelProvider.notifier).signInWithGoogle();
                     context.go('/cards_list_page');
                   },
                   child: const Text(
@@ -86,7 +86,7 @@ class TopPage extends ConsumerWidget {
                     )
                   ),
                   onPressed: () {
-                    context.go('/tel_identification_page');
+                    context.go('/register/tel_identification_page');
                   },
                   child: const Text(
                     '電話番号',
