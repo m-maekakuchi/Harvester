@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:harvester/router.dart';
+import 'package:harvester/viewModels/AuthController.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
-import 'views/pages/top_page.dart';
-import 'views/pages/tel_identification_page.dart';
-import 'views/pages/cards_list_page.dart';
+import 'viewModels/auth_view_model.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,55 +21,45 @@ Future<void> main() async{
     webRecaptchaSiteKey: 'recaptcha-v3-site-key',
     androidProvider: AndroidProvider.debug,
   );
-  runApp(const ProviderScope(child: MyApp()),);
+  runApp(ProviderScope(child: MyApp()),);
 }
 
-final GoRouter _router = GoRouter(
-  // redirect: (BuildContext context, GoRouterState state) {
-  //   if (FirebaseAuth.instance.currentUser != null) {
-  //     return '/cards_list_page';
-  //   } else {
-  //     return null;
-  //   }
-  // },
-  routes: <RouteBase>[
-    GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return const TopPage();
-      },
-      routes: <RouteBase>[
-        GoRoute(
-          path: 'tel_identification_page',
-          builder: (BuildContext context, GoRouterState state) {
-            return const TelIdentificationPage();
-          },
-        ),
-        GoRoute(
-          path: 'cards_list_page',
-          builder: (BuildContext context, GoRouterState state) {
-            return const CardsListPage();
-          },
-        ),
-        // GoRoute(
-        //   path: 'cards_info_page',
-        //   builder: (BuildContext context, GoRouterState state) {
-        //     return const CardsInfoPage();
-        //   },
-        // ),
-      ],
-    ),
-  ],
-);
+class MyApp extends ConsumerWidget {
+  MyApp({super.key});
 
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  Provider<GoRouter> routerProvider = router();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+
     return MaterialApp.router(
-      routerConfig: _router,
+      // localizationsDelegates: [
+        // GlobalMaterialLocalizations.delegate,
+        // GlobalWidgetsLocalizations.delegate,
+        // GlobalCupertinoLocalizations.delegate,
+      // ],
+      // supportedLocales: const [
+      //   Locale('ja'),
+      // ],
+      // title: 'BATTLE CHECK',
+      darkTheme: ThemeData(
+        primaryColor: Colors.black,
+        backgroundColor: Colors.black,
+        primaryColorDark: Colors.black,
+        appBarTheme: const AppBarTheme(
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+            color: Colors.black
+        ),
+      ),
+      themeMode: ThemeMode.dark,
+
+      // GoRouter設定
+      routeInformationProvider: ref.watch(routerProvider).routeInformationProvider,
+      routeInformationParser: ref.watch(routerProvider).routeInformationParser,
+      routerDelegate: ref.watch(routerProvider).routerDelegate,
     );
   }
 }
