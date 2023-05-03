@@ -1,19 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/viewModels/AuthController.dart';
 import 'package:harvester/views/pages/cards/card_detail_page.dart';
-import 'package:harvester/views/pages/cards/card_edit_page.dart';
+import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/cards_list_page.dart';
-import 'package:harvester/views/pages/collections/collection_add_page.dart';
+import 'package:harvester/views/pages/cards/card_edit_page.dart';
 import 'package:harvester/views/pages/collections/collection_page.dart';
+import 'package:harvester/views/pages/collections/collection_add_page.dart';
 import 'package:harvester/views/pages/home_page.dart';
 import 'package:harvester/views/pages/photos/photos_list_page.dart';
 import 'package:harvester/views/pages/settings/setting_page.dart';
-import 'package:harvester/views/pages/settings/setting_profile_page.dart';
+import 'package:harvester/views/pages/settings/profile_edit_page.dart';
 import 'package:harvester/views/pages/register/tel_identification_page.dart';
-import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/register/user_info_page.dart';
 import 'commons/RedirectPath.dart';
 
@@ -22,7 +21,7 @@ Provider<GoRouter> router() {
   return Provider((ref) =>
     GoRouter(
       redirect: (context, state) async {
-        // return '/register/tel_identification_page';
+        // return '/home_page';
         // authControllerProviderに変更があった場合に動くイメージ
         final auth = ref.watch(authControllerProvider);
         bool isSignedIn = auth.value != null;
@@ -58,7 +57,7 @@ Provider<GoRouter> router() {
         GoRoute(
           path: '/',
           builder: (BuildContext context, GoRouterState state) {
-            return const TopPage();
+            return const WelcomePage();
           },
         ),
         GoRoute(
@@ -117,9 +116,9 @@ Provider<GoRouter> router() {
           },
         ),
         GoRoute(
-          path: '/settings/setting_profile_page',
+          path: '/settings/profile_edit_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const SettingProfilePage();
+            return const ProfileEditePage();
           },
         ),
         GoRoute(
