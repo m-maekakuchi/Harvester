@@ -3,13 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../handlers/padding_handler.dart';
 import '../../viewModels/auth_view_model.dart';
-void main() async{
-  runApp(const TopPage());
-}
 
-// class TopPage extends StatelessWidget {
-class TopPage extends ConsumerWidget {
-  const TopPage({super.key});
+
+class WelcomePage extends ConsumerWidget {
+  const WelcomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
