@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/router.dart';
-import 'package:harvester/viewModels/AuthController.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'viewModels/auth_view_model.dart';
@@ -44,14 +42,16 @@ class MyApp extends ConsumerWidget {
       // ],
       // title: 'BATTLE CHECK',
       darkTheme: ThemeData(
-        primaryColor: Colors.black,
-        backgroundColor: Colors.black,
-        primaryColorDark: Colors.black,
+        // primaryColor: Colors.black,
+        scaffoldBackgroundColor: const Color.fromRGBO(248, 251, 242, 1),
+        textTheme: const TextTheme(bodyMedium: TextStyle(color: Color.fromRGBO(95, 99, 104, 1))),
+        // primaryColorDark: Colors.black,
         appBarTheme: const AppBarTheme(
             iconTheme: IconThemeData(
               color: Colors.white,
             ),
-            color: Colors.black
+            color: Color.fromRGBO(205, 235, 195, 1),
+            foregroundColor: Color.fromRGBO(95, 99, 104, 1)
         ),
       ),
       themeMode: ThemeMode.dark,
