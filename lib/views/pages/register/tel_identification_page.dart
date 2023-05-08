@@ -24,49 +24,12 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
   String verificationId = '';
   String smsCode = '';
   FirebaseAuth auth = FirebaseAuth.instance;
-
-  // Future<void> verifyPhoneNumber(BuildContext context) async {
-  //   String phone = "+81$iphone";
-  //
-  //   debugPrint("phone:$phone");
-  //
-  //   await auth.verifyPhoneNumber(
-  //     phoneNumber: phone,
-  //     timeout: const Duration(seconds: 60),
-  //
-  //     verificationCompleted: (PhoneAuthCredential credential) async {
-  //       debugPrint("verificationCompleted");
-  //       await auth.signInWithCredential(credential);
-  //     },
-  //     verificationFailed: (FirebaseAuthException e) {
-  //       debugPrint("verificationFailed");
-  //       if (e.code == 'invalid-phone-number') {
-  //         debugPrint('電話番号が正しくありません。');
-  //       }
-  //     },
-  //     codeSent: (String verificationId, int? resendToken) {
-  //       debugPrint("codeSent");
-  //       this.verificationId = verificationId;
-  //
-  //       smsCodeDialog(context).then((value) {
-  //         debugPrint('value$value');
-  //         debugPrint('sign in');
-  //       });
-  //     },
-  //     codeAutoRetrievalTimeout: (String verificationId) {
-  //       this.verificationId = verificationId;
-  //     },
-  //   );
-  // }
   
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: const Color.fromRGBO(247, 255, 231, 1),
         appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-          foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
           centerTitle: true,
           title: const Text(
             '電話番号認証'
@@ -183,7 +146,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
               ),
               SizedBox(
                 width: getW(context, 80),
-                height: getH(context, 8),
+                height: getH(context, 7),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
@@ -211,74 +174,5 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
       ),
     );
   }
-
-
-  // Future smsCodeDialog(BuildContext context) {
-  //   return showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext content) {
-  //       return AlertDialog(
-  //         title: const Text(
-  //           '認証コードを入力してください',
-  //           style: TextStyle(
-  //             color: Color.fromRGBO(112, 112, 112, 1),
-  //             fontSize: 16,
-  //           ),
-  //         ),
-  //         content: TextField(
-  //           keyboardType: TextInputType.number,
-  //           onChanged: (String value){
-  //             smsCode = value;
-  //           },
-  //         ),
-  //         contentPadding: const EdgeInsets.all(20),
-  //         actions: <Widget>[
-  //           SizedBox(
-  //             width: getW(context, 30),
-  //             height: getH(context, 8),
-  //             child: ElevatedButton(
-  //               onPressed: () async{
-  //                 final String smsCode = "123456";
-  //                 try {
-  //                   // ref.read(authControllerProvider.notifier).signInWithTel(verificationId, smsCode);
-  //                   final verificationId = ref.watch(verificationIdRepositoryProvider);
-  //                   PhoneAuthCredential credential = PhoneAuthProvider.credential(
-  //                       verificationId: verificationId,
-  //                       smsCode: smsCode
-  //                   );
-  //                   await ref.read(authControllerProvider.notifier).signInWithCredential(credential);
-  //                   context.go('/home_page');
-  //                 } catch(e){
-  //                   debugPrint(e.toString());
-  //                 }
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-  //                 foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
-  //                 shape: RoundedRectangleBorder(
-  //                   borderRadius: BorderRadius.circular(45)
-  //                 )
-  //               ),
-  //               child: const Text(
-  //                 "完了",
-  //                 style: TextStyle(
-  //                   fontSize: 18,
-  //                 ),
-  //               )
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     }
-  //   );
-  // }
-
-  // signIn() async{
-  //   PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-  //   await auth.signInWithCredential(credential).then((user) {
-  //     context.go('/cards_list_page');
-  //   });
-  // }
 }
 
