@@ -96,7 +96,7 @@ class AuthRepository implements BaseAuthRepository {
         _ref.read(verificationIdRepositoryProvider.notifier).state = verificationId;
         // _ref.read(isAuthActionProvider.notifier).state = true;
         smsCodeDialog(context).then((value) {
-          debugPrint('value$value');
+          // debugPrint('value$value');
           debugPrint('sign in');
         });
       },
@@ -123,7 +123,7 @@ class AuthRepository implements BaseAuthRepository {
     } catch (_) {}
   }
 
-  Future smsCodeDialog(BuildContext context) {
+  Future<void> smsCodeDialog(BuildContext context) {
     String smsCode = '';
     return showDialog(
         context: context,
@@ -150,7 +150,7 @@ class AuthRepository implements BaseAuthRepository {
                 height: getH(context, 8),
                 child: ElevatedButton(
                     onPressed: () async{
-                      final String smsCode = "123456";
+                      // final String smsCode = "123456";
                       try {
                         // ref.read(authControllerProvider.notifier).signInWithTel(verificationId, smsCode);
                         final verificationId = _ref.watch(verificationIdRepositoryProvider);
