@@ -59,8 +59,12 @@ const List<String> _addressAry = <String>[
 void main() async{
   runApp(const UserInfoPage());
 }
+
 final addressProvider = StateProvider((ref) => 12);
 final birthdayProvider = StateProvider((ref) => '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}');
+
+// テキストの文字色
+const textColor = Color.fromRGBO(95, 99, 104, 1);
 
 class UserInfoPage extends ConsumerWidget {
   const UserInfoPage({super.key});
@@ -69,6 +73,18 @@ class UserInfoPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedAddress = ref.watch(addressProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
+    final spaceHeight1 = SizedBox(
+      height: getH(context, 1),
+    );
+    final spaceHeight3 = SizedBox(
+      height: getH(context, 3),
+    );
+    final spaceHeight5 = SizedBox(
+      height: getH(context, 5),
+    );
+    final spaceWidth5 = SizedBox(
+      width: getW(context, 5),
+    );
 
     // 居住地のドラムロール
     void showDialog(Widget child) {
@@ -92,92 +108,86 @@ class UserInfoPage extends ConsumerWidget {
     }
 
     return Scaffold(
-        appBar: AppBar(title: const Text('プロフィール登録')),
-        body: Column(
-            children: [
-              SizedBox(
-                height: getH(context, 5),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: getW(context, 5),
+      appBar: AppBar(title: const Text('ユーザー登録')),
+        // 日本語キーボード表示時のOVERFLOWに対する対応
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            spaceHeight5,
+            Row(
+              children: [
+                spaceWidth5,
+                const SizedBox(
+                  child: Text(
+                    'ニックネーム',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.left,
                   ),
-                  const SizedBox(
-                    child: Text(
-                      'ニックネーム',
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
+                ),
+              ],
+            ),
+            spaceHeight1,
+            // ニックネーム欄
+            SizedBox(
+              width: getW(context, 90),
+              height: getH(context, 6),
+              child: TextFormField(
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return '入力してください';
+                //   }
+                //   return null;
+                // },
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
                   ),
-                ],
-              ),
-              SizedBox(
-                height: getH(context, 1),
-              ),
-              // ニックネーム欄
-              SizedBox(
-                width: getW(context, 90),
-                height: getH(context, 6),
-                child: TextFormField(
-                  validator: (value) {
-                    if (value == null || value.length > 10) {
-                      return '入力してください';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    hintText: '10文字以内',
-                    hintStyle: const TextStyle(
-                      fontSize: 16,
-                    ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  hintText: '10文字以内',
+                  hintStyle: const TextStyle(
+                    fontSize: 16,
+                    color: textColor,
                   ),
                 ),
               ),
-              SizedBox(
-                height: getH(context, 3),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: getW(context, 5),
-                  ),
-                  const SizedBox(
-                    child: Text(
-                      '居住地',
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                      textAlign: TextAlign.left,
+            ),
+            spaceHeight3,
+            Row(
+              children: [
+                spaceWidth5,
+                const SizedBox(
+                  child: Text(
+                    '居住地',
+                    style: TextStyle(
+                      fontSize: 18,
                     ),
+                    textAlign: TextAlign.left,
                   ),
-                ],
-              ),
-              SizedBox(
-                height: getH(context, 1),
-              ),
-              // 居住地欄
-              Container(
-                width: getW(context, 90),
-                height: getH(context, 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color.fromRGBO(95, 99, 104, 1)),
-                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: CupertinoButton(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  onPressed: () =>
+              ],
+            ),
+            spaceHeight1,
+            // 居住地選択欄
+            Container(
+              width: getW(context, 90),
+              height: getH(context, 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: textColor),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CupertinoButton(
+                    padding: const EdgeInsets.only(left: 20),
+                    onPressed: () =>
                       showDialog(
                         CupertinoPicker(
                           magnification: 1.22,
@@ -194,112 +204,123 @@ class UserInfoPage extends ConsumerWidget {
                           },
                           children:
                           List<Widget>.generate(
-                              _addressAry.length, (int index) {
-                            return Text(
-                              _addressAry[index],
-                            );
-                          }),
+                            _addressAry.length, (int index) {
+                              return Text(
+                                _addressAry[index],
+                                style: const TextStyle(
+                                  color: textColor,
+                                ),
+                              );
+                            }
+                          ),
                         ),
                       ),
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    _addressAry[selectedAddress],
-                    style: const TextStyle(
-                      color: Color.fromRGBO(95, 99, 104, 1),
-                      fontSize: 16
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: getH(context, 3),
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: getW(context, 5),
-                  ),
-                  const SizedBox(
+                    alignment: Alignment.centerLeft,
                     child: Text(
-                      '生年月日',
-                      style: TextStyle(
-                        fontSize: 18,
+                      _addressAry[selectedAddress],
+                      style: const TextStyle(
+                        color: textColor,
+                        fontSize: 16
                       ),
-                      textAlign: TextAlign.left,
                     ),
+                  ),
+                  const Icon(
+                    Icons.arrow_drop_down_rounded,
+                    size: 40,
+                    color: textColor,
                   ),
                 ],
               ),
-              SizedBox(
-                height: getH(context, 1),
-              ),
-              // 生年月日入力欄
-              Container(
-                width: getW(context, 90),
-                height: getH(context, 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color.fromRGBO(95, 99, 104, 1)),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextButton (
-                  onPressed: () {
-                    DatePicker.showDatePicker(context,
-                        showTitleActions: false,
-                        minTime: DateTime(1950, 1, 1),
-                        maxTime: DateTime(2020, 12, 31),
-                        onChanged: (date) {
-                          final notifier = ref.read(birthdayProvider.notifier);
-                          notifier.state = '${date.year}/${date.month}/${date.day}';
-                        },
-                        currentTime: DateTime.now(),
-                        locale: LocaleType.jp
-                    );
-                  },
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: getW(context, 3),
-                      ),
-                      Text(
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                          color: Color.fromRGBO(95, 99, 104, 1),
-                          fontSize: 16,
-                        ),
-                        selectedBirthday,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: getH(context, 5),
-              ),
-              SizedBox(
-                width: getW(context, 80),
-                height: getH(context, 7),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(205, 235, 195, 1),
-                      foregroundColor: const Color.fromRGBO(95, 99, 104, 1),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(45)
-                      )
-                  ),
-                  onPressed: () {
-                    context.go('/home_page');
-                  },
-                  child: const Text(
-                    '登録',
+            ),
+            spaceHeight3,
+            Row(
+              children: [
+                spaceWidth5,
+                const SizedBox(
+                  child: Text(
+                    '生年月日',
                     style: TextStyle(
                       fontSize: 18,
                     ),
+                    textAlign: TextAlign.left,
                   ),
                 ),
-              )
-            ]
-        )
+              ],
+            ),
+            spaceHeight1,
+            // 生年月日選択入力欄
+            Container(
+              width: getW(context, 90),
+              height: getH(context, 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: textColor),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: TextButton (
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.only(left: 20),
+                ),
+                onPressed: () {
+                  DatePicker.showDatePicker(context,
+                    showTitleActions: false,
+                    minTime: DateTime(1950, 1, 1),
+                    maxTime: DateTime(2020, 12, 31),
+                    onChanged: (date) {
+                      final notifier = ref.read(birthdayProvider.notifier);
+                      notifier.state = '${date.year}/${date.month}/${date.day}';
+                    },
+                    currentTime: DateTime.now(),
+                    locale: LocaleType.jp
+                  );
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                      ),
+                      selectedBirthday,
+                    ),
+                    const Icon(
+                      Icons.arrow_drop_down_rounded,
+                      size: 40,
+                      color: textColor,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            spaceHeight5,
+            SizedBox(
+              width: getW(context, 80),
+              height: getH(context, 7),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(205, 235, 195, 1),
+                  foregroundColor: textColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(45)
+                  )
+                ),
+                onPressed: () {
+                  context.go('/home_page');
+                },
+                child: const Text(
+                  '登録',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            )
+          ]
+        ),
+      )
     );
   }
 }
