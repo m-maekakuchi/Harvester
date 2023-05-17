@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../handlers/padding_handler.dart';
-import '../viewModels/AuthController.dart';
-
 enum FirebaseAuthResultStatus {
   successful,
   emailAlreadyExists,
@@ -37,6 +34,7 @@ final confirmationResultRepositoryProvider = StateProvider<ConfirmationResult?>(
 
 class AuthRepository implements BaseAuthRepository {
   final Ref _ref;
+
   AuthRepository(this._ref);
 
   @override
@@ -62,9 +60,9 @@ class AuthRepository implements BaseAuthRepository {
     return _ref.read(firebaseAuthProvider).currentUser?.uid != null;
   }
 
-  Future<void> verifyPhoneNumberNative(String phoneNumber, BuildContext context) async {
+  Future<void> verifyPhoneNumberNative(String phoneNumber,
+      BuildContext context) async {
     await _ref.read(firebaseAuthProvider).verifyPhoneNumber(
-      // phoneNumber: '+1 650-555-1234',
       phoneNumber: phoneNumber,
       // AndroidデバイスでのSMSコードの自動処理 =====================
       verificationCompleted: (PhoneAuthCredential credential) async {
@@ -95,10 +93,7 @@ class AuthRepository implements BaseAuthRepository {
         //verificationId:打ち込んだ電話番号に対する紐付けするID
         _ref.read(verificationIdRepositoryProvider.notifier).state = verificationId;
         // _ref.read(isAuthActionProvider.notifier).state = true;
-        smsCodeDialog(context).then((value) {
-          debugPrint('value$value');
-          debugPrint('sign in');
-        });
+        context.go('/register/tel_smsCode_page');
       },
 
       // Androidデバイスで自動SMSコード処理が失敗したときのタイムアウトを処理します。
@@ -114,6 +109,7 @@ class AuthRepository implements BaseAuthRepository {
     PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
     await auth.signInWithCredential(credential);
   }
+
   @override
   Future<void> signOut() async {
     try {
@@ -121,67 +117,5 @@ class AuthRepository implements BaseAuthRepository {
     } on FirebaseAuthException catch (e) {
       // throw CustomException(message: e.message);
     } catch (_) {}
-  }
-
-  Future smsCodeDialog(BuildContext context) {
-    String smsCode = '';
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext content) {
-          return AlertDialog(
-            title: const Text(
-              '認証コードを入力してください',
-              style: TextStyle(
-                color: Color.fromRGBO(112, 112, 112, 1),
-                fontSize: 16,
-              ),
-            ),
-            content: TextField(
-              keyboardType: TextInputType.number,
-              onChanged: (String value){
-                smsCode = value;
-              },
-            ),
-            contentPadding: const EdgeInsets.all(20),
-            actions: <Widget>[
-              SizedBox(
-                width: getW(context, 30),
-                height: getH(context, 8),
-                child: ElevatedButton(
-                    onPressed: () async{
-                      final String smsCode = "123456";
-                      try {
-                        // ref.read(authControllerProvider.notifier).signInWithTel(verificationId, smsCode);
-                        final verificationId = _ref.watch(verificationIdRepositoryProvider);
-                        PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                            verificationId: verificationId,
-                            smsCode: smsCode
-                        );
-                        await _ref.read(authControllerProvider.notifier).signInWithCredential(credential);
-                        context.go('/home_page');
-                      } catch(e){
-                        debugPrint(e.toString());
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-                        foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(45)
-                        )
-                    ),
-                    child: const Text(
-                      "完了",
-                      style: TextStyle(
-                        fontSize: 18,
-                      ),
-                    )
-                ),
-              ),
-            ],
-          );
-        }
-    );
   }
 }

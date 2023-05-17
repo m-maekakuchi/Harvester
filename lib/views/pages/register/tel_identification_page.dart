@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../../repositories/BaseAuthRepository.dart';
 import '../../../viewModels/AuthController.dart';
-import '../../../viewModels/auth_view_model.dart';
 
 void main() async{
   runApp(const TelIdentificationPage());
@@ -21,9 +18,6 @@ class TelIdentificationPage extends ConsumerStatefulWidget {
 class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
 
   String iphone = '';
-  String verificationId = '';
-  String smsCode = '';
-  FirebaseAuth auth = FirebaseAuth.instance;
   
   @override
   Widget build(BuildContext context) {
@@ -110,7 +104,8 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                               prefixIcon: Icon(Icons.local_phone_rounded),
                             ),
                             onChanged: (value) {
-                              iphone= value;
+                              // iphone= value;
+                              iphone = value;
                             }
                           ),
                         ),
@@ -156,8 +151,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                     )
                   ),
                   onPressed: () async{
-                    // verifyPhoneNumber(context);
-                    final phoneNumber = "+81 6505551234";
+                    final phoneNumber = "+81 " + iphone;
                     await ref.read(authControllerProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
                   },
                   child: const Text(
