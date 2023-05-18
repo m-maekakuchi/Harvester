@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
+import '../../../commons/app_color.dart';
 import '../../../repositories/BaseAuthRepository.dart';
 import '../../../viewModels/AuthController.dart';
 
@@ -75,6 +76,18 @@ class TelSmsCodePage extends ConsumerWidget {
                       Expanded (
                         child: TextField(
                           keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: textIconColor,
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: textIconColor,
+                              ),
+                            ),
+                          ),
                           onChanged: (String value){
                             smsCode = value;
                           },
@@ -110,8 +123,8 @@ class TelSmsCodePage extends ConsumerWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-                    foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
+                    backgroundColor: themeColor,
+                    foregroundColor: textIconColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(45)
                     )

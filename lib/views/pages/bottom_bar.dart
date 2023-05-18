@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/views/pages/photos/photos_list_page.dart';
 
+import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
 import 'cards/cards_list_page.dart';
 import 'collections/collection_add_page.dart';
@@ -12,11 +13,6 @@ import 'home_page.dart';
 final indexProvider = StateProvider((ref) {
   return 0;
 });
-
-// テキストの文字色
-const textColor = Color.fromRGBO(95, 99, 104, 1);
-// テーマカラー
-const themeColor = Color.fromRGBO(205, 235, 195, 1.0);
 
 class BottomBar extends ConsumerWidget {
   const BottomBar({super.key});
@@ -97,7 +93,7 @@ class BottomBar extends ConsumerWidget {
             },
             icon: const Icon(
               Icons.settings_rounded,
-              color: textColor,
+              color: textIconColor,
             ),
           ),
         ],
@@ -108,7 +104,7 @@ class BottomBar extends ConsumerWidget {
         items: items,
         backgroundColor: Colors.white, // バーの色
         selectedItemColor: themeColor, // 選ばれたアイテムの色
-        unselectedItemColor: textColor, // 選ばれていないアイテムの色
+        unselectedItemColor: textIconColor, // 選ばれていないアイテムの色
         currentIndex: index,
         onTap: (index) {
           ref.read(indexProvider.notifier).state = index;

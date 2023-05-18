@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
-import '../../viewModels/auth_view_model.dart';
-
 
 class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
@@ -11,9 +10,7 @@ class WelcomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.blue),
       home: Scaffold(
-        backgroundColor: const Color.fromRGBO(247, 255, 231, 1),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -21,7 +18,7 @@ class WelcomePage extends ConsumerWidget {
               Image.asset(
                 width: getW(context, 80),
                 height: getH(context, 30),
-                'images/harvester_logo.png'
+                'images/Harvester_logo.png'
               ),
               Image.asset(
                 width: getW(context, 70),
@@ -33,8 +30,8 @@ class WelcomePage extends ConsumerWidget {
                 height: getH(context, 8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-                    foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
+                    backgroundColor: themeColor,
+                    foregroundColor: textIconColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(45)
                     )
@@ -56,8 +53,8 @@ class WelcomePage extends ConsumerWidget {
                 height: getH(context, 8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-                    foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
+                    backgroundColor: themeColor,
+                    foregroundColor: textIconColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(45)
                     )
@@ -76,8 +73,8 @@ class WelcomePage extends ConsumerWidget {
                 height: getH(context, 8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromRGBO(203, 255, 211, 1),
-                    foregroundColor: const Color.fromRGBO(112, 112, 112, 1),
+                    backgroundColor: themeColor,
+                    foregroundColor: textIconColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(45)
                     )
