@@ -7,7 +7,6 @@ class CollectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('コレクション一覧')),
       body: Column(
         children: [
           OutlinedButton(

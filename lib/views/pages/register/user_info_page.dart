@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
+import '../../../commons/app_color.dart';
+
 const double _kItemExtent = 32.0;
 const List<String> _addressAry = <String>[
   '北海道',
@@ -63,9 +65,6 @@ void main() async{
 final addressProvider = StateProvider((ref) => 12);
 final birthdayProvider = StateProvider((ref) => '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}');
 
-// テキストの文字色
-const textColor = Color.fromRGBO(95, 99, 104, 1);
-
 class UserInfoPage extends ConsumerWidget {
   const UserInfoPage({super.key});
 
@@ -108,8 +107,22 @@ class UserInfoPage extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ユーザー登録')),
-        // 日本語キーボード表示時のOVERFLOWに対する対応
+      appBar: AppBar(
+        title: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                width: getW(context, 8),
+                height: getH(context, 8),
+                'images/AppBar_logo.png'
+              ),
+              const Text("ユーザー登録"),
+            ]
+          ),
+        ),
+      ),
+      // 日本語キーボード表示時のOVERFLOWに対する対応
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -122,6 +135,7 @@ class UserInfoPage extends ConsumerWidget {
                     'ニックネーム',
                     style: TextStyle(
                       fontSize: 18,
+                      color: textIconColor,
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -152,7 +166,7 @@ class UserInfoPage extends ConsumerWidget {
                   hintText: '10文字以内',
                   hintStyle: const TextStyle(
                     fontSize: 16,
-                    color: textColor,
+                    color: textIconColor,
                   ),
                 ),
               ),
@@ -166,6 +180,7 @@ class UserInfoPage extends ConsumerWidget {
                     '居住地',
                     style: TextStyle(
                       fontSize: 18,
+                      color: textIconColor,
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -179,7 +194,7 @@ class UserInfoPage extends ConsumerWidget {
               height: getH(context, 6),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: textColor),
+                border: Border.all(color: textIconColor),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -208,7 +223,7 @@ class UserInfoPage extends ConsumerWidget {
                               return Text(
                                 _addressAry[index],
                                 style: const TextStyle(
-                                  color: textColor,
+                                  color: textIconColor,
                                 ),
                               );
                             }
@@ -219,7 +234,7 @@ class UserInfoPage extends ConsumerWidget {
                     child: Text(
                       _addressAry[selectedAddress],
                       style: const TextStyle(
-                        color: textColor,
+                        color: textIconColor,
                         fontSize: 16
                       ),
                     ),
@@ -227,7 +242,7 @@ class UserInfoPage extends ConsumerWidget {
                   const Icon(
                     Icons.arrow_drop_down_rounded,
                     size: 40,
-                    color: textColor,
+                    color: textIconColor,
                   ),
                 ],
               ),
@@ -241,6 +256,7 @@ class UserInfoPage extends ConsumerWidget {
                     '生年月日',
                     style: TextStyle(
                       fontSize: 18,
+                      color: textIconColor,
                     ),
                     textAlign: TextAlign.left,
                   ),
@@ -254,7 +270,7 @@ class UserInfoPage extends ConsumerWidget {
               height: getH(context, 6),
               decoration: BoxDecoration(
                 color: Colors.white,
-                border: Border.all(color: textColor),
+                border: Border.all(color: textIconColor),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: TextButton (
@@ -281,7 +297,7 @@ class UserInfoPage extends ConsumerWidget {
                     Text(
                       textAlign: TextAlign.left,
                       style: const TextStyle(
-                        color: textColor,
+                        color: textIconColor,
                         fontSize: 16,
                       ),
                       selectedBirthday,
@@ -289,7 +305,7 @@ class UserInfoPage extends ConsumerWidget {
                     const Icon(
                       Icons.arrow_drop_down_rounded,
                       size: 40,
-                      color: textColor,
+                      color: textIconColor,
                     ),
                   ],
                 ),
@@ -301,8 +317,8 @@ class UserInfoPage extends ConsumerWidget {
               height: getH(context, 7),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(205, 235, 195, 1),
-                  foregroundColor: textColor,
+                  backgroundColor: themeColor,
+                  foregroundColor: textIconColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(45)
                   )

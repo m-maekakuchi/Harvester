@@ -5,12 +5,11 @@ import 'package:harvester/router.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-
-import 'viewModels/auth_view_model.dart';
+import 'commons/app_color.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  // Firebaseの初期化å
+  // Firebaseの初期化
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -30,7 +29,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-
     return MaterialApp.router(
       // localizationsDelegates: [
         // GlobalMaterialLocalizations.delegate,
@@ -42,19 +40,19 @@ class MyApp extends ConsumerWidget {
       // ],
       // title: 'BATTLE CHECK',
       darkTheme: ThemeData(
-        // primaryColor: Colors.black,
-        scaffoldBackgroundColor: const Color.fromRGBO(248, 251, 242, 1),
-        textTheme: const TextTheme(bodyMedium: TextStyle(color: Color.fromRGBO(95, 99, 104, 1))),
+        scaffoldBackgroundColor: scaffoldBackgroundColor,
+        textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.red)),
         // primaryColorDark: Colors.black,
         appBarTheme: const AppBarTheme(
-            iconTheme: IconThemeData(
-              color: Colors.white,
-            ),
-            color: Color.fromRGBO(205, 235, 195, 1),
-            foregroundColor: Color.fromRGBO(95, 99, 104, 1)
+          centerTitle: true,
+          iconTheme: IconThemeData(
+            color: textIconColor
+          ),
+          color: themeColor,
+          foregroundColor: textIconColor,
         ),
       ),
-      themeMode: ThemeMode.dark,
+      // themeMode: ThemeMode.dark,
 
       // GoRouter設定
       routeInformationProvider: ref.watch(routerProvider).routeInformationProvider,
