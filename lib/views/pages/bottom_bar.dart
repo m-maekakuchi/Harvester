@@ -59,7 +59,7 @@ class BottomBar extends ConsumerWidget {
       'My Manhole Cards',
       'My Manhole Cards',
       'All Manhole Cards',
-      'New My Cards',
+      'My Card 追加',
       'Photos'
     ];
 
@@ -76,9 +76,11 @@ class BottomBar extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: themeColor,
+        foregroundColor: textIconColor,
         title: Center(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
             children: appBarTitle
           ),
         ),
