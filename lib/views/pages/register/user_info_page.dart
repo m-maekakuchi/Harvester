@@ -200,50 +200,64 @@ class UserInfoPage extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CupertinoButton(
-                    padding: const EdgeInsets.only(left: 20),
-                    onPressed: () =>
-                      showDialog(
-                        CupertinoPicker(
-                          magnification: 1.22,
-                          squeeze: 1.2,
-                          useMagnifier: true,
-                          itemExtent: _kItemExtent,
-                          scrollController: FixedExtentScrollController(
-                            initialItem: selectedAddress,
-                          ),
-                          // This is called when selected item is changed.
-                          onSelectedItemChanged: (int selectedItem) {
-                            final notifier = ref.read(addressProvider.notifier);
-                            notifier.state = selectedItem;
-                          },
-                          children:
-                          List<Widget>.generate(
-                            _addressAry.length, (int index) {
-                              return Text(
-                                _addressAry[index],
-                                style: const TextStyle(
-                                  color: textIconColor,
-                                ),
-                              );
-                            }
+                  SizedBox(
+                    width: getW(context, 89),
+                    child: CupertinoButton(
+                      padding: const EdgeInsets.only(left: 20),
+                      color: Colors.white,
+                      onPressed: () =>
+                        showDialog(
+                          CupertinoPicker(
+                            magnification: 1.22,
+                            squeeze: 1.2,
+                            useMagnifier: true,
+                            itemExtent: _kItemExtent,
+                            scrollController: FixedExtentScrollController(
+                              initialItem: selectedAddress,
+                            ),
+                            // This is called when selected item is changed.
+                            onSelectedItemChanged: (int selectedItem) {
+                              final notifier = ref.read(addressProvider.notifier);
+                              notifier.state = selectedItem;
+                            },
+                            children:
+                            List<Widget>.generate(
+                              _addressAry.length, (int index) {
+                                return Text(
+                                  _addressAry[index],
+                                  style: const TextStyle(
+                                    color: textIconColor,
+                                  ),
+                                );
+                              }
+                            ),
                           ),
                         ),
-                      ),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _addressAry[selectedAddress],
-                      style: const TextStyle(
-                        color: textIconColor,
-                        fontSize: 16
+                      // alignment: Alignment.space,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _addressAry[selectedAddress],
+                            style: const TextStyle(
+                              color: textIconColor,
+                              fontSize: 16
+                            ),
+                          ),
+                          const Icon(
+                            Icons.arrow_drop_down_rounded,
+                            size: 40,
+                            color: textIconColor,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const Icon(
-                    Icons.arrow_drop_down_rounded,
-                    size: 40,
-                    color: textIconColor,
-                  ),
+                  // const Icon(
+                  //   Icons.arrow_drop_down_rounded,
+                  //   size: 40,
+                  //   color: textIconColor,
+                  // ),
                 ],
               ),
             ),
