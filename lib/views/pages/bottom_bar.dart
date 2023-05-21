@@ -74,32 +74,32 @@ class BottomBar extends ConsumerWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: themeColor,
-        foregroundColor: textIconColor,
-        title: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-            children: appBarTitle
-          ),
-        ),
-        iconTheme: const IconThemeData(
-          size: 30,
-        ),
-        // leading: ,
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/settings/setting_page');
-            },
-            icon: const Icon(
-              Icons.settings_rounded,
-              color: textIconColor,
-            ),
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   backgroundColor: themeColor,
+      //   foregroundColor: textIconColor,
+      //   title: Center(
+      //     child: Row(
+      //       mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
+      //       children: appBarTitle
+      //     ),
+      //   ),
+      //   iconTheme: const IconThemeData(
+      //     size: 30,
+      //   ),
+      //   // leading: ,
+      //   actions: [
+      //     IconButton(
+      //       onPressed: () {
+      //         context.push('/settings/setting_page');
+      //       },
+      //       icon: const Icon(
+      //         Icons.settings_rounded,
+      //         color: textIconColor,
+      //       ),
+      //     ),
+      //   ],
+      // ),
       body: pages[index],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,  // すべてのアイテムが表示されるように設定
