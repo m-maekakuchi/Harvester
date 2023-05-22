@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
@@ -56,7 +57,9 @@ Widget listTileContainer (String title, BuildContext context) {
     child: ListTile(
       visualDensity: const VisualDensity(horizontal: 0, vertical: -4),  // リストタイルの上下のpaddingを削除
       title: Text(title, style: const TextStyle(color: textIconColor),),
-      onTap: null,
-    ),
+      onTap: () {
+        context.push("/bottom_bar");
+      }
+    )
   );
 }
