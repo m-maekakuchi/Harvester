@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../viewModels/AuthController.dart';
+import '../../widgets/GreenButton.dart';
 
 void main() async{
   runApp(const TelIdentificationPage());
@@ -161,28 +162,13 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
             SizedBox(
               height: getH(context, 5),
             ),
-            SizedBox(
-              width: getW(context, 80),
-              height: getH(context, 7),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: themeColor,
-                  foregroundColor: textIconColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(45)
-                  )
-                ),
-                onPressed: () async{
-                  final phoneNumber = "+81 " + iphone;
-                  await ref.read(authControllerProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
-                },
-                child: const Text(
-                  '次へ',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
+            GreenButton(
+              text: '次へ',
+              fontSize: 18,
+              onPressed: () async{
+                final phoneNumber = "+81 " + iphone;
+                await ref.read(authControllerProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
+              },
             ),
           ]
         ),

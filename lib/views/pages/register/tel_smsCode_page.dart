@@ -7,6 +7,7 @@ import 'package:harvester/handlers/padding_handler.dart';
 import '../../../commons/app_color.dart';
 import '../../../repositories/BaseAuthRepository.dart';
 import '../../../viewModels/AuthController.dart';
+import '../../widgets/GreenButton.dart';
 
 class TelSmsCodePage extends ConsumerWidget {
   const TelSmsCodePage({super.key});
@@ -104,38 +105,23 @@ class TelSmsCodePage extends ConsumerWidget {
             SizedBox(
               height: getH(context, 5),
             ),
-            SizedBox(
-              width: getW(context, 80),
-              height: getH(context, 7),
-              child: ElevatedButton(
-                onPressed: () async{
-                  try {
-                    // ref.read(authControllerProvider.notifier).signInWithTel(verificationId, smsCode);
-                    final verificationId = ref.watch(verificationIdRepositoryProvider);
-                    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                      verificationId: verificationId,
-                      smsCode: smsCode
-                    );
-                    await ref.read(authControllerProvider.notifier).signInWithCredential(credential);
-                    context.go('/register/tel_smsCode_page');
-                  } catch(e){
-                    debugPrint(e.toString());
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: themeColor,
-                    foregroundColor: textIconColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(45)
-                    )
-                ),
-                child: const Text(
-                  "完了",
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                )
-              ),
+            GreenButton(
+              text: '完了',
+              fontSize: 18,
+              onPressed: () async{
+                try {
+                  // ref.read(authControllerProvider.notifier).signInWithTel(verificationId, smsCode);
+                  final verificationId = ref.watch(verificationIdRepositoryProvider);
+                  PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                    verificationId: verificationId,
+                    smsCode: smsCode
+                  );
+                  await ref.read(authControllerProvider.notifier).signInWithCredential(credential);
+                  context.go('/register/tel_smsCode_page');
+                } catch(e){
+                  debugPrint(e.toString());
+                }
+              },
             ),
           ]
         ),
