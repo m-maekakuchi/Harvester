@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
-class Accordion extends StatelessWidget {
-  const Accordion({
+import '../pages/cards/cards_list_page.dart';
+
+class RegionAccordion extends StatelessWidget {
+  const RegionAccordion({
     super.key,
     required this.title,
     required this.listTitleAry,
+    required this.ref
   });
 
   /// 地方区分の部分の文字
   final String title;
   /// 都道府県の配列
   final List<String> listTitleAry;
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,7 @@ class Accordion extends StatelessWidget {
       children: [
         // 中身のコンテナ
         for (int i = 0; i < length; i++) ... {
-          listTileContainer(listTitleAry[i], context),
+          listTileContainer(listTitleAry[i], context, ref),
         },
       ],
     );
@@ -45,7 +50,7 @@ class Accordion extends StatelessWidget {
 }
 
 // リストタイル
-Widget listTileContainer (String title, BuildContext context) {
+Widget listTileContainer (String title, BuildContext context, WidgetRef ref) {
   return Container(
     width: double.infinity,
     height: getH(context, 6),
@@ -58,7 +63,9 @@ Widget listTileContainer (String title, BuildContext context) {
       visualDensity: const VisualDensity(horizontal: 0, vertical: -4),  // リストタイルの上下のpaddingを削除
       title: Text(title, style: const TextStyle(color: textIconColor),),
       onTap: () {
-        context.push("/bottom_bar");
+        final notifier = ref.read(prefectureProvider.notifier);
+        notifier.state = title;
+        context.pop();
       }
     )
   );
