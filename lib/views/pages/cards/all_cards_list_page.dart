@@ -16,8 +16,8 @@ const List<Tab> tabs = [
 
 final prefectureProvider = StateProvider((ref) => "");
 
-class CardsListPage extends ConsumerWidget {
-  const CardsListPage({super.key});
+class AllCardsListPage extends ConsumerWidget {
+  const AllCardsListPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

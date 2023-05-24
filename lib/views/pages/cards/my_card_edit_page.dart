@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-void main() => runApp(const CardEditPage());
-
-class CardEditPage extends StatelessWidget {
-  const CardEditPage({super.key});
+class MyCardEditPage extends StatelessWidget {
+  const MyCardEditPage({super.key});
 
   @override
   Widget build(BuildContext context) {

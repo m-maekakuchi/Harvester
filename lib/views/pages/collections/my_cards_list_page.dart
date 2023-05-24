@@ -7,7 +7,6 @@ import '../../../handlers/padding_handler.dart';
 import '../../components/CardShortInfoContainer.dart';
 import '../../components/ColoredTabBar.dart';
 import '../../components/ColumnAccordionPrefecture.dart';
-import '../../widgets/RegionAccordion.dart';
 import '../../widgets/WhiteButton.dart';
 
 const List<Tab> tabs = [
@@ -24,8 +23,8 @@ const noMyCardsMsg = Text(
   'My Card はありません'
 );
 
-class CollectionPage extends ConsumerWidget {
-  const CollectionPage({super.key});
+class MyCardsListPage extends ConsumerWidget {
+  const MyCardsListPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/views/pages/photos/photos_list_page.dart';
 
 import '../../commons/app_color.dart';
-import 'cards/cards_list_page.dart';
-import 'collections/collection_add_page.dart';
-import 'collections/collection_page.dart';
+import 'cards/all_cards_list_page.dart';
+import 'collections/my_card_add_page.dart';
+import 'collections/my_cards_list_page.dart';
 import 'home_page.dart';
 
 final indexProvider = StateProvider((ref) {
@@ -46,9 +46,9 @@ class BottomBar extends ConsumerWidget {
     // 画面
     const pages = [
       HomePage(),
-      CollectionPage(),
-      CardsListPage(),
-      ColletionAddPage(),
+      MyCardsListPage(),
+      AllCardsListPage(),
+      MyCardAddPage(),
       PhotosListPage(),
     ];
 
