@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../commons/app_color.dart';
-import '../widgets/ratioIndicatorWidget.dart';
+import '../components/RatioIndicator.dart';
 
 const kElevation = 10.0;
 const indicatorPlace = [
@@ -190,50 +191,75 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: getH(context, 3),
-            ),
-            // 全国のインジケーター
-            _indicator(15, 20, getW(context, 40), indicatorPlace[0], myCardsNum[0] / allCardsNum[0], myCardsNum[0], allCardsNum[0], context),
-            // 地方のインジケーター
-            for (int i = 1; i < areaNum; i += 2) ... {
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (int j = 0; j <= 1; j ++) ... {
-                    _indicator(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
-                  }
-                ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
+            children: [
+              Image.asset(
+                width: getW(context, 10),
+                height: getH(context, 10),
+                'images/AppBar_logo.png'
               ),
+              const Text("My Manhole Cards"),
+            ]
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.push('/settings/setting_page');
             },
-            // 都道府県のインジケーター
-            for (int i = 9; i < 55; i += 3) ... {
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                    for (int j = 0; j <= 2; j ++) ... {
-                      // 最後の行が1つ分空くので空白を設置
-                      if (i == 54 && j == 2) ... {
-                        SizedBox(
-                          width: getW(context, 30) + getW(context, 30) * 0.06,
-                        ),
-                      } else ... {
-                        _indicator(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
-                      }
-                    },
-                  // }
-                ],
+            icon: const Icon(Icons.settings_rounded),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: getH(context, 3),
               ),
-            },
-            SizedBox(
-              height: getH(context, 3),
-            ),
-          ],
+              // 全国のインジケーター
+              _indicator(15, 20, getW(context, 40), indicatorPlace[0], myCardsNum[0] / allCardsNum[0], myCardsNum[0], allCardsNum[0], context),
+              // 地方のインジケーター
+              for (int i = 1; i < areaNum; i += 2) ... {
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (int j = 0; j <= 1; j ++) ... {
+                      _indicator(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
+                    }
+                  ],
+                ),
+              },
+              // 都道府県のインジケーター
+              for (int i = 9; i < 55; i += 3) ... {
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                      for (int j = 0; j <= 2; j ++) ... {
+                        // 最後の行が1つ分空くので空白を設置
+                        if (i == 54 && j == 2) ... {
+                          SizedBox(
+                            width: getW(context, 30) + getW(context, 30) * 0.06,
+                          ),
+                        } else ... {
+                          _indicator(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
+                        }
+                      },
+                    // }
+                  ],
+                ),
+              },
+              SizedBox(
+                height: getH(context, 3),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -250,7 +276,6 @@ Widget _indicator(
     allCardsNum,
     context
 ) {
-
   return CustomPaint(
     painter: RatioIndicatorWidget(
       percentage: percentage, // バッテリーレベルの割合

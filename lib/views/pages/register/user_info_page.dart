@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../../commons/app_color.dart';
+import '../../widgets/GreenButton.dart';
 
 const double _kItemExtent = 32.0;
 const List<String> _addressAry = <String>[
@@ -326,28 +327,13 @@ class UserInfoPage extends ConsumerWidget {
               ),
             ),
             spaceHeight5,
-            SizedBox(
-              width: getW(context, 80),
-              height: getH(context, 7),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: themeColor,
-                  foregroundColor: textIconColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(45)
-                  )
-                ),
-                onPressed: () {
-                  context.go('/home_page');
-                },
-                child: const Text(
-                  '登録',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            )
+            GreenButton(
+              text: '登録',
+              fontSize: 18,
+              onPressed: () {
+                context.go('/home_page');
+              },
+            ),
           ]
         ),
       )

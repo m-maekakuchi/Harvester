@@ -7,6 +7,7 @@ import '../../../commons/app_color.dart';
 import '../../components/CardShortInfoContainer.dart';
 import '../../widgets/RegionAccordion.dart';
 import '../../components/ColoredTabBar.dart';
+import '../../widgets/WhiteButton.dart';
 
 const List<Tab> tabs = [
   Tab(text: '全国'),
@@ -215,42 +216,27 @@ class CardsListPage extends ConsumerWidget {
       child: Column(
         children: [
           // 都道府県選択ボタン
-          Container(
-            width: getW(context, 60),
-            height: getH(context, 5),
-            margin: EdgeInsets.symmetric(vertical: getH(context, 2)),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: indicatorBeginColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(45)
-                )
-              ),
-              onPressed: () {
-                showModalBottomSheet(
-                  backgroundColor: Colors.transparent,  // ModalBottomSheetを角丸にするための設定
-                  isScrollControlled: true, // ModalBottomSheetの画面を半分以上にできる
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20))
-                      ),
-                      height: getH(context, 90),
-                      child: columnSelectPrefectures,
-                    );
-                  }
-                );
-              },
-              child: const Text(
-                '都道府県の選択',
-                style: TextStyle(
-                  fontSize: 16,
-                )
-              ),
-            ),
+          WhiteButton(
+            text: '都道府県の選択',
+            fontSize: 16,
+            onPressed: () {
+              // 都道府県の選択のためのModalBottomSheetを出す
+              showModalBottomSheet(
+                backgroundColor: Colors.transparent,  // ModalBottomSheetを角丸にするための設定
+                isScrollControlled: true, // ModalBottomSheetの画面を半分以上にできる
+                context: context,
+                builder: (context) {
+                  return Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20))
+                    ),
+                    height: getH(context, 90),
+                    child: columnSelectPrefectures,
+                  );
+                }
+              );
+            },
           ),
           // 都道府県を選択したら以下が表示される
           if (selectedPrefecture != "") ... {
@@ -312,9 +298,6 @@ class CardsListPage extends ConsumerWidget {
         tabController.addListener(() {});
         return Scaffold(
           appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: themeColor,
-            foregroundColor: textIconColor,
             title: Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
@@ -324,22 +307,16 @@ class CardsListPage extends ConsumerWidget {
                     height: getH(context, 10),
                     'images/AppBar_logo.png'
                   ),
-                  const Text('All Manhole Cards'),
-                ],
+                  const Text("All Manhole Cards"),
+                ]
               ),
-            ),
-            iconTheme: const IconThemeData(
-              size: 30,
             ),
             actions: [
               IconButton(
                 onPressed: () {
                   context.push('/settings/setting_page');
                 },
-                icon: const Icon(
-                  Icons.settings_rounded,
-                  color: textIconColor,
-                ),
+                icon: const Icon(Icons.settings_rounded),
               ),
             ],
             bottom: const ColoredTabBar(

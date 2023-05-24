@@ -39,14 +39,15 @@ class MyApp extends ConsumerWidget {
       //   Locale('ja'),
       // ],
       // title: 'BATTLE CHECK',
-      darkTheme: ThemeData(
+      theme: ThemeData(
         scaffoldBackgroundColor: scaffoldBackgroundColor,
-        textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.red)),
+        textTheme: const TextTheme(bodyMedium: TextStyle(color: textIconColor)),
         // primaryColorDark: Colors.black,
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           iconTheme: IconThemeData(
-            color: textIconColor
+            color: textIconColor,
+            size: 30,
           ),
           color: themeColor,
           foregroundColor: textIconColor,
