@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:harvester/views/pages/photos/photos_list_page.dart';
 
 import '../../commons/app_color.dart';
-import '../../handlers/padding_handler.dart';
 import 'cards/cards_list_page.dart';
 import 'collections/collection_add_page.dart';
 import 'collections/collection_page.dart';
@@ -54,52 +52,26 @@ class BottomBar extends ConsumerWidget {
       PhotosListPage(),
     ];
 
-    // AppBarのテキストタイトル
-    const appBarTextTitle = [
-      'My Manhole Cards',
-      'My Manhole Cards',
-      'All Manhole Cards',
-      'My Card 追加',
-      'Photos'
-    ];
-
-    // AppBarのtitle
-    final appBarTitle = [
-      Image.asset(
-        width: getW(context, 10),
-        height: getH(context, 10),
-        'images/AppBar_logo.png'
-      ),
-      Text(appBarTextTitle[index]),
-    ];
+    // // AppBarのテキストタイトル
+    // const appBarTextTitle = [
+    //   'My Manhole Cards',
+    //   'My Manhole Cards',
+    //   'All Manhole Cards',
+    //   'My Card 追加',
+    //   'Photos'
+    // ];
+    //
+    // // AppBarのtitle
+    // final appBarTitle = [
+    //   Image.asset(
+    //     width: getW(context, 10),
+    //     height: getH(context, 10),
+    //     'images/AppBar_logo.png'
+    //   ),
+    //   Text(appBarTextTitle[index]),
+    // ];
 
     return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   backgroundColor: themeColor,
-      //   foregroundColor: textIconColor,
-      //   title: Center(
-      //     child: Row(
-      //       mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-      //       children: appBarTitle
-      //     ),
-      //   ),
-      //   iconTheme: const IconThemeData(
-      //     size: 30,
-      //   ),
-      //   // leading: ,
-      //   actions: [
-      //     IconButton(
-      //       onPressed: () {
-      //         context.push('/settings/setting_page');
-      //       },
-      //       icon: const Icon(
-      //         Icons.settings_rounded,
-      //         color: textIconColor,
-      //       ),
-      //     ),
-      //   ],
-      // ),
       body: pages[index],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,  // すべてのアイテムが表示されるように設定

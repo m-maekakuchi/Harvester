@@ -193,9 +193,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: themeColor,
-        foregroundColor: textIconColor,
         title: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
@@ -205,22 +202,16 @@ class HomePage extends StatelessWidget {
                 height: getH(context, 10),
                 'images/AppBar_logo.png'
               ),
-              const Text('All Manhole Cards'),
-            ],
+              const Text("My Manhole Cards"),
+            ]
           ),
-        ),
-        iconTheme: const IconThemeData(
-          size: 30,
         ),
         actions: [
           IconButton(
             onPressed: () {
               context.push('/settings/setting_page');
             },
-            icon: const Icon(
-              Icons.settings_rounded,
-              color: textIconColor,
-            ),
+            icon: const Icon(Icons.settings_rounded),
           ),
         ],
       ),
@@ -285,7 +276,6 @@ Widget _indicator(
     allCardsNum,
     context
 ) {
-
   return CustomPaint(
     painter: RatioIndicatorWidget(
       percentage: percentage, // バッテリーレベルの割合
