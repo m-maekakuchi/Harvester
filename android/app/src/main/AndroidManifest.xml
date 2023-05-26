@@ -4,6 +4,14 @@
         android:label="harvester"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+       <!--　image_cropperの設定 -->
+       <activity
+           android:name="com.yalantis.ucrop.UCropActivity"
+           android:screenOrientation="portrait"
+           android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+       />
+       <!--　image_cropperの設定ここまで -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
