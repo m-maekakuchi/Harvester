@@ -41,9 +41,9 @@ class MyCardEditPage extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
               children: [
                 Image.asset(
-                    width: getW(context, 10),
-                    height: getH(context, 10),
-                    'images/AppBar_logo.png'
+                  width: getW(context, 10),
+                  height: getH(context, 10),
+                  'images/AppBar_logo.png'
                 ),
                 const Text("My Card 編集"),
               ]

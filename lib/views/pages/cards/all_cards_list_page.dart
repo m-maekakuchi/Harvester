@@ -119,7 +119,6 @@ class AllCardsListPage extends ConsumerWidget {
                     ),
                     height: getH(context, 90),
                     child: ColumnAccordionPrefectures(
-                      ref: ref,
                       provider: prefectureProvider,
                     ),
                   );
