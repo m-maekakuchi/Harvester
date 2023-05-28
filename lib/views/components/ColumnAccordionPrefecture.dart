@@ -4,25 +4,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../handlers/padding_handler.dart';
 import '../widgets/RegionAccordion.dart';
 
-class ColumnAccordionPrefectures extends StatelessWidget {
+class ColumnAccordionPrefectures extends ConsumerWidget {
 
-  final WidgetRef ref;
   final StateProvider provider;
 
   const ColumnAccordionPrefectures({
     super.key,
-    required this.ref,
     required this.provider,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
         Container(
-            height: getH(context, 6),
-            alignment: Alignment.center,
-            child: const Text("都道府県の選択", style: TextStyle(fontSize: 16),)
+          height: getH(context, 6),
+          alignment: Alignment.center,
+          child: const Text("都道府県の選択", style: TextStyle(fontSize: 16),)
         ),
         Expanded( // スクロールさせる領域をExpandedで囲むと、それ以外が固定になる
           child: SingleChildScrollView(
@@ -30,15 +28,14 @@ class ColumnAccordionPrefectures extends StatelessWidget {
               children: [
                 RegionAccordion(
                   title: '北海道',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '北海道'
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '東北',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '青森県',
                     '岩手県',
                     '宮城県',
@@ -46,12 +43,11 @@ class ColumnAccordionPrefectures extends StatelessWidget {
                     '山形県',
                     '福島県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '関東',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '茨城県',
                     '栃木県',
                     '群馬県',
@@ -60,12 +56,11 @@ class ColumnAccordionPrefectures extends StatelessWidget {
                     '東京都',
                     '神奈川県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '中部',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '新潟県',
                     '富山県',
                     '石川県',
@@ -76,12 +71,11 @@ class ColumnAccordionPrefectures extends StatelessWidget {
                     '静岡県',
                     '愛知県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '近畿',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '三重県',
                     '滋賀県',
                     '京都府',
@@ -90,35 +84,32 @@ class ColumnAccordionPrefectures extends StatelessWidget {
                     '奈良県',
                     '和歌山県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '中国',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '鳥取県',
                     '島根県',
                     '岡山県',
                     '広島県',
                     '山口県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '四国',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '徳島県',
                     '香川県',
                     '愛媛県',
                     '高知県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
                 RegionAccordion(
                   title: '九州',
-                  listTitleAry: const [
+                  listTileTextAry: const [
                     '福岡県',
                     '佐賀県',
                     '長崎県',
@@ -128,7 +119,6 @@ class ColumnAccordionPrefectures extends StatelessWidget {
                     '鹿児島県',
                     '沖縄県',
                   ],
-                  ref: ref,
                   provider: provider,
                 ),
               ],

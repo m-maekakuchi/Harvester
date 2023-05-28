@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -53,6 +54,12 @@ class MyApp extends ConsumerWidget {
           color: themeColor,
           foregroundColor: textIconColor,
         ),
+        cupertinoOverrideTheme: const CupertinoThemeData(
+          textTheme: CupertinoTextThemeData(
+            dateTimePickerTextStyle: TextStyle(color: textIconColor, fontSize: 20),
+            pickerTextStyle: TextStyle(color: Colors.black, fontSize: 16),
+          )
+        )
       ),
       // themeMode: ThemeMode.dark,
 
