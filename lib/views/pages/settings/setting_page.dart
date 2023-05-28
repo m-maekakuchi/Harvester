@@ -1,53 +1,175 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SettingPage extends StatelessWidget {
+import '../../../commons/app_color.dart';
+import '../../../handlers/padding_handler.dart';
+import '../../widgets/SettingAccordion.dart';
+
+final colorProvider = StateProvider((ref) => 5);
+
+class SettingPage extends ConsumerWidget {
   const SettingPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectColorIndex = ref.watch(colorProvider);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('設定')),
+      appBar: AppBar(
+        title: SizedBox(  // 幅を設定しないとcenterにならない
+          width: getW(context, 50),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
+            children: [
+              Image.asset(
+                width: getW(context, 10),
+                height: getH(context, 10),
+                'images/AppBar_logo.png'
+              ),
+              const Text("設定"),
+            ]
+          ),
+        ),
+      ),
       body: Column(
+        children: [
+          SizedBox(height: getH(context, 3),),
+          SettingAccordion(
+            title: 'アカウント',
+            listItemAry: [
+              [
+                'プロフィール編集',
+                () { context.push("/settings/profile_edit_page"); },
+              ],
+              [
+                'ログアウト',
+                () {},
+              ],
+              [
+                '退会する',
+                () {},
+              ]
+            ],
+          ),
+          itemTextItem(
+            context,
+            'テーマカラー',
+            () {
+              _dialogBuilder(selectColorIndex, context, ref);
+            }
+          ),
+          itemTextItem(
+            context,
+            '利用規約',
+            () { }
+          ),
+          itemTextItem(
+            context,
+            'プライバシーポリシー',
+            () { }
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Accordion以外の項目はTextButton
+  Widget itemTextItem(BuildContext context, String text, GestureTapCallback onPressed) {
+    return SizedBox(
+      width: double.infinity,
+      height: getH(context, 7.4),
+      child: TextButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.only(left: getW(context, 3), right: getW(context, 4)),
+          side: const BorderSide(
+            color: textIconColor,
+            width: 0.2
+          ),
+          backgroundColor: Colors.white,
+          foregroundColor: textIconColor,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            OutlinedButton(
-              onPressed: () {
-                context.go('/home_page');
-              },
-              child: Text('ホーム'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                context.go('/collections/collection_page');
-              },
-              child: Text('コレクション一覧'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                context.go('/cards/cards_list_page');
-              },
-              child: Text('カード一覧'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                context.go('/collections/collection_add_page');
-              },
-              child: Text('コレクション登録'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                context.go('/photos/photos_list_page');
-              },
-              child: Text('写真一覧'),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                context.push('/settings/profile_edit_page');
-              },
-              child: Text('プロフィール編集'),
-            ),
-          ]
+            Text(text, style: const TextStyle(fontSize: 16)),
+            const Icon(Icons.arrow_forward_ios, size: 15),
+          ],
+        ),
       )
     );
   }
+
+  // テーマカラー選択のダイアログ
+  Future<void> _dialogBuilder(int selectColorIndex, BuildContext context, WidgetRef ref) {
+    final length = themeColorChoice.length / 4;
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Consumer(builder: (context, ref, _) {
+          return AlertDialog(
+            title: const Text('色を選択してください', style: TextStyle(color: textIconColor, fontSize: 18)),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  for (int i = 0; i < length; i++) ... {
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        for (int j = i * 4; j < i * 4 + 4; j++) ... {
+                          Stack(
+                            alignment: AlignmentDirectional.center,
+                            children: [
+                              colorBall(themeColorChoice[j], j, context, ref),
+                              // 選択されたらチェックアイコンを上に表示
+                              if (ref.watch(colorProvider) == j) ... {
+                                const Icon(Icons.done_rounded, color: textIconColor),
+                              }
+                            ]
+                          ),
+                        }
+                      ],
+                    ),
+                  },
+                  IconButton(
+                    icon: const Icon(Icons.clear_rounded, size: 30, color: textIconColor,),
+                    /// themeColorを選択された色に変える処理をあとでここに書く
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      }
+    );
+  }
+
+  // 選択できる色の丸
+  Widget colorBall(Color color, int index, BuildContext context, WidgetRef ref) {
+    return Container(
+      width: getW(context, 10),
+      height: getW(context, 10),
+      margin: EdgeInsets.all(getW(context, 3)),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(45)
+          )
+        ),
+        // 色が選択された場合
+        onPressed: () {
+          final notifier = ref.read(colorProvider.notifier);
+          notifier.state = index;
+        },
+        child: const SizedBox.shrink(),
+      ),
+    );
+  }
+
 }
