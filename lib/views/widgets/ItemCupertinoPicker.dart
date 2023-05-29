@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/app_color.dart';
+
 const double _kItemExtent = 32.0;
 
 class ItemCupertinoPicker extends ConsumerWidget {
@@ -33,7 +35,12 @@ class ItemCupertinoPicker extends ConsumerWidget {
       },
       children:
       List<Widget>.generate(itemAry.length, (int index) {
-        return Center(child: Text(itemAry[index]));
+        return Text(
+          itemAry[index],
+          style: const TextStyle(
+            color: textIconColor,
+          ),
+        );
       }),
     );
   }
