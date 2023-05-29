@@ -31,8 +31,57 @@ class MyCardEditPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     final cardIndex = ref.watch(cardProvider);
     final date = ref.watch(dateProvider);
+
+    // ドラムロール(カード選択)
+    void showDialog(Widget child) {
+      showCupertinoModalPopup<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              height: MediaQuery.of(context).size.height / 3,
+              padding: const EdgeInsets.only(top: 6.0),
+              margin: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              color: CupertinoColors.systemBackground.resolveFrom(context),
+              child: SafeArea(
+                top: false,
+                child: child,
+              ),
+            );
+          }
+      );
+    }
+
+    // 日付のPickerを表示
+    Future<DateTime?> showDate(date) {
+      return showDatePicker(
+        context: context,
+        initialDate: date,
+        firstDate: DateTime(2000),
+        lastDate: DateTime.now(),
+        builder: (context, child) {
+          return Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: const ColorScheme.light(
+                primary: themeColor, // ヘッダー背景色
+                onPrimary: textIconColor, // ヘッダーテキストカラー
+                onSurface: textIconColor, // カレンダーのテキストカラー
+              ),
+              textButtonTheme: const TextButtonThemeData(
+                style: ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(textIconColor), // ボタンの色
+                ),
+              ),
+            ),
+            child: child!,
+          );
+        },
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -84,9 +133,11 @@ class MyCardEditPage extends ConsumerWidget {
                   // 取得カードの選択欄
                   ItemFieldUserSelect(
                     text: cardAry[cardIndex],
-                    onPressed: () => _showDialog(
-                      ItemCupertinoPicker(provider: cardProvider, itemAry: cardAry),
-                      context
+                    onPressed: () => showDialog(
+                      ItemCupertinoPicker(
+                        provider: cardProvider,
+                        itemAry: cardAry
+                      ),
                     ),
                   ),
                   const ItemTitle(titleStr: '収集日'),
@@ -94,7 +145,7 @@ class MyCardEditPage extends ConsumerWidget {
                   ItemFieldUserSelect(
                     text: '${date.year}/${date.month}/${date.day}',
                     onPressed: () async {
-                      final selectedDate = await showDate(context, date);
+                      final selectedDate = await showDate(date);
                       // 日付が選択された場合
                       if (selectedDate != null) {
                         final notifier = ref.read(dateProvider.notifier);
@@ -128,52 +179,5 @@ class MyCardEditPage extends ConsumerWidget {
     );
   }
 
-  // ドラムロール(カード選択)
-  void _showDialog(Widget child, BuildContext context) {
-    showCupertinoModalPopup<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: MediaQuery.of(context).size.height / 3,
-            padding: const EdgeInsets.only(top: 6.0),
-            margin: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            color: CupertinoColors.systemBackground.resolveFrom(context),
-            child: SafeArea(
-              top: false,
-              child: child,
-            ),
-          );
-        }
-    );
-  }
-
-  // 日付のPickerを表示
-  Future<DateTime?> showDate(context, date) {
-    return showDatePicker(
-      context: context,
-      initialDate: date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: themeColor, // ヘッダー背景色
-              onPrimary: textIconColor, // ヘッダーテキストカラー
-              onSurface: textIconColor, // カレンダーのテキストカラー
-            ),
-            textButtonTheme: const TextButtonThemeData(
-              style: ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(textIconColor), // ボタンの色
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-  }
 }
 
