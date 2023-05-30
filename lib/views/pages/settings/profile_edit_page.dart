@@ -61,8 +61,6 @@ const List<String> addressAry = [
   '沖縄県',
 ];
 
-final textController = TextEditingController(text: '初期値');
-
 /// 初期値はユーザーの登録情報から取ってくる
 // TextEditingControllerのtextでTextFormFieldの初期値を設定
 final textControllerProvider = StateProvider((ref) => TextEditingController(text: '初期値'));

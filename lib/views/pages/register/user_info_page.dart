@@ -6,10 +6,12 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../../commons/app_color.dart';
+import '../../components/ItemTitle.dart';
 import '../../widgets/GreenButton.dart';
+import '../../widgets/ItemCupertinoPicker.dart';
+import '../../widgets/ItemFieldUserSelect.dart';
 
-const double _kItemExtent = 32.0;
-const List<String> _addressAry = <String>[
+const List<String> addressAry = [
   '北海道',
   '青森県',
   '岩手県',
@@ -59,10 +61,7 @@ const List<String> _addressAry = <String>[
   '沖縄県',
 ];
 
-void main() async{
-  runApp(const UserInfoPage());
-}
-
+final textControllerProvider = StateProvider((ref) => TextEditingController());
 final addressProvider = StateProvider((ref) => 12);
 final birthdayProvider = StateProvider((ref) => '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}');
 
@@ -71,19 +70,14 @@ class UserInfoPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    final textController = ref.watch(textControllerProvider);
     final selectedAddress = ref.watch(addressProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
-    final spaceHeight1 = SizedBox(
-      height: getH(context, 1),
-    );
-    final spaceHeight3 = SizedBox(
-      height: getH(context, 3),
-    );
-    final spaceHeight5 = SizedBox(
-      height: getH(context, 5),
-    );
-    final spaceWidth5 = SizedBox(
-      width: getW(context, 5),
+
+    // TextFormFieldのカーソルを末尾に設定
+    textController.selection = TextSelection.fromPosition(
+      TextPosition(offset: textController.text.length),
     );
 
     // 居住地のドラムロール
@@ -107,191 +101,87 @@ class UserInfoPage extends ConsumerWidget {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                width: getW(context, 8),
-                height: getH(context, 8),
-                'images/AppBar_logo.png'
-              ),
-              const Text("ユーザー登録"),
-            ]
+    return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: SizedBox(  // 幅を設定しないとcenterにならない
+            width: getW(context, 50),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
+              children: [
+                Image.asset(
+                  width: getW(context, 10),
+                  height: getH(context, 10),
+                  'images/AppBar_logo.png'
+                ),
+                const Text("ユーザー登録", style: TextStyle(fontSize: 18)),
+              ]
+            ),
           ),
         ),
-      ),
-      // 日本語キーボード表示時のOVERFLOWに対する対応
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            spaceHeight5,
-            Row(
-              children: [
-                spaceWidth5,
-                const SizedBox(
-                  child: Text(
-                    'ニックネーム',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: textIconColor,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              const ItemTitle(titleStr: 'ニックネーム'),
+              //  ニックネーム欄
+              SizedBox(
+                width: getW(context, 90),
+                height: getH(context, 6),
+                child: TextFormField(
+                  /// validator: ,
+                  controller: textController,
+                  // 入力されたテキストの色
+                  style: const TextStyle(
+                      color: textIconColor
+                  ),
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
                     ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ],
-            ),
-            spaceHeight1,
-            // ニックネーム欄
-            SizedBox(
-              width: getW(context, 90),
-              height: getH(context, 6),
-              child: TextFormField(
-                // validator: (value) {
-                //   if (value == null || value.isEmpty) {
-                //     return '入力してください';
-                //   }
-                //   return null;
-                // },
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  hintText: '10文字以内',
-                  hintStyle: const TextStyle(
-                    fontSize: 16,
-                    color: textIconColor,
-                  ),
-                ),
-              ),
-            ),
-            spaceHeight3,
-            Row(
-              children: [
-                spaceWidth5,
-                const SizedBox(
-                  child: Text(
-                    '居住地',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: textIconColor,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ],
-            ),
-            spaceHeight1,
-            // 居住地選択欄
-            Container(
-              width: getW(context, 90),
-              height: getH(context, 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: textIconColor),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: getW(context, 89),
-                    child: CupertinoButton(
-                      padding: const EdgeInsets.only(left: 20),
-                      color: Colors.white,
-                      onPressed: () =>
-                        showDialog(
-                          CupertinoPicker(
-                            magnification: 1.22,
-                            squeeze: 1.2,
-                            useMagnifier: true,
-                            itemExtent: _kItemExtent,
-                            scrollController: FixedExtentScrollController(
-                              initialItem: selectedAddress,
-                            ),
-                            // This is called when selected item is changed.
-                            onSelectedItemChanged: (int selectedItem) {
-                              final notifier = ref.read(addressProvider.notifier);
-                              notifier.state = selectedItem;
-                            },
-                            children:
-                            List<Widget>.generate(
-                              _addressAry.length, (int index) {
-                                return Text(
-                                  _addressAry[index],
-                                  style: const TextStyle(
-                                    color: textIconColor,
-                                  ),
-                                );
-                              }
-                            ),
-                          ),
-                        ),
-                      // alignment: Alignment.space,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _addressAry[selectedAddress],
-                            style: const TextStyle(
-                              color: textIconColor,
-                              fontSize: 16
-                            ),
-                          ),
-                          const Icon(
-                            Icons.arrow_drop_down_rounded,
-                            size: 40,
-                            color: textIconColor,
-                          ),
-                        ],
+                    // 枠線の色
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: textIconColor,
+                        width: 1,
                       ),
                     ),
-                  ),
-                  // const Icon(
-                  //   Icons.arrow_drop_down_rounded,
-                  //   size: 40,
-                  //   color: textIconColor,
-                  // ),
-                ],
-              ),
-            ),
-            spaceHeight3,
-            Row(
-              children: [
-                spaceWidth5,
-                const SizedBox(
-                  child: Text(
-                    '生年月日',
-                    style: TextStyle(
-                      fontSize: 18,
+                    // 入力中の枠線の色
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: textIconColor,
+                        width: 1,
+                      ),
+                    ),
+                    hintText: '10文字以内',
+                    hintStyle: const TextStyle(
+                      fontSize: 16,
                       color: textIconColor,
                     ),
-                    textAlign: TextAlign.left,
                   ),
                 ),
-              ],
-            ),
-            spaceHeight1,
-            // 生年月日選択入力欄
-            Container(
-              width: getW(context, 90),
-              height: getH(context, 6),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: textIconColor),
-                borderRadius: BorderRadius.circular(10),
               ),
-              child: TextButton (
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.only(left: 20),
+              const ItemTitle(titleStr: '居住地'),
+              // 居住地選択欄
+              ItemFieldUserSelect(
+                text: addressAry[selectedAddress],
+                onPressed: () => showDialog(
+                  ItemCupertinoPicker(
+                    itemAry: addressAry,
+                    provider: addressProvider,
+                  ),
                 ),
+              ),
+              const ItemTitle(titleStr: '生年月日'),
+              // 生年月日選択欄
+              ItemFieldUserSelect(
+                text: selectedBirthday,
                 onPressed: () {
                   DatePicker.showDatePicker(context,
                     showTitleActions: false,
@@ -304,39 +194,20 @@ class UserInfoPage extends ConsumerWidget {
                     currentTime: DateTime.now(),
                     locale: LocaleType.jp
                   );
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: textIconColor,
-                        fontSize: 16,
-                      ),
-                      selectedBirthday,
-                    ),
-                    const Icon(
-                      Icons.arrow_drop_down_rounded,
-                      size: 40,
-                      color: textIconColor,
-                    ),
-                  ],
-                ),
+                }
               ),
-            ),
-            spaceHeight5,
-            GreenButton(
-              text: '登録',
-              fontSize: 18,
-              onPressed: () {
-                context.go('/home_page');
-              },
-            ),
-          ]
+              SizedBox(height: getH(context, 3)),
+              GreenButton(
+                text: '登録',
+                fontSize: 18,
+                onPressed: () {
+                  context.go('/home_page');
+                }
+              ),
+            ],
+          ),
         ),
-      )
+      ),
     );
   }
 }
