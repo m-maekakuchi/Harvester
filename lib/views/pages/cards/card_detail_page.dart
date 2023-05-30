@@ -54,6 +54,7 @@ class CardDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
+    final ScrollController _controllerOne = ScrollController();
     final toLaunch = Uri.parse(card["url"]!);
 
     // 詳細情報のTabBar
@@ -71,8 +72,10 @@ class CardDetailPage extends ConsumerWidget {
     Widget singleCardDetailInfo(text) {
       return Scrollbar(
         thumbVisibility: true,
+        controller: _controllerOne,
         thickness: 6,
         child: SingleChildScrollView(
+          controller: _controllerOne,
           child: Container(
             padding: EdgeInsets.all(getH(context, 2)),
             child: Text(text, style: const TextStyle(fontSize: 16),),
@@ -150,10 +153,10 @@ class CardDetailPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: getH(context, 2)),
+                  SizedBox(height: getH(context, 1)),
                   // 写真のスライダー
                   CarouselSliderPhotos(imgList: imgList),
-                  SizedBox(height: getW(context, 3)),
+                  SizedBox(height: getW(context, 1)),
                   // カード番号・都道府県・市町村
                   Column(
                     children: [
@@ -206,15 +209,15 @@ class CardDetailPage extends ConsumerWidget {
           ),
           Container(
             width: double.infinity,
-            height: getH(context, 8),
-            color: Colors.white,
+            height: getH(context, 6),
+            color: textIconColor,
             child: IconButton(
               onPressed: () {
                 context.push('/cards/my_card_edit_page');
               },
               icon: const Icon(Icons.edit_rounded),
-              iconSize: 40,
-              color: textIconColor,
+              iconSize: 30,
+              color: Colors.white,
             ),
           ),
         ],
