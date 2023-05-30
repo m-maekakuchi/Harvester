@@ -67,5 +67,12 @@
     <key>NSMicrophoneUsageDescription</key>
     <string>This app requires to add file to your photo library your microphone</string>
     <!-- image_cropperの設定ここまで -->
+    <!-- url_launcherの設定 -->
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>sms</string>
+      <string>tel</string>
+    </array>
+    <!-- url_launcherの設定ここまで -->
 </dict>
 </plist>

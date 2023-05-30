@@ -163,14 +163,14 @@ class MyCardEditPage extends ConsumerWidget {
           ),
           Container(
             width: double.infinity,
-            height: getH(context, 10),
+            height: getH(context, 8),
             color: Colors.white,
             child: IconButton(
               onPressed: () {
                 context.pop();
               },
               icon: const Icon(Icons.done_rounded),
-              iconSize: 50,
+              iconSize: 40,
               color: textIconColor,
             ),
           ),
