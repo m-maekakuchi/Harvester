@@ -193,7 +193,8 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
+        title: SizedBox(
+          width: getW(context, 60),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
             children: [

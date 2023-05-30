@@ -110,7 +110,15 @@ class SettingPage extends ConsumerWidget {
       builder: (BuildContext context) {
         return Consumer(builder: (context, ref, _) {
           return AlertDialog(
-            title: const Text('色を選択してください', style: TextStyle(color: textIconColor, fontSize: 18)),
+            title: const Center(
+              child: Text(
+                '色を選択してください',
+                style: TextStyle(
+                  color: textIconColor,
+                  fontSize: 18,
+                ),
+              )
+            ),
             content: SingleChildScrollView(
               child: Column(
                 children: [

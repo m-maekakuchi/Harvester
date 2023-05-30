@@ -49,6 +49,9 @@ dependencies:
   image_picker: ^0.8.7+5
   image_cropper: ^4.0.1
   flutter_localization: ^0.1.11
+  carousel_slider: ^4.2.1
+  url_launcher: ^6.1.11
+  flutter_native_splash: ^2.2.19
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +66,24 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_native_splash:
+  image: images/Harvester_only_icon.png
+  color: '#F8FBF2'
+  color_dark: '#042a49'
+  image_dark: images/Harvester_only_icon.png
+  fullscreen: true
+  android: true
+  ios: true
+  android_12:
+    # Splash screen background color.
+    color: "#F8FBF2"
+#    App icon background color.
+#    icon_background_color: "#111111"
+#    The branding property allows you to specify an image used as branding in the splash screen.
+    branding: images/Harvester_only_icon.png
+    image_dark: images/Harvester_only_icon.png
+
 
 # The following section is specific to Flutter packages.
 flutter:

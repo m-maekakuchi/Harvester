@@ -23,154 +23,163 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
+    return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: SizedBox(
+            width: getW(context, 50),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
                     width: getW(context, 8),
                     height: getH(context, 8),
                     'images/AppBar_logo.png'
-                ),
-                const Text("電話番号認証"),
-              ]
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.go('/top_page');
-            },
-            icon: const Icon(
-              Icons.clear_rounded,
-              size: 40
+                  ),
+                  const Text("電話番号認証"),
+                ]
             ),
           ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          children:[
-            SizedBox(
-              height: getH(context, 5),
-            ),
-            Container(
-              width: getW(context, 90),
-              height: getH(context, 28),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.go('/top_page');
+              },
+              icon: const Icon(
+                Icons.clear_rounded,
+                size: 40
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: getH(context, 3),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: getW(context, 5),
-                      ),
-                      const Text(
-                        "携帯電話番号",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+            ),
+          ],
+        ),
+        body: Center(
+          child: Column(
+            children:[
+              SizedBox(
+                height: getH(context, 5),
+              ),
+              Container(
+                width: getW(context, 90),
+                height: getH(context, 28),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: getH(context, 3),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: getW(context, 5),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: getH(context, 1),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: getW(context, 5),
-                      ),
-                      const Text(
-                        "入力後に認証コードが送信されます。",
-                        style: TextStyle(
-                          fontSize: 16,
+                        const Text(
+                          "携帯電話番号",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: getH(context, 1),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: getW(context, 5),
-                      ),
-                      Expanded(
-                        child: TextFormField(
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.local_phone_rounded,
+                      ],
+                    ),
+                    SizedBox(
+                      height: getH(context, 1),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: getW(context, 5),
+                        ),
+                        const Text(
+                          "入力後に認証コードが送信されます。",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: getH(context, 1),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: getW(context, 5),
+                        ),
+                        Expanded(
+                          child: TextFormField(
+                            keyboardType: TextInputType.phone,
+                            style: const TextStyle( // 入力された文字の色
                               color: textIconColor,
                             ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.local_phone_rounded,
                                 color: textIconColor,
                               ),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: textIconColor,
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: textIconColor,
+                                ),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: textIconColor,
+                                ),
                               ),
                             ),
+                            onChanged: (value) {
+                              // iphone= value;
+                              iphone = value;
+                            }
                           ),
-                          onChanged: (value) {
-                            // iphone= value;
-                            iphone = value;
-                          }
                         ),
-                      ),
-                      SizedBox(
-                        width: getW(context, 5),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: getH(context, 1),
-                  ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: getW(context, 5),
-                      ),
-                      const Text(
-                        "※ハイフンなし",
-                        style: TextStyle(
-                          fontSize: 16,
+                        SizedBox(
+                          width: getW(context, 5),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: getH(context, 3),
-                  ),
-                ],
-              )
-            ),
-            SizedBox(
-              height: getH(context, 5),
-            ),
-            GreenButton(
-              text: '次へ',
-              fontSize: 18,
-              onPressed: () async{
-                final phoneNumber = "+81 " + iphone;
-                await ref.read(authControllerProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
-              },
-            ),
-          ]
+                      ],
+                    ),
+                    SizedBox(
+                      height: getH(context, 1),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: getW(context, 5),
+                        ),
+                        const Text(
+                          "※ハイフンなし",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: getH(context, 3),
+                    ),
+                  ],
+                )
+              ),
+              SizedBox(
+                height: getH(context, 5),
+              ),
+              GreenButton(
+                text: '次へ',
+                fontSize: 18,
+                onPressed: () async{
+                  final phoneNumber = "+81 " + iphone;
+                  await ref.read(authControllerProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
+                },
+              ),
+            ]
+          ),
         ),
       ),
     );

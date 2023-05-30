@@ -21,10 +21,10 @@ class ItemFieldUserSelect extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: getW(context, 90),
-      height: getH(context, 6),
+      margin: EdgeInsets.only(bottom: getH(context, 1)),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: textIconColor),
+        border: Border.all(color: textIconColor, width: 1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: CupertinoButton( // TextIconでもいいけど日付選択欄のボタンにあわせてデザイン揃えている

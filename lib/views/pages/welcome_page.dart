@@ -9,40 +9,38 @@ class WelcomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children:[
-              Image.asset(
-                width: getW(context, 80),
-                height: getH(context, 30),
-                'images/Harvester_logo.png'
-              ),
-              Image.asset(
-                width: getW(context, 70),
-                height: getH(context, 25),
-                'images/manhole.png'
-              ),
-              GreenButton(
-                text: 'Google',
-                fontSize: 20,
-                onPressed: () {
-                  // ref.read(authViewModelProvider.notifier).signInWithGoogle();
-                  context.go('/cards_list_page');
-                },
-              ),
-              GreenButton(
-                text: '電話番号',
-                fontSize: 20,
-                onPressed: () {
-                  context.go('/register/tel_identification_page');
-                },
-              ),
-            ]
-          )
-        ),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children:[
+            Image.asset(
+              width: getW(context, 80),
+              height: getH(context, 30),
+              'images/Harvester_logo.png'
+            ),
+            Image.asset(
+              width: getW(context, 70),
+              height: getH(context, 25),
+              'images/manhole.png'
+            ),
+            GreenButton(
+              text: 'Google',
+              fontSize: 20,
+              onPressed: () {
+                // ref.read(authViewModelProvider.notifier).signInWithGoogle();
+                context.go('/cards_list_page');
+              },
+            ),
+            GreenButton(
+              text: '電話番号',
+              fontSize: 20,
+              onPressed: () {
+                context.go('/register/tel_identification_page');
+              },
+            ),
+          ]
+        )
       ),
     );
   }
