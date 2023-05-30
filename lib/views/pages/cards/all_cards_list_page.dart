@@ -187,7 +187,8 @@ class AllCardsListPage extends ConsumerWidget {
         tabController.addListener(() {});
         return Scaffold(
           appBar: AppBar(
-            title: Center(
+            title: SizedBox(
+              width: getW(context, 60),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
                 children: [
