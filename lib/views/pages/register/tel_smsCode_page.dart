@@ -137,7 +137,6 @@ class TelSmsCodePage extends ConsumerWidget {
                       smsCode: smsCode
                     );
                     await ref.read(authControllerProvider.notifier).signInWithCredential(credential);
-                    context.go('/register/tel_smsCode_page');
                   } catch(e){
                     debugPrint(e.toString());
                   }
