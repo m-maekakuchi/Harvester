@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/viewModels/AuthController.dart';
+import 'package:harvester/views/pages/bottom_bar.dart';
 import 'package:harvester/views/pages/cards/card_detail_page.dart';
+import 'package:harvester/views/pages/register/tel_smsCode_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
-import 'package:harvester/views/pages/cards/cards_list_page.dart';
-import 'package:harvester/views/pages/cards/card_edit_page.dart';
-import 'package:harvester/views/pages/collections/collection_page.dart';
-import 'package:harvester/views/pages/collections/collection_add_page.dart';
+import 'package:harvester/views/pages/cards/all_cards_list_page.dart';
+import 'package:harvester/views/pages/cards/my_card_edit_page.dart';
+import 'package:harvester/views/pages/collections/my_cards_list_page.dart';
+import 'package:harvester/views/pages/collections/my_card_add_page.dart';
 import 'package:harvester/views/pages/home_page.dart';
 import 'package:harvester/views/pages/photos/photos_list_page.dart';
 import 'package:harvester/views/pages/settings/setting_page.dart';
@@ -21,7 +23,9 @@ Provider<GoRouter> router() {
   return Provider((ref) =>
     GoRouter(
       redirect: (context, state) async {
-        // return '/home_page';
+        // return '/register/user_info_page';
+        // return '/bottom_bar';
+
         // authControllerProviderに変更があった場合に動くイメージ
         final auth = ref.watch(authControllerProvider);
         bool isSignedIn = auth.value != null;
@@ -32,20 +36,31 @@ Provider<GoRouter> router() {
         // AuthControllerメソッド呼ぶときnotifierつける
         final user = ref.watch(authControllerProvider.notifier).getCurrentUser();
         String requestPagePath = state.subloc;
-
+        print("リダイレクトパス：" + requestPagePath);
         // アクセスしようとしているパスがnotLoginSignInPathに入ってるか
         final goingToSignIn = RedirectPath.notLoginSignInPath.contains(requestPagePath);
-        // print(goingToSignIn);
         // サインインしてない && notLoginSignInPath以外に入ろうとしてる
         if (!isSignedIn && !goingToSignIn) {
+          print('----サインインしていない && notLoginSignInPathに入ろうとしている----');
           return '/';
         } else if (isSignedIn) {
+          print('----サインインしている----');
           // サインインしてるのに、トップとか電話番号認証に入ろうとしてる
           if (requestPagePath == '/' || goingToSignIn) {
+            print('----入ってはいけないページにアクセスしようとしている。----');
             final result = await user!.getIdTokenResult(true);
-
+            print("***********************");
+            print(result);
+            print("***********************");
             await ref.watch(authControllerProvider.notifier).reload();
-            return '/home_page';
+            final status = result.claims!['status'];
+            print(status);
+            print("***********************");
+            if (status == null) {
+              return '/register/user_info_page';
+            } else {
+              return '/bottom_bar';
+            }
           } else {
             return null;
           }
@@ -63,14 +78,27 @@ Provider<GoRouter> router() {
         GoRoute(
           path: '/register/tel_identification_page',
           builder: (BuildContext context, GoRouterState state) {
-            print(67);
             return const TelIdentificationPage();
+          },
+        ),
+        GoRoute(
+          path: '/register/tel_smsCode_page',
+          builder: (BuildContext context, GoRouterState state) {
+            return const TelSmsCodePage();
           },
         ),
         GoRoute(
           path: '/register/user_info_page',
           builder: (BuildContext context, GoRouterState state) {
             return const UserInfoPage();
+          },
+        ),
+        GoRoute(
+          // path: '/BasePage',
+          path: '/bottom_bar',
+          builder: (BuildContext context, GoRouterState state) {
+            // return const BasePage();
+            return const BottomBar();
           },
         ),
         GoRoute(
@@ -82,19 +110,19 @@ Provider<GoRouter> router() {
         GoRoute(
           path: '/collections/collection_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const CollectionPage();
+            return const MyCardsListPage();
           },
         ),
         GoRoute(
           path: '/collections/collection_add_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const ColletionAddPage();
+            return const MyCardAddPage();
           },
         ),
         GoRoute(
           path: '/cards/cards_list_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const CardsListPage();
+            return const AllCardsListPage();
           },
         ),
         GoRoute(
@@ -104,9 +132,9 @@ Provider<GoRouter> router() {
           },
         ),
         GoRoute(
-          path: '/cards/card_edit_page',
+          path: '/cards/my_card_edit_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const CardEditPage();
+            return const MyCardEditPage();
           },
         ),
         GoRoute(
