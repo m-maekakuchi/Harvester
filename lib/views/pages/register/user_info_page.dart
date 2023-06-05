@@ -201,7 +201,7 @@ class UserInfoPage extends ConsumerWidget {
                 text: '登録',
                 fontSize: 18,
                 onPressed: () {
-                  context.go('/home_page');
+                  context.go('/bottom_bar');
                 }
               ),
             ],

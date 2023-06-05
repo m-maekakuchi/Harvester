@@ -3,18 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_color.dart';
+import '../../../commons/my_cards_tab.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../components/CardShortInfoContainer.dart';
 import '../../components/ColoredTabBar.dart';
 import '../../components/ColumnAccordionPrefecture.dart';
 import '../../widgets/WhiteButton.dart';
-
-const List<Tab> tabs = [
-  Tab(text: '日付'),
-  Tab(text: 'お気に入り'),
-  Tab(text: '全国'),
-  Tab(text: '都道府県'),
-];
 
 final prefectureProvider = StateProvider((ref) => "");
 
@@ -228,7 +222,7 @@ class MyCardsListPage extends ConsumerWidget {
     );
 
     return DefaultTabController(
-      length: tabs.length,
+      length: myCardsTab.length,
       child: Builder(builder: (context) {
         final TabController tabController = DefaultTabController.of(context);
         // タブを切り替えたときに呼び出される
@@ -262,7 +256,7 @@ class MyCardsListPage extends ConsumerWidget {
                 indicatorColor: textIconColor,
                 labelColor: textIconColor,
                 labelStyle: TextStyle(fontSize: 13),
-                tabs: tabs,
+                tabs: myCardsTab,
               ),
               color: scaffoldBackgroundColor,
             ),

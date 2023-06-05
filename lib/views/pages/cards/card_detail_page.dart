@@ -6,6 +6,7 @@ import 'package:harvester/handlers/padding_handler.dart';
 import 'package:harvester/views/widgets/WhiteButton.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../commons/card_info_tab.dart';
 import '../../widgets/CarouselSliderPhotos.dart';
 
 /// 写真
@@ -33,12 +34,6 @@ const collectionDay = "2023/4/5";
 // お気に入り登録されているかどうか
 const bookmark = true;
 
-const cardInfoTabText = [
-  Tab(child: Text('配布場所', style: TextStyle(fontSize: 16))),
-  Tab(child: Text('配布場所', style: TextStyle(fontSize: 16))),
-  Tab(child: Text('発行日', style: TextStyle(fontSize: 16))),
-];
-
 class CardDetailPage extends ConsumerWidget {
   const CardDetailPage({super.key});
 
@@ -65,13 +60,13 @@ class CardDetailPage extends ConsumerWidget {
         color: themeColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      tabs: cardInfoTabText,
+      tabs: cardInfoTab,
     );
 
     // 詳細情報の内容
     Widget singleCardDetailInfo(text) {
       return Scrollbar(
-        thumbVisibility: true,
+        // thumbVisibility: true,
         controller: _controllerOne,
         thickness: 6,
         child: SingleChildScrollView(
