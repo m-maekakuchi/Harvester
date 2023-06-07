@@ -15,6 +15,112 @@ class SettingPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectColorIndex = ref.watch(colorProvider);
 
+    // Accordion以外の項目はTextButton
+    Widget itemTextItem(String text, GestureTapCallback onPressed) {
+      return SizedBox(
+          width: double.infinity,
+          height: getH(context, 7.4),
+          child: TextButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.only(left: getW(context, 3), right: getW(context, 4)),
+              side: const BorderSide(
+                  color: textIconColor,
+                  width: 0.2
+              ),
+              backgroundColor: Colors.white,
+              foregroundColor: textIconColor,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(text, style: const TextStyle(fontSize: 16)),
+                const Icon(Icons.arrow_forward_ios, size: 15),
+              ],
+            ),
+          )
+      );
+    }
+
+    // 選択できる色の丸
+    Widget colorBall(Color color, int index, WidgetRef ref) {
+      return Container(
+        width: getW(context, 10),
+        height: getW(context, 10),
+        margin: EdgeInsets.all(getW(context, 3)),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(45)
+              )
+          ),
+          // 色が選択された場合
+          onPressed: () {
+            final notifier = ref.read(colorProvider.notifier);
+            notifier.state = index;
+          },
+          child: const SizedBox.shrink(),
+        ),
+      );
+    }
+    
+    // テーマカラー選択のダイアログ
+    Future<void> _dialogBuilder(int selectColorIndex, WidgetRef ref) {
+      final length = themeColorChoice.length / 4;
+
+      return showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return Consumer(builder: (context, ref, _) {
+              return AlertDialog(
+                title: const Center(
+                    child: Text(
+                      '色を選択してください',
+                      style: TextStyle(
+                        color: textIconColor,
+                        fontSize: 18,
+                      ),
+                    )
+                ),
+                content: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < length; i++) ... {
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            for (int j = i * 4; j < i * 4 + 4; j++) ... {
+                              Stack(
+                                  alignment: AlignmentDirectional.center,
+                                  children: [
+                                    colorBall(themeColorChoice[j], j, ref),
+                                    // 選択されたらチェックアイコンを上に表示
+                                    if (ref.watch(colorProvider) == j) ... {
+                                      const Icon(Icons.done_rounded, color: textIconColor),
+                                    }
+                                  ]
+                              ),
+                            }
+                          ],
+                        ),
+                      },
+                      IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 30, color: textIconColor,),
+                        /// themeColorを選択された色に変える処理をあとでここに書く
+                        onPressed: () {
+                          context.pop();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            });
+          }
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: SizedBox(  // 幅を設定しないとcenterにならない
@@ -53,129 +159,20 @@ class SettingPage extends ConsumerWidget {
             ],
           ),
           itemTextItem(
-            context,
             'テーマカラー',
             () {
-              _dialogBuilder(selectColorIndex, context, ref);
+              _dialogBuilder(selectColorIndex, ref);
             }
           ),
           itemTextItem(
-            context,
             '利用規約',
             () { }
           ),
           itemTextItem(
-            context,
             'プライバシーポリシー',
             () { }
           ),
         ],
-      ),
-    );
-  }
-
-  // Accordion以外の項目はTextButton
-  Widget itemTextItem(BuildContext context, String text, GestureTapCallback onPressed) {
-    return SizedBox(
-      width: double.infinity,
-      height: getH(context, 7.4),
-      child: TextButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.only(left: getW(context, 3), right: getW(context, 4)),
-          side: const BorderSide(
-            color: textIconColor,
-            width: 0.2
-          ),
-          backgroundColor: Colors.white,
-          foregroundColor: textIconColor,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(text, style: const TextStyle(fontSize: 16)),
-            const Icon(Icons.arrow_forward_ios, size: 15),
-          ],
-        ),
-      )
-    );
-  }
-
-  // テーマカラー選択のダイアログ
-  Future<void> _dialogBuilder(int selectColorIndex, BuildContext context, WidgetRef ref) {
-    final length = themeColorChoice.length / 4;
-
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Consumer(builder: (context, ref, _) {
-          return AlertDialog(
-            title: const Center(
-              child: Text(
-                '色を選択してください',
-                style: TextStyle(
-                  color: textIconColor,
-                  fontSize: 18,
-                ),
-              )
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  for (int i = 0; i < length; i++) ... {
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        for (int j = i * 4; j < i * 4 + 4; j++) ... {
-                          Stack(
-                            alignment: AlignmentDirectional.center,
-                            children: [
-                              colorBall(themeColorChoice[j], j, context, ref),
-                              // 選択されたらチェックアイコンを上に表示
-                              if (ref.watch(colorProvider) == j) ... {
-                                const Icon(Icons.done_rounded, color: textIconColor),
-                              }
-                            ]
-                          ),
-                        }
-                      ],
-                    ),
-                  },
-                  IconButton(
-                    icon: const Icon(Icons.clear_rounded, size: 30, color: textIconColor,),
-                    /// themeColorを選択された色に変える処理をあとでここに書く
-                    onPressed: () {
-                      context.pop();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-      }
-    );
-  }
-
-  // 選択できる色の丸
-  Widget colorBall(Color color, int index, BuildContext context, WidgetRef ref) {
-    return Container(
-      width: getW(context, 10),
-      height: getW(context, 10),
-      margin: EdgeInsets.all(getW(context, 3)),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(45)
-          )
-        ),
-        // 色が選択された場合
-        onPressed: () {
-          final notifier = ref.read(colorProvider.notifier);
-          notifier.state = index;
-        },
-        child: const SizedBox.shrink(),
       ),
     );
   }

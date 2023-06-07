@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../repositories/BaseAuthRepository.dart';
-import '../repositories/auth_repository.dart';
 
 final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<User?>>(
       (ref) => AuthController(ref)..appStarted(),

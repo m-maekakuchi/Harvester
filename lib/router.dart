@@ -7,7 +7,7 @@ import 'package:harvester/views/pages/cards/card_detail_page.dart';
 import 'package:harvester/views/pages/register/tel_smsCode_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/all_cards_list_page.dart';
-import 'package:harvester/views/pages/cards/my_card_edit_page.dart';
+import 'package:harvester/views/pages/collections/my_card_edit_page.dart';
 import 'package:harvester/views/pages/collections/my_cards_list_page.dart';
 import 'package:harvester/views/pages/collections/my_card_add_page.dart';
 import 'package:harvester/views/pages/home_page.dart';
@@ -16,7 +16,7 @@ import 'package:harvester/views/pages/settings/setting_page.dart';
 import 'package:harvester/views/pages/settings/profile_edit_page.dart';
 import 'package:harvester/views/pages/register/tel_identification_page.dart';
 import 'package:harvester/views/pages/register/user_info_page.dart';
-import 'commons/RedirectPath.dart';
+import 'commons/redirect_path.dart';
 
 
 Provider<GoRouter> router() {

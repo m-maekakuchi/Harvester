@@ -9,6 +9,7 @@ class CardShortInfoContainer extends StatelessWidget {
   const CardShortInfoContainer({
     super.key,
     required this.image,
+    required this.prefecture,
     required this.city,
     required this.version,
     required this.serialNumber,
@@ -17,6 +18,8 @@ class CardShortInfoContainer extends StatelessWidget {
 
   /// 画像
   final String image;
+  /// 都道府県
+  final String prefecture;
   /// 市町村
   final String city;
   /// 段数
@@ -58,36 +61,42 @@ class CardShortInfoContainer extends StatelessWidget {
             ),
             // カード情報
             Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
                 children: [
-                  // favoriteがnullでなければその値が使われ、nullであれば??隣の値（false）が使われる
-                  // MyCardsでお気に入り登録していたらアイコンが表示される
-                  // Container(
-                  //   child: (favorite ?? false)
-                  //     ? const Icon(Icons.bookmark_outlined) // favoriteがtrueの場合
-                  //     : const SizedBox(), // favoriteがfalseの場合
-                  // ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(city, style: const TextStyle(fontSize: 15),),
-                      /// ----お気に入り登録してたら表示したい----
-                      SizedBox(width: getW(context, 1),),
-                      Icon(
-                        Icons.bookmark_outlined,
-                        size: 20,
-                        color: Colors.yellow[700],
-                      ),
-                      /// ------------------------------------
-                    ],
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // favoriteがnullでなければその値が使われ、nullであれば??隣の値（false）が使われる
+                        // MyCardsでお気に入り登録していたらアイコンが表示される
+                        // Container(
+                        //   child: (favorite ?? false)
+                        //     ? const Icon(Icons.bookmark_outlined) // favoriteがtrueの場合
+                        //     : const SizedBox(), // favoriteがfalseの場合
+                        // ),
+                        Text(prefecture, style: const TextStyle(fontSize: 14),),
+                        SizedBox(height: getH(context, 0.2),),
+                        Text(city, style: const TextStyle(fontSize: 17),),
+                        SizedBox(height: getH(context, 0.2),),
+                        Text("第$version弾", style: const TextStyle(fontSize: 14),),
+                        SizedBox(height: getH(context, 0.5),),
+                        Text(serialNumber, style: const TextStyle(fontSize: 14),),
+                      ]
+                    ),
                   ),
-                  Text("第$version弾", style: const TextStyle(fontSize: 14),),
-                  SizedBox(
-                    height: getH(context, 0.5),
+                  /// ----お気に入り登録してたら表示したい----
+                  Positioned( // お気に入りアイコンを親の右下に配置
+                    bottom: getW(context, 2),
+                    right: getW(context, 2),
+                    child: Icon(
+                      Icons.bookmark_outlined,
+                      size: 25,
+                      color: Colors.yellow[700],
+                    ),
                   ),
-                  Text(serialNumber, style: const TextStyle(fontSize: 14),),
+                  /// ------------------------------------
                 ],
+                // ),
               ),
             ),
           ],
