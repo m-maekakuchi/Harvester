@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../../commons/app_color.dart';
-import '../../../repositories/BaseAuthRepository.dart';
-import '../../../viewModels/AuthController.dart';
+import '../../../repositories/auth_repository.dart';
+import '../../../viewModels/auth_view_model.dart';
 import '../../widgets/GreenButton.dart';
 
 class TelSmsCodePage extends ConsumerWidget {
@@ -136,7 +136,7 @@ class TelSmsCodePage extends ConsumerWidget {
                       verificationId: verificationId,
                       smsCode: smsCode
                     );
-                    await ref.read(authControllerProvider.notifier).signInWithCredential(credential);
+                    await ref.read(authViewModelProvider.notifier).signInWithCredential(credential);
                   } catch(e){
                     debugPrint(e.toString());
                   }
