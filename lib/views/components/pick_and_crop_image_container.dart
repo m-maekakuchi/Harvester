@@ -18,17 +18,15 @@ class PickAndCropImageContainer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final imageList = ref.watch(imageListProvider);
 
-    void clear() {
-
-    }
-    // 削除ボタン
+    /// 削除ボタン
     Widget deleteButton() {
       return Container(
         width: getW(context, 12),
         padding: EdgeInsets.only(right: getW(context, 3), top: 0),
         child: FloatingActionButton(
           onPressed: () {
-            clear();
+            /// ImageModelのリストから削除
+            ref.read(imageListProvider.notifier).remove(index);
           },
           backgroundColor: Colors.white,
           child: const Icon(Icons.clear_rounded, color: textIconColor,),
@@ -36,7 +34,7 @@ class PickAndCropImageContainer extends ConsumerWidget {
       );
     }
 
-    // 切り抜き画像がある場合のデザイン
+    /// 切り抜き画像がある場合のデザイン
     Widget image() {
       return SizedBox(
         width: getW(context, 40),
