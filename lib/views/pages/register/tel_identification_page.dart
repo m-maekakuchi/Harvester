@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../../viewModels/AuthController.dart';
+import '../../../viewModels/auth_view_model.dart';
 import '../../widgets/GreenButton.dart';
 
 void main() async{
@@ -175,7 +175,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                 fontSize: 18,
                 onPressed: () async{
                   final phoneNumber = "+81 " + iphone;
-                  await ref.read(authControllerProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
+                  await ref.read(authViewModelProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
                 },
               ),
             ]

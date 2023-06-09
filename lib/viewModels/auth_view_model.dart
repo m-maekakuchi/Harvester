@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../repositories/BaseAuthRepository.dart';
+import '../repositories/auth_repository.dart';
 
-final authControllerProvider = StateNotifierProvider<AuthController, AsyncValue<User?>>(
-      (ref) => AuthController(ref)..appStarted(),
+final authViewModelProvider = StateNotifierProvider<AuthViewModel, AsyncValue<User?>>(
+      (ref) => AuthViewModel(ref)..appStarted(),
 );
 
-class AuthController extends StateNotifier<AsyncValue<User?>> {
+class AuthViewModel extends StateNotifier<AsyncValue<User?>> {
   final Ref _ref;
   StreamSubscription<User?>? _idTokenChangesSubscription;
 
-  AuthController(this._ref) : super(const AsyncValue.loading()) {
+  AuthViewModel(this._ref) : super(const AsyncValue.loading()) {
     _idTokenChangesSubscription?.cancel();
     _idTokenChangesSubscription = _ref.read(authRepositoryProvider).idTokenChanges.listen((user) async {
       state = AsyncValue.data(user);

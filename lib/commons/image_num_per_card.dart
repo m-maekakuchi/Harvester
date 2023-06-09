@@ -1,0 +1,1 @@
+const imageNumPerCard = 4;
