@@ -1,61 +1,61 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CardMaster {
-  final String? serialNumber;
-  final String? prefecture;
-  final String? city;
-  final int? version;
-  final String? issueDate;
-  final String? comment;
+class CardMasterModel {
+  final String serialNumber;
+  final String prefecture;
+  final String city;
+  final int version;
+  final String issueDay;
+  final String comment;
   final String? stockLink;
-  final List<String>? distributeLocations;
-  final List<String>? distributeAddresses;
-  final List<String>? locationLinks;
+  final List<String?> distributeLocations;
+  final List<String?> distributeAddresses;
+  final List<String?> locationLinks;
 
-  CardMaster({
-    this.serialNumber,
-    this.prefecture,
-    this.city,
-    this.version,
-    this.issueDate,
-    this.comment,
-    this.stockLink,
-    this.distributeLocations,
-    this.distributeAddresses,
-    this.locationLinks,
+  CardMasterModel({
+    required this.serialNumber,
+    required this.prefecture,
+    required this.city,
+    required this.version,
+    required this.issueDay,
+    required this.comment,
+    required this.stockLink,
+    required this.distributeLocations,
+    required this.distributeAddresses,
+    required this.locationLinks,
   });
 
-  factory CardMaster.fromFirestore(
+  factory CardMasterModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    return CardMaster(
+    return CardMasterModel(
       serialNumber: data?['serial_number'],
       prefecture: data?['prefecture'],
       city: data?['city'],
       version: data?['version'],
-      issueDate: data?['issue_date'],
+      issueDay: data?['issue_day'],
       comment: data?['comment'],
       stockLink: data?['stock_link'],
-      distributeLocations: data?['distribute_locations'],
-      distributeAddresses: data?['location_links'],
-      locationLinks: data?['distribute_addresses'],
+      distributeLocations: List.from(data?['distribute_locations']),
+      distributeAddresses: List.from(data?['location_links']),
+      locationLinks: List.from(data?['distribute_addresses']),
     );
   }
 
-  // Map<String, dynamic> toFirestore() {
-  //   return {
-  //     if (serialNumber != null) 'serial_number': serialNumber,
-  //     if (prefecture != null) 'prefecture': prefecture,
-  //     if (city != null) 'city': city,
-  //     if (version != null) 'version': version,
-  //     if (issueDate != null) 'issue_date': issueDate,
-  //     if (comment != null) 'comment': comment,
-  //     if (stockLink != null) 'stock_link': stockLink,
-  //     if (distributeLocation != null) 'distribute_location': distributeLocation,
-  //     if (locationLink != null) 'distribute_address': locationLink,
-  //     if (distributeAddress != null) 'location_link': distributeAddress,
-  //   };
-  // }
+  Map<String, dynamic> toFirestore() {
+    return {
+      'serial_number': serialNumber,
+      'prefecture': prefecture,
+      'city': city,
+      'version': version,
+      'issue_day': issueDay,
+      'comment': comment,
+      'stock_link': stockLink,
+      'distribute_locations': distributeLocations,
+      'distribute_addresses': distributeAddresses,
+      'location_links': locationLinks,
+    };
+  }
 }

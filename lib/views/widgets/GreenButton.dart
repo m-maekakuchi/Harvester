@@ -13,7 +13,7 @@ class  GreenButton extends StatelessWidget {
 
   final String text;
   final double fontSize;
-  final GestureTapCallback onPressed;
+  final GestureTapCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

@@ -9,25 +9,17 @@ import 'package:harvester/views/widgets/GreenButton.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/image_num_per_card.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../viewModels/card_master_option_view_model.dart';
+import '../../components/card_master_option_list_view.dart';
 import '../../components/pick_and_crop_image_container.dart';
 import '../../widgets/BookMarkButton.dart';
-import '../../widgets/ItemCupertinoPicker.dart';
 import '../../widgets/ItemFieldUserSelect.dart';
+import '../../components/white_show_modal_bottom_sheet.dart';
 
-final cardProvider = StateProvider((ref) => 0);
+final cardIndexProvider = StateProvider((ref) => 0);
 final dateProvider = StateProvider((ref) => DateTime.now());
 // trueならお気に入り登録する
 final bookmarkProvider = StateProvider((ref) => false);
-
-
-const List<String> cardAry = <String>[
-  '日本下水道事業団 00-101-A001',
-  'UR都市機構 00-102-A001',
-  '札幌市（A001） 01-100-A001',
-  '札幌市（B001） 01-100-B001',
-  '函館市 01-202-A001',
-  '小樽市 01-203-A002',
-];
 
 class MyCardAddPage extends ConsumerWidget {
   const MyCardAddPage({super.key});
@@ -35,31 +27,38 @@ class MyCardAddPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final cardIndex = ref.watch(cardProvider);
+    final cardIndex = ref.watch(cardIndexProvider);
     final date = ref.watch(dateProvider);
 
+    final cardMasterOptionList = ref.watch(cardMasterOptionListProvider);
     final imageList = ref.watch(imageListProvider);
 
-    /// ドラムロール(カード選択)
-    void showDialog(Widget child) {
-      showCupertinoModalPopup<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return Container(
-              height: MediaQuery.of(context).size.height / 3,
-              padding: const EdgeInsets.only(top: 6.0),
-              margin: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              color: CupertinoColors.systemBackground.resolveFrom(context),
-              child: SafeArea(
-                top: false,
-                child: child,
-              ),
-            );
-          }
-      );
-    }
+    /// マスターカード選択欄のリスト
+    // Widget cardMasterOptionListView() {
+    //   return ListView.builder(
+    //     itemCount: cardMasterOptionList.length,
+    //     itemBuilder: (context, index) {
+    //       return GestureDetector(
+    //         onTap: () {
+    //           final cardIndexNotifier = ref.read(cardIndexProvider.notifier);
+    //           cardIndexNotifier.state = index;
+    //           context.pop();
+    //         },
+    //         child: Container(
+    //           alignment: Alignment.centerLeft,
+    //           padding: EdgeInsets.only(left: getW(context, 5)),
+    //           decoration: const BoxDecoration(
+    //             border: Border(
+    //               bottom: BorderSide(color: textIconColor, width: 0.1),
+    //             ),
+    //           ),
+    //           height: getH(context, 6),
+    //           child: Text(cardMasterOptionList[index]),
+    //         ),
+    //       );
+    //     },
+    //   );
+    // }
 
     /// 日付のPickerを表示
     Future<DateTime?> showDate(date) {
@@ -100,7 +99,7 @@ class MyCardAddPage extends ConsumerWidget {
                   height: getH(context, 10),
                   'images/AppBar_logo.png'
                 ),
-                const Text("My Card 追加2"),
+                const Text("My Card 追加"),
               ]
             ),
           ),
@@ -131,13 +130,17 @@ class MyCardAddPage extends ConsumerWidget {
             const ItemTitle(titleStr: 'カード'),
             /// カード選択欄
             ItemFieldUserSelect(
-              text: cardAry[cardIndex],
-              onPressed: () => showDialog(
-                ItemCupertinoPicker(
-                  provider: cardProvider,
-                  itemAry: cardAry
-                ),
-              ),
+              text: cardMasterOptionList[cardIndex],
+              onPressed: () {
+                whiteShowModalBottomSheet(
+                  context: context,
+                  child: cardMasterOptionListView(
+                    list: cardMasterOptionList,
+                    ref: ref,
+                    provider: cardIndexProvider
+                  ),
+                );
+              },
             ),
             const ItemTitle(titleStr: '収集日'),
             /// 収集日選択欄
@@ -159,10 +162,11 @@ class MyCardAddPage extends ConsumerWidget {
             GreenButton(
               text: '登録',
               fontSize: 18,
-              onPressed: () {
-                /// 画像をstorageに登録
-                ref.read(imageListProvider.notifier).uploadImageToFirebase();
-              },
+              onPressed: imageList.isEmpty
+                ? null
+                : () {
+                  ref.read(imageListProvider.notifier).uploadImageToFirebase(); /// 画像をstorageに登録
+                },
             ),
           ]
         ),
