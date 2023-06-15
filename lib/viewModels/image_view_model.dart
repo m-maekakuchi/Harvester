@@ -12,11 +12,11 @@ class ImageListViewModel extends StateNotifier<List<ImageModel>> {
   ImageRepository repository = ImageRepository();
 
   Future<void> add(ImageModel image) async{
-    // 今の時点のstateを確保　新しいList<ImageModel>を定義して代入
-    // 引数から与えられたimageを追加する
-    // stateに再定義したリストを代入
+    /// 今の時点のstateを確保　新しいList<ImageModel>を定義して代入
+    /// 引数から与えられたimageを追加する
+    /// stateに再定義したリストを代入
     List<ImageModel> imageList = state;
-    // 4枚以上リストに登録できないように設定
+    /// 4枚以上リストに登録できないように設定
     if (imageList.length > 4) return;
 
     imageList.add(image);
@@ -24,9 +24,12 @@ class ImageListViewModel extends StateNotifier<List<ImageModel>> {
     print(state.length);
   }
 
-  // Future<void> remove(ImageModel image) async{
-  //   state.remove(image);
-  // }
+  Future<void> remove(int index) async{
+    List<ImageModel> imageList = state;
+    imageList.removeAt(index);
+    state = [...imageList];
+    print(state.length);
+  }
 
   // Future<void> getImageFromFirebase() async {
   //   state = await repository.getImageFromFirebase(state);

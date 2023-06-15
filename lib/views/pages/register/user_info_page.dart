@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../../commons/app_color.dart';
+import '../../../viewModels/card_master_option_view_model.dart';
+import '../../../viewModels/card_master_view_model.dart';
 import '../../components/ItemTitle.dart';
 import '../../widgets/GreenButton.dart';
 import '../../widgets/ItemCupertinoPicker.dart';
@@ -200,7 +202,10 @@ class UserInfoPage extends ConsumerWidget {
               GreenButton(
                 text: '登録',
                 fontSize: 18,
-                onPressed: () {
+                onPressed: () async {
+                  await ref.read(cardMasterListProvider.notifier).getAllCardMasters();
+                  final cardMasterList = ref.watch(cardMasterListProvider);
+                  ref.read(cardMasterOptionListProvider.notifier).getCardMasterOption(cardMasterList);
                   context.go('/bottom_bar');
                 }
               ),

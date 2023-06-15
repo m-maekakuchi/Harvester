@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../commons/app_color.dart';
-
 const double _kItemExtent = 32.0;
 
 class ItemCupertinoPicker extends ConsumerWidget {
@@ -29,17 +27,14 @@ class ItemCupertinoPicker extends ConsumerWidget {
         initialItem: initIndex,
       ),
       // 項目が選択された場合
-      onSelectedItemChanged: (int selectedItem) {
+      onSelectedItemChanged: (int selectedItemIndex) {
         final notifier = ref.read(provider.notifier);
-        notifier.state = selectedItem;
+        notifier.state = selectedItemIndex;
       },
       children:
       List<Widget>.generate(itemAry.length, (int index) {
         return Text(
           itemAry[index],
-          style: const TextStyle(
-            color: textIconColor,
-          ),
         );
       }),
     );

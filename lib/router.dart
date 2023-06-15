@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/viewModels/AuthController.dart';
+import 'package:harvester/viewModels/auth_view_model.dart';
 import 'package:harvester/views/pages/bottom_bar.dart';
 import 'package:harvester/views/pages/cards/card_detail_page.dart';
 import 'package:harvester/views/pages/register/tel_smsCode_page.dart';
+import 'package:harvester/views/pages/test_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/all_cards_list_page.dart';
 import 'package:harvester/views/pages/collections/my_card_edit_page.dart';
@@ -24,17 +25,17 @@ Provider<GoRouter> router() {
     GoRouter(
       redirect: (context, state) async {
         // return '/register/user_info_page';
-        // return '/bottom_bar';
+        // return '/test_page';
 
         // authControllerProviderに変更があった場合に動くイメージ
-        final auth = ref.watch(authControllerProvider);
+        final auth = ref.watch(authViewModelProvider);
         bool isSignedIn = auth.value != null;
 
         // サインアウトするときのコード
         // ref.watch(authControllerProvider.notifier).signOut();
 
         // AuthControllerメソッド呼ぶときnotifierつける
-        final user = ref.watch(authControllerProvider.notifier).getCurrentUser();
+        final user = ref.watch(authViewModelProvider.notifier).getCurrentUser();
         String requestPagePath = state.subloc;
         print("リダイレクトパス：" + requestPagePath);
         // アクセスしようとしているパスがnotLoginSignInPathに入ってるか
@@ -52,7 +53,7 @@ Provider<GoRouter> router() {
             print("***********************");
             print(result);
             print("***********************");
-            await ref.watch(authControllerProvider.notifier).reload();
+            await ref.watch(authViewModelProvider.notifier).reload();
             final status = result.claims!['status'];
             print(status);
             print("***********************");
@@ -69,6 +70,12 @@ Provider<GoRouter> router() {
         }
       },
       routes: <GoRoute>[
+        GoRoute(
+          path: '/test_page',
+          builder: (BuildContext context, GoRouterState state) {
+            return const TestPage();
+          },
+        ),
         GoRoute(
           path: '/',
           builder: (BuildContext context, GoRouterState state) {
