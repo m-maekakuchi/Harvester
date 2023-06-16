@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/viewModels/auth_view_model.dart';
 import 'package:harvester/views/pages/bottom_bar.dart';
 import 'package:harvester/views/pages/cards/card_detail_page.dart';
-import 'package:harvester/views/pages/register/tel_smsCode_page.dart';
+import 'package:harvester/views/pages/register/tel_sms_code_page.dart';
 import 'package:harvester/views/pages/test_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/all_cards_list_page.dart';

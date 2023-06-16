@@ -174,7 +174,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                 text: '次へ',
                 fontSize: 18,
                 onPressed: () async{
-                  final phoneNumber = "+81 " + iphone;
+                  final phoneNumber = "+81 $iphone";
                   await ref.read(authViewModelProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
                 },
               ),

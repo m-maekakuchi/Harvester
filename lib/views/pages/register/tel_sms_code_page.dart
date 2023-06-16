@@ -94,7 +94,7 @@ class TelSmsCodePage extends ConsumerWidget {
                         ),
                         Expanded (
                           child: TextField(
-                            style: TextStyle(color: textIconColor),
+                            style: const TextStyle(color: textIconColor),
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               enabledBorder: UnderlineInputBorder(

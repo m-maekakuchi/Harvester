@@ -49,7 +49,7 @@ class CardDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final ScrollController _controllerOne = ScrollController();
+    final ScrollController controllerOne = ScrollController();
     final toLaunch = Uri.parse(card["url"]!);
 
     // 詳細情報のTabBar
@@ -67,10 +67,10 @@ class CardDetailPage extends ConsumerWidget {
     Widget singleCardDetailInfo(text) {
       return Scrollbar(
         // thumbVisibility: true,
-        controller: _controllerOne,
+        controller: controllerOne,
         thickness: 6,
         child: SingleChildScrollView(
-          controller: _controllerOne,
+          controller: controllerOne,
           child: Container(
             padding: EdgeInsets.all(getH(context, 2)),
             child: Text(text, style: const TextStyle(fontSize: 16),),
