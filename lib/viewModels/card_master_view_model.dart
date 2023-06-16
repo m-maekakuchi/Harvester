@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:harvester/models/card_master_model.dart';
 
+import '../models/card_master_model.dart';
 import '../repositories/card_master_repository.dart';
 
 final cardMasterListProvider = StateNotifierProvider<CardMasterViewModel, List<CardMasterModel>>

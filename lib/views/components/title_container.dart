@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../../handlers/padding_handler.dart';
 
 // ユーザーに入力or選択してもらう欄のタイトル
-class ItemTitle extends StatelessWidget {
+class TitleContainer extends StatelessWidget {
 
   /// タイトル
   final String titleStr;
 
-  const ItemTitle({
+  const TitleContainer({
     super.key,
     required this.titleStr,
   });

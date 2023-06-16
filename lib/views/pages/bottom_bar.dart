@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:harvester/views/pages/photos/photos_list_page.dart';
 
 import '../../commons/app_color.dart';
 import '../../commons/bottom_navigation_bar_item.dart';
@@ -8,6 +7,7 @@ import 'cards/all_cards_list_page.dart';
 import 'collections/my_card_add_page.dart';
 import 'collections/my_cards_list_page.dart';
 import 'home_page.dart';
+import 'photos/photos_list_page.dart';
 
 final indexProvider = StateProvider((ref) {
   return 0;

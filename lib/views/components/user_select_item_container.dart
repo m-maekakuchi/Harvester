@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 
 import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
-import '../components/SelectedItemAndIcon.dart';
+import 'selected_item_and_icon.dart';
 
-class ItemFieldUserSelect extends StatelessWidget {
+class UserSelectItemContainer extends StatelessWidget {
 
   /// 選択欄に表示するテキスト
   final String text;
   final GestureTapCallback onPressed;
 
-  const ItemFieldUserSelect({
+  const UserSelectItemContainer({
     super.key,
     required this.text,
     required this.onPressed,

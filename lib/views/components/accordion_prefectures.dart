@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../handlers/padding_handler.dart';
-import '../widgets/RegionAccordion.dart';
+import '../widgets/region_accordion.dart';
 
-class ColumnAccordionPrefectures extends ConsumerWidget {
+class AccordionPrefectures extends ConsumerWidget {
 
   final StateProvider provider;
 
-  const ColumnAccordionPrefectures({
+  const AccordionPrefectures({
     super.key,
     required this.provider,
   });

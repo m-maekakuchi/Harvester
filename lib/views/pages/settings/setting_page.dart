@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../widgets/SettingAccordion.dart';
+import '../../widgets/setting_accordion.dart';
 
 final colorProvider = StateProvider((ref) => 5);
 

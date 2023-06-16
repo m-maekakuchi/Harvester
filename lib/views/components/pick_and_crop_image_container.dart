@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:harvester/commons/app_color.dart';
-import 'package:harvester/viewModels/image_view_model.dart';
 
 import '../../../handlers/padding_handler.dart';
+import '../../commons/app_color.dart';
 import '../../handlers/image_handler.dart';
+import '../../viewModels/image_view_model.dart';
 
 class PickAndCropImageContainer extends ConsumerWidget {
   final int index;
