@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../commons/app_color.dart';
-import '../components/RatioIndicator.dart';
+import '../../handlers/padding_handler.dart';
+import '../components/ratio_indicator.dart';
 
 const kElevation = 10.0;
 const indicatorPlace = [

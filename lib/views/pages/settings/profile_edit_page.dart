@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/views/widgets/GreenButton.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../components/ItemTitle.dart';
-import '../../widgets/ItemCupertinoPicker.dart';
-import '../../widgets/ItemFieldUserSelect.dart';
+import '../../components/title_container.dart';
+import '../../widgets/green_button.dart';
+import '../../components/user_select_item_container.dart';
+import '../../widgets/item_cupertino_picker.dart';
 
 const List<String> addressAry = [
   '北海道',
@@ -127,7 +127,7 @@ class ProfileEditePage extends ConsumerWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const ItemTitle(titleStr: 'ニックネーム'),
+              const TitleContainer(titleStr: 'ニックネーム'),
               //  ニックネーム欄
               SizedBox(
                 width: getW(context, 90),
@@ -169,9 +169,9 @@ class ProfileEditePage extends ConsumerWidget {
                   ),
                 ),
               ),
-              const ItemTitle(titleStr: '居住地'),
+              const TitleContainer(titleStr: '居住地'),
               // 居住地選択欄
-              ItemFieldUserSelect(
+              UserSelectItemContainer(
                 text: addressAry[selectedAddress],
                 onPressed: () => showDialog(
                   ItemCupertinoPicker(
@@ -180,9 +180,9 @@ class ProfileEditePage extends ConsumerWidget {
                   ),
                 ),
               ),
-              const ItemTitle(titleStr: '生年月日'),
+              const TitleContainer(titleStr: '生年月日'),
               // 生年月日選択欄
-              ItemFieldUserSelect(
+              UserSelectItemContainer(
                 text: selectedBirthday,
                 onPressed: () {
                   DatePicker.showDatePicker(context,

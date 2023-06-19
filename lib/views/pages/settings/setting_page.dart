@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../widgets/SettingAccordion.dart';
+import '../../widgets/setting_accordion.dart';
 
 final colorProvider = StateProvider((ref) => 5);
 
@@ -66,7 +66,7 @@ class SettingPage extends ConsumerWidget {
     }
     
     // テーマカラー選択のダイアログ
-    Future<void> _dialogBuilder(int selectColorIndex, WidgetRef ref) {
+    Future<void> dialogBuilder(int selectColorIndex, WidgetRef ref) {
       final length = themeColorChoice.length / 4;
 
       return showDialog<void>(
@@ -161,7 +161,7 @@ class SettingPage extends ConsumerWidget {
           itemTextItem(
             'テーマカラー',
             () {
-              _dialogBuilder(selectColorIndex, ref);
+              dialogBuilder(selectColorIndex, ref);
             }
           ),
           itemTextItem(

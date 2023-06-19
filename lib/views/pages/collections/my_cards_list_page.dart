@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_color.dart';
-import '../../../commons/my_cards_tab.dart';
+import '../../../commons/my_card_list_tab.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../components/CardShortInfoContainer.dart';
-import '../../components/ColoredTabBar.dart';
-import '../../components/ColumnAccordionPrefecture.dart';
-import '../../widgets/WhiteButton.dart';
+import '../../components/accordion_prefectures.dart';
+import '../../components/colored_tab_bar.dart';
+import '../../widgets/white_button.dart';
 
 final prefectureProvider = StateProvider((ref) => "");
 
@@ -37,18 +36,18 @@ class MyCardsListPage extends ConsumerWidget {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（A001）",
-            version: 1,
-            serialNumber: "01-100-A001",
-          ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（B001）",
-            version: 9,
-            serialNumber: "01-100-B001",
-          ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（A001）",
+          //   version: 1,
+          //   serialNumber: "01-100-A001",
+          // ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（B001）",
+          //   version: 9,
+          //   serialNumber: "01-100-B001",
+          // ),
           Container(
             padding: EdgeInsets.only(left: getW(context, 5), top: getH(context, 2), bottom: getH(context, 1)),
             width: double.infinity,
@@ -58,18 +57,18 @@ class MyCardsListPage extends ConsumerWidget {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（A001）",
-            version: 1,
-            serialNumber: "01-100-A001",
-          ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（B001）",
-            version: 9,
-            serialNumber: "01-100-B001",
-          ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（A001）",
+          //   version: 1,
+          //   serialNumber: "01-100-A001",
+          // ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（B001）",
+          //   version: 9,
+          //   serialNumber: "01-100-B001",
+          // ),
         ],
       ),
     );
@@ -79,18 +78,18 @@ class MyCardsListPage extends ConsumerWidget {
       child: Column(
         children: [
           SizedBox(height: getH(context, 2),),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（A001）",
-            version: 1,
-            serialNumber: "01-100-A001",
-          ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（B001）",
-            version: 9,
-            serialNumber: "01-100-B001",
-          ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（A001）",
+          //   version: 1,
+          //   serialNumber: "01-100-A001",
+          // ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（B001）",
+          //   version: 9,
+          //   serialNumber: "01-100-B001",
+          // ),
         ],
       ),
     );
@@ -108,18 +107,18 @@ class MyCardsListPage extends ConsumerWidget {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（A001）",
-            version: 1,
-            serialNumber: "01-100-A001",
-          ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "札幌市（B001）",
-            version: 9,
-            serialNumber: "01-100-B001",
-          ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（A001）",
+          //   version: 1,
+          //   serialNumber: "01-100-A001",
+          // ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "札幌市（B001）",
+          //   version: 9,
+          //   serialNumber: "01-100-B001",
+          // ),
           Container(
             padding: EdgeInsets.only(left: getW(context, 5), top: getH(context, 2), bottom: getH(context, 1)),
             width: double.infinity,
@@ -129,12 +128,12 @@ class MyCardsListPage extends ConsumerWidget {
               style: TextStyle(fontSize: 16),
             ),
           ),
-          const CardShortInfoContainer(
-            image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-            city: "青森市",
-            version: 5,
-            serialNumber: "02-201-A001",
-          ),
+          // const CardShortInfoContainer(
+          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //   city: "青森市",
+          //   version: 5,
+          //   serialNumber: "02-201-A001",
+          // ),
         ],
       ),
     );
@@ -160,7 +159,7 @@ class MyCardsListPage extends ConsumerWidget {
                       borderRadius: BorderRadius.vertical(top: Radius.circular(20))
                     ),
                     height: getH(context, 90),
-                    child: ColumnAccordionPrefectures(
+                    child: AccordionPrefectures(
                       provider: prefectureProvider,
                     ),
                   );
@@ -180,49 +179,49 @@ class MyCardsListPage extends ConsumerWidget {
                 style: const TextStyle(fontSize: 16),
               ),
             ),
-            const CardShortInfoContainer(
-              image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-              city: "札幌市（A001）",
-              version: 1,
-              serialNumber: "01-100-A001",
-            ),
-            const CardShortInfoContainer(
-              image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-              city: "札幌市（B001）",
-              version: 9,
-              serialNumber: "01-100-B001",
-            ),
-            const CardShortInfoContainer(
-              image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-              city: "函館市",
-              version: 3,
-              serialNumber: "01-202-B001",
-            ),
-            const CardShortInfoContainer(
-              image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-              city: "小樽市",
-              version: 3,
-              serialNumber: "01-203-B001",
-            ),
-            const CardShortInfoContainer(
-              image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-              city: "旭川市",
-              version: 4,
-              serialNumber: "01-204-B001",
-            ),
-            const CardShortInfoContainer(
-              image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-              city: "室蘭市",
-              version: 8,
-              serialNumber: "01-205-B001",
-            ),
+            // const CardShortInfoContainer(
+            //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+            //   city: "札幌市（A001）",
+            //   version: 1,
+            //   serialNumber: "01-100-A001",
+            // ),
+            // const CardShortInfoContainer(
+            //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+            //   city: "札幌市（B001）",
+            //   version: 9,
+            //   serialNumber: "01-100-B001",
+            // ),
+            // const CardShortInfoContainer(
+            //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+            //   city: "函館市",
+            //   version: 3,
+            //   serialNumber: "01-202-B001",
+            // ),
+            // const CardShortInfoContainer(
+            //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+            //   city: "小樽市",
+            //   version: 3,
+            //   serialNumber: "01-203-B001",
+            // ),
+            // const CardShortInfoContainer(
+            //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+            //   city: "旭川市",
+            //   version: 4,
+            //   serialNumber: "01-204-B001",
+            // ),
+            // const CardShortInfoContainer(
+            //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+            //   city: "室蘭市",
+            //   version: 8,
+            //   serialNumber: "01-205-B001",
+            // ),
           }
         ],
       ),
     );
 
     return DefaultTabController(
-      length: myCardsTab.length,
+      length: myCardListTab.length,
       child: Builder(builder: (context) {
         final TabController tabController = DefaultTabController.of(context);
         // タブを切り替えたときに呼び出される
@@ -256,7 +255,7 @@ class MyCardsListPage extends ConsumerWidget {
                 indicatorColor: textIconColor,
                 labelColor: textIconColor,
                 labelStyle: TextStyle(fontSize: 13),
-                tabs: myCardsTab,
+                tabs: myCardListTab,
               ),
               color: scaffoldBackgroundColor,
             ),

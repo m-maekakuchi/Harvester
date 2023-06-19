@@ -1,19 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/viewModels/image_view_model.dart';
-import 'package:harvester/views/components/ItemTitle.dart';
-import 'package:harvester/views/widgets/GreenButton.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../commons/image_num_per_card.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../viewModels/card_master_option_view_model.dart';
+import '../../../viewModels/image_view_model.dart';
 import '../../components/card_master_option_list_view.dart';
 import '../../components/pick_and_crop_image_container.dart';
-import '../../widgets/BookMarkButton.dart';
-import '../../widgets/ItemFieldUserSelect.dart';
+import '../../components/title_container.dart';
+import '../../widgets/bookmark_button.dart';
+import '../../widgets/green_button.dart';
+import '../../components/user_select_item_container.dart';
 import '../../components/white_show_modal_bottom_sheet.dart';
 
 final cardIndexProvider = StateProvider((ref) => 0);
@@ -127,9 +126,9 @@ class MyCardAddPage extends ConsumerWidget {
                 ]
               ),
             },
-            const ItemTitle(titleStr: 'カード'),
+            const TitleContainer(titleStr: 'カード'),
             /// カード選択欄
-            ItemFieldUserSelect(
+            UserSelectItemContainer(
               text: cardMasterOptionList[cardIndex],
               onPressed: () {
                 whiteShowModalBottomSheet(
@@ -142,9 +141,9 @@ class MyCardAddPage extends ConsumerWidget {
                 );
               },
             ),
-            const ItemTitle(titleStr: '収集日'),
+            const TitleContainer(titleStr: '収集日'),
             /// 収集日選択欄
-            ItemFieldUserSelect(
+            UserSelectItemContainer(
               text: '${date.year}/${date.month}/${date.day}',
               onPressed: () async {
                 final selectedDate = await showDate(date);

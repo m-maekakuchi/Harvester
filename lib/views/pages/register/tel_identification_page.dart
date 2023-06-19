@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../viewModels/auth_view_model.dart';
-import '../../widgets/GreenButton.dart';
+import '../../widgets/green_button.dart';
 
 void main() async{
   runApp(const TelIdentificationPage());
@@ -174,7 +174,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                 text: '次へ',
                 fontSize: 18,
                 onPressed: () async{
-                  final phoneNumber = "+81 " + iphone;
+                  final phoneNumber = "+81 $iphone";
                   await ref.read(authViewModelProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
                 },
               ),

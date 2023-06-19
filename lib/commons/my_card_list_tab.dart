@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const List<Tab> myCardsTab = [
+const List<Tab> myCardListTab = [
   Tab(text: '日付'),
   Tab(text: 'お気に入り'),
   Tab(text: '全国'),

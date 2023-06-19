@@ -61,7 +61,7 @@ class SettingAccordion extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: const TextStyle(color: textIconColor),),
-            Icon(Icons.arrow_forward_ios_rounded, size: 20,)
+            const Icon(Icons.arrow_forward_ios_rounded, size: 20,)
           ],
         ),
         onTap: onTap,

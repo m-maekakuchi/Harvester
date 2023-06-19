@@ -1,13 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:harvester/handlers/padding_handler.dart';
 
 import '../../../commons/app_color.dart';
+import '../../../handlers/padding_handler.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
-import '../../widgets/GreenButton.dart';
+import '../../widgets/green_button.dart';
 
 class TelSmsCodePage extends ConsumerWidget {
   const TelSmsCodePage({super.key});
@@ -95,7 +94,7 @@ class TelSmsCodePage extends ConsumerWidget {
                         ),
                         Expanded (
                           child: TextField(
-                            style: TextStyle(color: textIconColor),
+                            style: const TextStyle(color: textIconColor),
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               enabledBorder: UnderlineInputBorder(

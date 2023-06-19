@@ -5,11 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 
 import '../../../handlers/padding_handler.dart';
-import '../../widgets/BookMarkButton.dart';
-import '../../widgets/ItemCupertinoPicker.dart';
-import '../../widgets/ImagePickerAndCrop.dart';
-import '../../components/ItemTitle.dart';
-import '../../widgets/ItemFieldUserSelect.dart';
+import '../../components/title_container.dart';
+import '../../components/user_select_item_container.dart';
+import '../../widgets/bookmark_button.dart';
+import '../../widgets/item_cupertino_picker.dart';
 
 final cardProvider = StateProvider((ref) => 0);
 final dateProvider = StateProvider((ref) => DateTime.now());
@@ -119,20 +118,20 @@ class MyCardEditPage extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      ImagePickAndCrop(),
-                      ImagePickAndCrop(),
+                      // ImagePickAndCrop(),
+                      // ImagePickAndCrop(),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
-                      ImagePickAndCrop(),
-                      ImagePickAndCrop(),
+                      // ImagePickAndCrop(),
+                      // ImagePickAndCrop(),
                     ],
                   ),
-                  const ItemTitle(titleStr: 'カード'),
+                  const TitleContainer(titleStr: 'カード'),
                   // 取得カードの選択欄
-                  ItemFieldUserSelect(
+                  UserSelectItemContainer(
                     text: cardAry[cardIndex],
                     onPressed: () => showDialog(
                       ItemCupertinoPicker(
@@ -141,9 +140,9 @@ class MyCardEditPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const ItemTitle(titleStr: '収集日'),
+                  const TitleContainer(titleStr: '収集日'),
                   // 収集日の選択欄
-                  ItemFieldUserSelect(
+                  UserSelectItemContainer(
                     text: '${date.year}/${date.month}/${date.day}',
                     onPressed: () async {
                       final selectedDate = await showDate(date);

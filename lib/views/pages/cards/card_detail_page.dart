@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/commons/app_color.dart';
-import 'package:harvester/handlers/padding_handler.dart';
-import 'package:harvester/views/widgets/WhiteButton.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../commons/card_info_tab.dart';
-import '../../widgets/CarouselSliderPhotos.dart';
+import '../../../commons/app_color.dart';
+import '../../../commons/card_detail_info_tab.dart';
+import '../../../handlers/padding_handler.dart';
+import '../../widgets/carousel_slider_photos.dart';
+import '../../widgets/white_button.dart';
 
 /// 写真
 const List<String> imgList = [
@@ -49,7 +49,7 @@ class CardDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final ScrollController _controllerOne = ScrollController();
+    final ScrollController controllerOne = ScrollController();
     final toLaunch = Uri.parse(card["url"]!);
 
     // 詳細情報のTabBar
@@ -60,17 +60,17 @@ class CardDetailPage extends ConsumerWidget {
         color: themeColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      tabs: cardInfoTab,
+      tabs: cardDetailInfoTab,
     );
 
     // 詳細情報の内容
     Widget singleCardDetailInfo(text) {
       return Scrollbar(
         // thumbVisibility: true,
-        controller: _controllerOne,
+        controller: controllerOne,
         thickness: 6,
         child: SingleChildScrollView(
-          controller: _controllerOne,
+          controller: controllerOne,
           child: Container(
             padding: EdgeInsets.all(getH(context, 2)),
             child: Text(text, style: const TextStyle(fontSize: 16),),
