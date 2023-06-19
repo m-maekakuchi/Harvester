@@ -118,4 +118,38 @@ class AuthRepository implements BaseAuthRepository {
       // throw CustomException(message: e.message);
     } catch (_) {}
   }
+
+  // Future<void> registerCustomStatus() async {
+  //   print("-*-*-*-*-*-*-*-*-*");
+  //   print(getCurrentUser()!.uid);
+  //   print("-*-*-*-*-*-*-*-*-*");
+  // await FirebaseFunctions.instance.httpsCallable('registerCustomState').call(
+  //   {
+  //     // "uid" : "FSN0JaLrEyg1cl55KgyumrsQy713",
+  //     "uid": getCurrentUser()!.uid,
+  //     "registerStatus": 1,
+  //   },
+  // );
+
+  // Future<void> addNumber() async {
+  //   var _number = 2;
+  //   print("aaaaaaaaaaaaaaaaaaa");
+  //   try {
+  //     /// カウントアップの関数の読み出し
+  //     final result = await FirebaseFunctions.instance
+  //         .httpsCallable('yourV1CallableFunction')
+  //         .call({'firstNumber': _number, 'secondNumber': 1});
+  //     _number = result.data['addNumber'];
+  //     print(result);
+  //     print(result);
+  //     print(result);
+  //     print(result);
+  //     print(result);
+  //     // print(result.data['contextUid']);
+  //   } on FirebaseFunctionsException catch (error) {
+  //     print(error.code);
+  //     print(error.details);
+  //     print(error.message);
+  //   }
+  // }
 }

@@ -5,9 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 
 import '../../../handlers/padding_handler.dart';
+import '../../widgets/bookmark_button.dart';
 import '../../components/title_container.dart';
 import '../../components/user_select_item_container.dart';
-import '../../widgets/bookmark_button.dart';
 import '../../widgets/item_cupertino_picker.dart';
 
 final cardProvider = StateProvider((ref) => 0);
@@ -115,20 +115,20 @@ class MyCardEditPage extends ConsumerWidget {
               child: Column(
                 children: [
                   SizedBox(height: getH(context, 3),),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      // ImagePickAndCrop(),
-                      // ImagePickAndCrop(),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      // ImagePickAndCrop(),
-                      // ImagePickAndCrop(),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: const [
+                  //     ImagePickAndCrop(),
+                  //     ImagePickAndCrop(),
+                  //   ],
+                  // ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: const [
+                  //     ImagePickAndCrop(),
+                  //     ImagePickAndCrop(),
+                  //   ],
+                  // ),
                   const TitleContainer(titleStr: 'カード'),
                   // 取得カードの選択欄
                   UserSelectItemContainer(
@@ -180,4 +180,3 @@ class MyCardEditPage extends ConsumerWidget {
   }
 
 }
-

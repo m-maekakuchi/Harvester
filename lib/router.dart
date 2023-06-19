@@ -35,7 +35,7 @@ Provider<GoRouter> router() {
         // AuthControllerメソッド呼ぶときnotifierつける
         final user = ref.watch(authViewModelProvider.notifier).getCurrentUser();
         String requestPagePath = state.subloc;
-        print("リダイレクトパス：" + requestPagePath);
+        print("リダイレクトパス：$requestPagePath");
         // アクセスしようとしているパスがnotLoginSignInPathに入ってるか
         final goingToSignIn = RedirectPath.notLoginSignInPath.contains(requestPagePath);
         // サインインしてない && notLoginSignInPath以外に入ろうとしてる
@@ -48,17 +48,18 @@ Provider<GoRouter> router() {
           if (requestPagePath == '/' || goingToSignIn) {
             print('----入ってはいけないページにアクセスしようとしている。----');
             final result = await user!.getIdTokenResult(true);
-            print("***********************");
+            print("*****************************************************");
             print(result);
-            print("***********************");
+            print("*****************************************************");
             await ref.watch(authViewModelProvider.notifier).reload();
-            final status = result.claims!['status'];
-            print(status);
+            final registerCustomState = result.claims!['status'];
             print("***********************");
-            if (status == null) {
-              return '/register/user_info_page';
-            } else {
+            print("ユーザー画面に登録しているか: $registerCustomState");
+            print("***********************");
+            if (registerCustomState == 1) {
               return '/bottom_bar';
+            } else {
+              return '/register/user_info_page';
             }
           } else {
             return null;

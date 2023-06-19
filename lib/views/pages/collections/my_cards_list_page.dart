@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/my_card_list_tab.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../components/accordion_prefectures.dart';
+import '../../components/card_short_info_container.dart';
 import '../../components/colored_tab_bar.dart';
+import '../../components/accordion_prefectures.dart';
+import '../../components/white_show_modal_bottom_sheet.dart';
 import '../../widgets/white_button.dart';
 
 final prefectureProvider = StateProvider((ref) => "");
@@ -78,18 +80,18 @@ class MyCardsListPage extends ConsumerWidget {
       child: Column(
         children: [
           SizedBox(height: getH(context, 2),),
-          // const CardShortInfoContainer(
-          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-          //   city: "札幌市（A001）",
-          //   version: 1,
-          //   serialNumber: "01-100-A001",
-          // ),
-          // const CardShortInfoContainer(
-          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-          //   city: "札幌市（B001）",
-          //   version: 9,
-          //   serialNumber: "01-100-B001",
-          // ),
+          //       const CardShortInfoContainer(
+          //         image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //         city: "札幌市（A001）",
+          //         version: 1,
+          //         serialNumber: "01-100-A001",
+          //       ),
+          //       const CardShortInfoContainer(
+          //         image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //         city: "札幌市（B001）",
+          //         version: 9,
+          //         serialNumber: "01-100-B001",
+          //       ),
         ],
       ),
     );
@@ -98,42 +100,42 @@ class MyCardsListPage extends ConsumerWidget {
     final body2 = SingleChildScrollView(
       child: Column(
         children: [
-          Container(
-            padding: EdgeInsets.only(left: getW(context, 5), top: getH(context, 2), bottom: getH(context, 1)),
-            width: double.infinity,
-            child: const Text(
-              "北海道",
-              textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-          // const CardShortInfoContainer(
-          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-          //   city: "札幌市（A001）",
-          //   version: 1,
-          //   serialNumber: "01-100-A001",
-          // ),
-          // const CardShortInfoContainer(
-          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-          //   city: "札幌市（B001）",
-          //   version: 9,
-          //   serialNumber: "01-100-B001",
-          // ),
-          Container(
-            padding: EdgeInsets.only(left: getW(context, 5), top: getH(context, 2), bottom: getH(context, 1)),
-            width: double.infinity,
-            child: const Text(
-              "青森県",
-              textAlign: TextAlign.left,
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
-          // const CardShortInfoContainer(
-          //   image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-          //   city: "青森市",
-          //   version: 5,
-          //   serialNumber: "02-201-A001",
-          // ),
+          //       Container(
+          //         padding: EdgeInsets.only(left: getW(context, 5), top: getH(context, 2), bottom: getH(context, 1)),
+          //         width: double.infinity,
+          //         child: const Text(
+          //           "北海道",
+          //           textAlign: TextAlign.left,
+          //           style: TextStyle(fontSize: 16),
+          //         ),
+          //       ),
+          //       const CardShortInfoContainer(
+          //         image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //         city: "札幌市（A001）",
+          //         version: 1,
+          //         serialNumber: "01-100-A001",
+          //       ),
+          //       const CardShortInfoContainer(
+          //         image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //         city: "札幌市（B001）",
+          //         version: 9,
+          //         serialNumber: "01-100-B001",
+          //       ),
+          //       Container(
+          //         padding: EdgeInsets.only(left: getW(context, 5), top: getH(context, 2), bottom: getH(context, 1)),
+          //         width: double.infinity,
+          //         child: const Text(
+          //           "青森県",
+          //           textAlign: TextAlign.left,
+          //           style: TextStyle(fontSize: 16),
+          //         ),
+          //       ),
+          //       const CardShortInfoContainer(
+          //         image: 'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
+          //         city: "青森市",
+          //         version: 5,
+          //         serialNumber: "02-201-A001",
+          //       ),
         ],
       ),
     );
@@ -148,22 +150,18 @@ class MyCardsListPage extends ConsumerWidget {
             fontSize: 16,
             onPressed: () {
               // 都道府県の選択のためのModalBottomSheetを出す
-              showModalBottomSheet(
-                backgroundColor: Colors.transparent,  // ModalBottomSheetを角丸にするための設定
-                isScrollControlled: true, // ModalBottomSheetの画面を半分以上にできる
+              whiteShowModalBottomSheet(
                 context: context,
-                builder: (context) {
-                  return Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(20))
-                    ),
-                    height: getH(context, 90),
-                    child: AccordionPrefectures(
-                      provider: prefectureProvider,
-                    ),
-                  );
-                }
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20))
+                  ),
+                  height: getH(context, 90),
+                  child: AccordionPrefectures(
+                    provider: prefectureProvider,
+                  ),
+                )
               );
             },
           ),
