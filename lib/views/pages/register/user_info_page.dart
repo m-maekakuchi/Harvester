@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/card_master_option_view_model.dart';
 import '../../../viewModels/card_master_view_model.dart';
 import '../../components/title_container.dart';
@@ -206,6 +207,10 @@ class UserInfoPage extends ConsumerWidget {
                   await ref.read(cardMasterListProvider.notifier).getAllCardMasters();
                   final cardMasterList = ref.watch(cardMasterListProvider);
                   ref.read(cardMasterOptionListProvider.notifier).getCardMasterOption(cardMasterList);
+
+                  // await ref.read(authViewModelProvider.notifier).registerCustomStatus();
+                  // await ref.read(authViewModelProvider.notifier).addNumber();
+
                   context.go('/bottom_bar');
                 }
               ),
