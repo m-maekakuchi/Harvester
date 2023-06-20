@@ -30,7 +30,7 @@ Provider<GoRouter> router() {
         bool isSignedIn = auth.value != null;
 
         // サインアウトするときのコード
-        // ref.watch(authControllerProvider.notifier).signOut();
+        // ref.watch(authViewModelProvider.notifier).signOut();
 
         // AuthControllerメソッド呼ぶときnotifierつける
         final user = ref.watch(authViewModelProvider.notifier).getCurrentUser();
