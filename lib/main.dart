@@ -1,4 +1,3 @@
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,11 +14,12 @@ Future<void> main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // App Checkの初期化
-  await FirebaseAppCheck.instance.activate(
-    webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-    androidProvider: AndroidProvider.debug,
-  );
+  //  App Checkの初期化
+  // await FirebaseAppCheck.instance.activate(
+  //   webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+  //   androidProvider: AndroidProvider.debug,
+  //   appleProvider: AppleProvider.appAttest,
+  // );
   runApp(ProviderScope(child: MyApp()),);
 }
 
