@@ -52,10 +52,10 @@ Provider<GoRouter> router() {
             print(result);
             print("*****************************************************");
             await ref.watch(authViewModelProvider.notifier).reload();
-            final registerCustomState = result.claims!['status'];
-            print("***********************");
-            print("ユーザー画面に登録しているか: $registerCustomState");
-            print("***********************");
+            final registerCustomState = result.claims!['registerStatus'];
+            print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            print("ユーザー情報の登録が完了済か: $registerCustomState");
+            print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
             if (registerCustomState == 1) {
               return '/bottom_bar';
             } else {
