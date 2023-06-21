@@ -67,11 +67,11 @@ class AuthViewModel extends StateNotifier<AsyncValue<User?>> {
     // await AuthRepository().signInWithGoogle();
   }
 
-  // Future<void> registerCustomStatus() async {
-  //   await _ref.read(authRepositoryProvider).registerCustomStatus();
-  // }
+  Future<void> registerCustomStatus() async {
+    await _ref.read(authRepositoryProvider).registerCustomStatus();
+  }
 
-  // Future<void> addNumber() async {
-  //   await _ref.read(authRepositoryProvider).addNumber();
+  // Future<void> removeCustomStatus() async {
+  //   await _ref.read(authRepositoryProvider).removeCustomStatus();
   // }
 }

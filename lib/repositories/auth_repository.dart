@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -119,33 +120,25 @@ class AuthRepository implements BaseAuthRepository {
     } catch (_) {}
   }
 
-  // Future<void> registerCustomStatus() async {
-  //   print("-*-*-*-*-*-*-*-*-*");
-  //   print(getCurrentUser()!.uid);
-  //   print("-*-*-*-*-*-*-*-*-*");
-  // await FirebaseFunctions.instance.httpsCallable('registerCustomState').call(
-  //   {
-  //     // "uid" : "FSN0JaLrEyg1cl55KgyumrsQy713",
-  //     "uid": getCurrentUser()!.uid,
-  //     "registerStatus": 1,
-  //   },
-  // );
+  Future<void> registerCustomStatus() async {
+    try {
+      final result = await FirebaseFunctions.instance
+          .httpsCallable('registerCustomState')
+          .call({"registerStatus": 1});
+      print(result.data['state']);
+    } on FirebaseFunctionsException catch (error) {
+      print(error.code);
+      print(error.details);
+      print(error.message);
+    }
+  }
 
-  // Future<void> addNumber() async {
-  //   var _number = 2;
-  //   print("aaaaaaaaaaaaaaaaaaa");
+  // Future<void> removeCustomStatus() async {
   //   try {
-  //     /// カウントアップの関数の読み出し
   //     final result = await FirebaseFunctions.instance
-  //         .httpsCallable('yourV1CallableFunction')
-  //         .call({'firstNumber': _number, 'secondNumber': 1});
-  //     _number = result.data['addNumber'];
-  //     print(result);
-  //     print(result);
-  //     print(result);
-  //     print(result);
-  //     print(result);
-  //     // print(result.data['contextUid']);
+  //         .httpsCallable('removeCustomStatus')
+  //         .call({});
+  //     print(result.data['state']);
   //   } on FirebaseFunctionsException catch (error) {
   //     print(error.code);
   //     print(error.details);

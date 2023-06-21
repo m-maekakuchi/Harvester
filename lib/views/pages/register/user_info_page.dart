@@ -208,8 +208,8 @@ class UserInfoPage extends ConsumerWidget {
                   final cardMasterList = ref.watch(cardMasterListProvider);
                   ref.read(cardMasterOptionListProvider.notifier).getCardMasterOption(cardMasterList);
 
-                  // await ref.read(authViewModelProvider.notifier).registerCustomStatus();
-                  // await ref.read(authViewModelProvider.notifier).addNumber();
+                  // ユーザ情報の登録が完了したことをCustom Claimに登録
+                  await ref.read(authViewModelProvider.notifier).registerCustomStatus();
 
                   context.go('/bottom_bar');
                 }
