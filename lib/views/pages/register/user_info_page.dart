@@ -5,10 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_color.dart';
+import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../models/user_model.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/card_master_option_view_model.dart';
 import '../../../viewModels/card_master_view_model.dart';
+import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
 import '../../components/user_select_item_container.dart';
@@ -66,7 +69,7 @@ const List<String> addressAry = [
 
 final textControllerProvider = StateProvider((ref) => TextEditingController());
 final addressProvider = StateProvider((ref) => 12);
-final birthdayProvider = StateProvider((ref) => '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}');
+final birthdayProvider = StateProvider((ref) => '');
 
 class UserInfoPage extends ConsumerWidget {
   const UserInfoPage({super.key});
@@ -138,7 +141,7 @@ class UserInfoPage extends ConsumerWidget {
                   controller: textController,
                   // 入力されたテキストの色
                   style: const TextStyle(
-                      color: textIconColor
+                    color: textIconColor
                   ),
                   decoration: InputDecoration(
                     fillColor: Colors.white,
@@ -175,6 +178,7 @@ class UserInfoPage extends ConsumerWidget {
               UserSelectItemContainer(
                 text: addressAry[selectedAddress],
                 onPressed: () => showDialog(
+                  // if (textController.text)
                   ItemCupertinoPicker(
                     itemAry: addressAry,
                     provider: addressProvider,
@@ -203,13 +207,29 @@ class UserInfoPage extends ConsumerWidget {
               GreenButton(
                 text: '登録',
                 fontSize: 18,
-                onPressed: () async {
+                onPressed: textController.text == "" ||  selectedBirthday == ""
+                    ? null
+                    : () async {
                   await ref.read(cardMasterListProvider.notifier).getAllCardMasters();
                   final cardMasterList = ref.watch(cardMasterListProvider);
                   ref.read(cardMasterOptionListProvider.notifier).getCardMasterOption(cardMasterList);
 
+                  final birthday = convertStringToDateTime(selectedBirthday);
+                  final userUid = ref.watch(authViewModelProvider.notifier).getUid();
+                  final now = DateTime.now();
+                  final userInfoModel = UserModel(
+                    firebaseAuthUid: userUid,
+                    name: textController.text,
+                    addressIndex: selectedAddress,
+                    birthday: birthday,
+                    createdAt: now,
+                    updatedAt: now,
+                  );
+                  // print(userInfoModel.birthday);
+                  ref.watch(userProvider.notifier).setState(userInfoModel);
+                  ref.watch(userProvider.notifier).setToFirestore();
                   // ユーザ情報の登録が完了したことをCustom Claimに登録
-                  await ref.read(authViewModelProvider.notifier).registerCustomStatus();
+                  // await ref.read(authViewModelProvider.notifier).registerCustomStatus();
 
                   context.go('/bottom_bar');
                 }
