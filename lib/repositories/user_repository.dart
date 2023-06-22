@@ -1,34 +1,49 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/user_info_model.dart';
-import '../viewModels/auth_view_model.dart';
 
 class UserRepository {
+  final db = FirebaseFirestore.instance;
 
-  Future<void> getFromFireStore() async {
-    // final userUid = _ref.watch(authViewModelProvider.notifier).getUid();
-    // final docRef = FirebaseFirestore.instance.collection("users").doc(userUid);
-    // docRef.get().then(
-    //   (DocumentSnapshot doc) {
-    //   print(doc.data());
-    //   // final data = doc.data() as Map<String, dynamic>;
-    //   },
-    //   onError: (e) => print("Error getting document: $e"),
-    // );
-    // return ;
+  Future<UserInfoModel?> getFromFireStore(String userUid) async {
+    final ref = db
+      .collection("users")
+      .doc(userUid)
+      .withConverter(
+        fromFirestore: UserInfoModel.fromFirestore,
+        toFirestore: (UserInfoModel userInfoModel, _) => userInfoModel.toFirestore(),
+      );
+    final docSnap = await ref.get();
+    final userInfoModel = docSnap.data();
+    if (userInfoModel != null) {
+      return userInfoModel;
+    } else {
+      print("No such document.");
+      return null;
+    }
   }
 
-  Future<void> setToFireStore(UserInfoModel userModel) async {
-    final db = FirebaseFirestore.instance;
+  Future<void> setToFireStore(UserInfoModel userInfoModel) async {
     final docRef = db
       .collection("users")
       .withConverter(
         fromFirestore: UserInfoModel.fromFirestore,
-        toFirestore: (UserInfoModel userModel, options) => userModel.toFirestore(),
+        toFirestore: (UserInfoModel userInfoModel, options) => userInfoModel.toFirestore(),
       )
-      .doc(userModel.firebaseAuthUid);
-    await docRef.set(userModel);
+      .doc(userInfoModel.firebaseAuthUid);
+    await docRef.set(userInfoModel).then(
+      (value) => print("DocumentSnapshot successfully set!"),
+      onError: (e) => print("Error setting document $e"));
+  }
+
+  // 値が変わらないフィールドは更新されない
+  Future<void> updateOfFireStore(UserInfoModel userInfoModel) async {
+    final washingtonRef = db
+      .collection("users")
+      .doc(userInfoModel.firebaseAuthUid);
+    await washingtonRef.update(userInfoModel.toFirestore()).then(
+      (value) => print("DocumentSnapshot successfully updated!"),
+      onError: (e) => print("Error updating document $e"));
   }
 }

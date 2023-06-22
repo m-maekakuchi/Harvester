@@ -5,68 +5,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/viewModels/user_view_model.dart';
 
+import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
+import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../models/user_info_model.dart';
+import '../../../viewModels/auth_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
 import '../../components/user_select_item_container.dart';
 import '../../widgets/item_cupertino_picker.dart';
 
-const List<String> addressAry = [
-  '北海道',
-  '青森県',
-  '岩手県',
-  '宮城県',
-  '秋田県',
-  '山形県',
-  '福島県',
-  '茨城県',
-  '栃木県',
-  '群馬県',
-  '埼玉県',
-  '千葉県',
-  '東京都',
-  '神奈川県',
-  '新潟県',
-  '富山県',
-  '石川県',
-  '福井県',
-  '山梨県',
-  '長野県',
-  '岐阜県',
-  '静岡県',
-  '愛知県',
-  '三重県',
-  '滋賀県',
-  '京都府',
-  '大阪府',
-  '兵庫県',
-  '奈良県',
-  '和歌山県',
-  '鳥取県',
-  '島根県',
-  '岡山県',
-  '広島県',
-  '山口県',
-  '徳島県',
-  '香川県',
-  '愛媛県',
-  '高知県',
-  '福岡県',
-  '佐賀県',
-  '長崎県',
-  '熊本県',
-  '大分県',
-  '宮崎県',
-  '鹿児島県',
-  '沖縄県',
-];
-
-/// 初期値はユーザーの登録情報から取ってくる
 // TextEditingControllerのtextでTextFormFieldの初期値を設定
-final textControllerProvider = StateProvider((ref) => TextEditingController(text: '初期値'));
-final addressIndexProvider = StateProvider((ref) => 12);
-final birthdayProvider = StateProvider((ref) => '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}');
+final textControllerProvider = StateProvider((ref) =>
+  TextEditingController(text: ref.read(userViewModelProvider).name)
+);
+final addressIndexProvider = StateProvider((ref) =>
+  ref.read(userViewModelProvider).addressIndex
+);
+final birthdayProvider = StateProvider((ref) =>
+  dateTimeToString(ref.read(userViewModelProvider).birthday!)
+);
 
 class UserInfoEditPage extends ConsumerWidget {
   const UserInfoEditPage({super.key});
@@ -75,7 +34,7 @@ class UserInfoEditPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final textController = ref.watch(textControllerProvider);
-    final selectedAddress = ref.watch(addressIndexProvider);
+    final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
     // TextFormFieldのカーソルを末尾に設定
@@ -173,10 +132,10 @@ class UserInfoEditPage extends ConsumerWidget {
               const TitleContainer(titleStr: '居住地'),
               // 居住地選択欄
               UserSelectItemContainer(
-                text: addressAry[selectedAddress],
+                text: addressList[selectedAddressIndex!],
                 onPressed: () => showDialog(
                   ItemCupertinoPicker(
-                    itemAry: addressAry,
+                    itemAry: addressList,
                     provider: addressIndexProvider,
                   ),
                 ),
@@ -203,9 +162,26 @@ class UserInfoEditPage extends ConsumerWidget {
               GreenButton(
                 text: '登録',
                 fontSize: 18,
-                onPressed: () {
-                  // ref.watch(userProvider.notifier).getFromFireStore();
-                  context.pop();
+                // ニックネームが入力されていない場合、ボタンを押せなくする
+                onPressed: textController.text == ""
+                  ? null
+                  : () {
+                  final userUid = ref.watch(authViewModelProvider.notifier).getUid();
+                  final birthday = convertStringToDateTime(selectedBirthday);
+                  final now = DateTime.now();
+                  final userInfoModel = UserInfoModel(
+                    firebaseAuthUid: userUid,
+                    name: textController.text,
+                    addressIndex: selectedAddressIndex,
+                    birthday: birthday,
+                    updatedAt: now,
+                  );
+
+                  // userViewModelProviderの状態を変更してFireStoreを更新する
+                  ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
+                  ref.read(userViewModelProvider.notifier).updateOfFireStore();
+
+                  // context.pop();
                 }
               ),
             ],

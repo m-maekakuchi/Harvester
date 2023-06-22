@@ -5,3 +5,8 @@ DateTime convertStringToDateTime(String dateString) {
   int day = int.parse(parts[2]);
   return DateTime(year, month, day);
 }
+
+String dateTimeToString(DateTime dateTime) {
+  final formattedDate = '${dateTime.year}/${dateTime.month}/${dateTime.day}';
+  return formattedDate;
+}

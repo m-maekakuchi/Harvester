@@ -16,12 +16,15 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
   }
 
   Future<void> getFromFireStore(String userUid) async {
-    print(state.name);
-
-    // await repository.getFromFireStore();
+    final userInfoModel = await repository.getFromFireStore(userUid);
+    if (userInfoModel != null) state = userInfoModel;
   }
 
   Future<void> setToFireStore() async {
     await repository.setToFireStore(state);
+  }
+
+  Future<void> updateOfFireStore() async {
+    await repository.updateOfFireStore(state);
   }
 }
