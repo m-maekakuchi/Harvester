@@ -13,9 +13,9 @@ import 'package:harvester/views/pages/collections/my_card_add_page.dart';
 import 'package:harvester/views/pages/home_page.dart';
 import 'package:harvester/views/pages/photos/photos_list_page.dart';
 import 'package:harvester/views/pages/settings/setting_page.dart';
-import 'package:harvester/views/pages/settings/profile_edit_page.dart';
+import 'package:harvester/views/pages/settings/user_info_edit_page.dart';
 import 'package:harvester/views/pages/register/tel_identification_page.dart';
-import 'package:harvester/views/pages/register/user_info_page.dart';
+import 'package:harvester/views/pages/register/user_info_register_page.dart';
 import 'commons/redirect_path.dart';
 
 
@@ -59,7 +59,7 @@ Provider<GoRouter> router() {
             if (registerCustomState == 1) {
               return '/bottom_bar';
             } else {
-              return '/register/user_info_page';
+              return '/register/user_info_register_page';
             }
           } else {
             return null;
@@ -88,9 +88,9 @@ Provider<GoRouter> router() {
           },
         ),
         GoRoute(
-          path: '/register/user_info_page',
+          path: '/register/user_info_register_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const UserInfoPage();
+            return const UserInfoRegisterPage();
           },
         ),
         GoRoute(
@@ -144,9 +144,9 @@ Provider<GoRouter> router() {
           },
         ),
         GoRoute(
-          path: '/settings/profile_edit_page',
+          path: '/settings/user_info_edit_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const ProfileEditePage();
+            return const UserInfoEditPage();
           },
         ),
         GoRoute(

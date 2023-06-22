@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:harvester/viewModels/user_view_model.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
@@ -64,17 +65,17 @@ const List<String> addressAry = [
 /// 初期値はユーザーの登録情報から取ってくる
 // TextEditingControllerのtextでTextFormFieldの初期値を設定
 final textControllerProvider = StateProvider((ref) => TextEditingController(text: '初期値'));
-final addressProvider = StateProvider((ref) => 12);
+final addressIndexProvider = StateProvider((ref) => 12);
 final birthdayProvider = StateProvider((ref) => '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}');
 
-class ProfileEditePage extends ConsumerWidget {
-  const ProfileEditePage({super.key});
+class UserInfoEditPage extends ConsumerWidget {
+  const UserInfoEditPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
     final textController = ref.watch(textControllerProvider);
-    final selectedAddress = ref.watch(addressProvider);
+    final selectedAddress = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
     // TextFormFieldのカーソルを末尾に設定
@@ -176,7 +177,7 @@ class ProfileEditePage extends ConsumerWidget {
                 onPressed: () => showDialog(
                   ItemCupertinoPicker(
                     itemAry: addressAry,
-                    provider: addressProvider,
+                    provider: addressIndexProvider,
                   ),
                 ),
               ),
@@ -203,6 +204,7 @@ class ProfileEditePage extends ConsumerWidget {
                 text: '登録',
                 fontSize: 18,
                 onPressed: () {
+                  // ref.watch(userProvider.notifier).getFromFireStore();
                   context.pop();
                 }
               ),

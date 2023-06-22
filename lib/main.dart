@@ -7,6 +7,7 @@ import 'package:harvester/router.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
 import 'commons/app_color.dart';
+import 'repositories/local_storage_repository.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,8 @@ Future<void> main() async{
   //   androidProvider: AndroidProvider.debug,
   //   appleProvider: AppleProvider.appAttest,
   // );
+  // Hiveの初期化
+  await LocalStorageRepository().init();
   runApp(ProviderScope(child: MyApp()),);
 }
 

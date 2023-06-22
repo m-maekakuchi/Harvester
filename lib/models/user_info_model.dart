@@ -1,33 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class User {
+class UserInfoModel {
   final String? firebaseAuthUid;
   final String? name;
-  final String? address;
+  final int? addressIndex;
   final DateTime? birthday;
   final List<DocumentReference>? cards;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  User({
+  UserInfoModel({
     this.firebaseAuthUid,
     this.name,
-    this.address,
+    this.addressIndex,
     this.birthday,
     this.cards,
     this.createdAt,
     this.updatedAt,
   });
 
-  factory User.fromFirestore(
+  factory UserInfoModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    return User(
+    return UserInfoModel(
       firebaseAuthUid: data?['firebase_auth_uid'],
       name: data?['name'],
-      address: data?['address'],
+      addressIndex: data?['address_index'],
       birthday: data?['birthday'].toDate(),
       cards: data?['cards'],
       createdAt: data?['created_at'].toDate(),
@@ -39,7 +39,7 @@ class User {
     return {
       if (firebaseAuthUid != null) 'firebase_auth_uid': firebaseAuthUid,
       if (name != null) 'name': name,
-      if (address != null) 'address': address,
+      if (addressIndex != null) 'address_index': addressIndex,
       if (birthday != null) 'birthday': birthday,
       if (cards != null) 'cards': cards,
       if (createdAt != null) 'created_at': createdAt,
