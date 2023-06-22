@@ -146,7 +146,7 @@ class SettingPage extends ConsumerWidget {
             listItemAry: [
               [
                 'プロフィール編集',
-                () { context.push("/settings/profile_edit_page"); },
+                () { context.push("/settings/user_info_edit_page"); },
               ],
               [
                 'ログアウト',
