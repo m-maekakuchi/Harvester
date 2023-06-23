@@ -10,6 +10,7 @@ import '../../../commons/app_color.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
+import '../../../repositories/local_storage_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
@@ -165,7 +166,7 @@ class UserInfoEditPage extends ConsumerWidget {
                 // ニックネームが入力されていない場合、ボタンを押せなくする
                 onPressed: textController.text == ""
                   ? null
-                  : () {
+                  : () async {
                   final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                   final birthday = convertStringToDateTime(selectedBirthday);
                   final now = DateTime.now();
@@ -181,7 +182,11 @@ class UserInfoEditPage extends ConsumerWidget {
                   ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
                   ref.read(userViewModelProvider.notifier).updateOfFireStore();
 
-                  // context.pop();
+                  // Hiveでローカルにユーザー情報を保存
+                  LocalStorageRepository().putUserInfo(userInfoModel);
+
+                  /// 本当は戻ったページで変更完了のダイアログを表示したい
+                  context.pop(context);
                 }
               ),
             ],
