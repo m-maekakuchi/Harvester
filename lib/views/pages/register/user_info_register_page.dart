@@ -158,7 +158,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
               GreenButton(
                 text: '登録',
                 fontSize: 18,
-                // ニックネームと生年月日が入力されていない場合
+                // ニックネームと生年月日が入力されていない場合、ボタンを押せなくする
                 onPressed: textController.text == "" || selectedBirthday == ""
                   ? null
                   : () async {
@@ -184,8 +184,6 @@ class UserInfoRegisterPage extends ConsumerWidget {
 
                     // Hiveでローカルにユーザー情報を保存
                     LocalStorageRepository().putUserInfo(userInfoModel);
-                    // print(await LocalStorageRepository().fetchUserInfo());
-
 
                     // ユーザ情報の登録が完了したことをCustom Claimに登録
                     await ref.read(authViewModelProvider.notifier).registerCustomStatus();

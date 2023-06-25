@@ -8,14 +8,18 @@ class LocalStorageRepository {
     await Hive.initFlutter();
   }
 
-  Future<UserInfoModel> fetchUserInfo() async {
+  Future<UserInfoModel?> fetchUserInfo() async {
     var box = await Hive.openBox('userBox');
     var userInfo = box.get('userInfo');
-    return UserInfoModel(
-      name: userInfo['name'],
-      addressIndex: userInfo['addressIndex'],
-      birthday: userInfo['birthday'],
-    );
+    if (userInfo == null) {
+      return null;
+    } else {
+      return UserInfoModel(
+        name: userInfo['name'],
+        addressIndex: userInfo['addressIndex'],
+        birthday: userInfo['birthday'],
+      );
+    }
   }
 
   Future<void> putUserInfo(UserInfoModel userInfoModel) async {
