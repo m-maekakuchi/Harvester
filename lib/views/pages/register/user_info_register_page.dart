@@ -11,8 +11,6 @@ import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
 import '../../../repositories/local_storage_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
-import '../../../viewModels/card_master_option_view_model.dart';
-import '../../../viewModels/card_master_view_model.dart';
 import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
@@ -162,10 +160,6 @@ class UserInfoRegisterPage extends ConsumerWidget {
                 onPressed: textController.text == "" || selectedBirthday == ""
                   ? null
                   : () async {
-                    // await ref.read(cardMasterListProvider.notifier).getAllCardMasters();
-                    // final cardMasterList = ref.watch(cardMasterListProvider);
-                    // ref.read(cardMasterOptionListProvider.notifier).getCardMasterOption(cardMasterList);
-
                     final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                     final birthday = convertStringToDateTime(selectedBirthday);
                     final now = DateTime.now();
@@ -183,7 +177,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
                     ref.watch(userViewModelProvider.notifier).setToFireStore();
 
                     // Hiveでローカルにユーザー情報を保存
-                    LocalStorageRepository().putUserInfo(userInfoModel);
+                    await LocalStorageRepository().putUserInfo(userInfoModel);
 
                     // ユーザ情報の登録が完了したことをCustom Claimに登録
                     await ref.read(authViewModelProvider.notifier).registerCustomStatus();

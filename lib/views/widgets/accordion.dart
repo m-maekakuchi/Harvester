@@ -4,23 +4,51 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
-class RegionAccordion extends ConsumerWidget {
-  const RegionAccordion({
+class Accordion extends ConsumerWidget {
+  const Accordion({
     super.key,
     required this.title,
-    required this.listTileTextAry,
+    required this.tileTextList,
     required this.provider
   });
 
-  /// 地方区分の部分の文字
+  /// 頭の部分のタイトル
   final String title;
-  /// 都道府県の配列
-  final List<String> listTileTextAry;
+  /// 開いたときのリスト
+  final List<String> tileTextList;
   final StateProvider provider;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final length = listTileTextAry.length;
+    final length = tileTextList.length;
+
+    // リストタイル
+    Widget listTileContainer (String title, StateProvider provider) {
+      return Container(
+        width: double.infinity,
+        height: getH(context, 6),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(color: textIconColor, width: 0.1),
+          color: Colors.white,  // リストタイルの背景色
+        ),
+        child: ListTile(
+          visualDensity: const VisualDensity(horizontal: 0, vertical: -4),  // リストタイルの上下のpaddingを削除
+          title: SingleChildScrollView(
+            scrollDirection: Axis.horizontal, // 文字数がオーバーしたときに横にスクロール可能
+            child: Text(
+              title,
+              style: const TextStyle(color: textIconColor),
+            ),
+          ),
+          onTap: () {
+            final notifier = ref.read(provider.notifier);
+            notifier.state = title;
+            context.pop();
+          }
+        )
+      );
+    }
 
     return ExpansionTile(
       collapsedTextColor: textIconColor,    // 閉じたときの文字色
@@ -40,31 +68,9 @@ class RegionAccordion extends ConsumerWidget {
       children: [
         // 中身のコンテナ
         for (int i = 0; i < length; i++) ... {
-          listTileContainer(listTileTextAry[i], context, ref, provider),
+          listTileContainer(tileTextList[i], provider),
         }
       ],
-    );
-  }
-
-  // リストタイル
-  Widget listTileContainer (String title, BuildContext context, WidgetRef ref, StateProvider provider) {
-    return Container(
-      width: double.infinity,
-      height: getH(context, 6),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(color: textIconColor, width: 0.1),
-        color: Colors.white,  // リストタイルの背景色
-      ),
-      child: ListTile(
-        visualDensity: const VisualDensity(horizontal: 0, vertical: -4),  // リストタイルの上下のpaddingを削除
-        title: Text(title, style: const TextStyle(color: textIconColor),),
-        onTap: () {
-          final notifier = ref.read(provider.notifier);
-          notifier.state = title;
-          context.pop();
-        }
-      )
     );
   }
 

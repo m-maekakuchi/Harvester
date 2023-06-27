@@ -18,12 +18,15 @@ class SelectedItemAndIcon extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          style: const TextStyle(
-            color: textIconColor,
-            fontSize: 16,
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: textIconColor,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          text,
         ),
         const Icon(
           Icons.arrow_drop_down_rounded,
@@ -31,6 +34,6 @@ class SelectedItemAndIcon extends StatelessWidget {
           color: textIconColor,
         ),
       ],
-    );;
+    );
   }
 }

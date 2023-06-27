@@ -1,0 +1,1 @@
+const noSelectOption = "選択してください";
