@@ -184,7 +184,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
                     // ユーザ情報の登録が完了したことをCustom Claimに登録
                     await ref.read(authViewModelProvider.notifier).registerCustomStatus();
 
-                    context.go('/bottom_bar');
+                    if (context.mounted) context.go('/bottom_bar');
                   }
               ),
             ],

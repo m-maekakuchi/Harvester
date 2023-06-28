@@ -160,7 +160,7 @@ class SettingPage extends ConsumerWidget {
                     // ローカルにユーザー情報があった場合は、UserViewModelにセット
                     await ref.read(userViewModelProvider.notifier).setState(userInfoModel);
                   }
-                  context.push("/settings/user_info_edit_page");
+                  if (context.mounted) context.push("/settings/user_info_edit_page");
                 },
               ],
               [

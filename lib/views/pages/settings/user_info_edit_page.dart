@@ -199,8 +199,7 @@ class UserInfoEditPage extends ConsumerWidget {
 
                   await messageDialog(context, registerCompleteMessage);
 
-                  /// 本当は戻ったページで変更完了のダイアログを表示したい
-                  context.pop();
+                  if (context.mounted) context.pop();
                 }
               ),
             ],
