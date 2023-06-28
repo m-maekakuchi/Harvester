@@ -16,7 +16,7 @@ import '../../widgets/green_button.dart';
 import '../../components/user_select_item_container.dart';
 import '../../components/white_show_modal_bottom_sheet.dart';
 
-final cardProvider = StateProvider((ref) => noSelectOption);
+final cardProvider = StateProvider((ref) => noSelectOptionMessage);
 final dateProvider = StateProvider((ref) => DateTime.now());
 // trueならお気に入り登録する
 final bookmarkProvider = StateProvider((ref) => false);
@@ -147,7 +147,7 @@ class MyCardAddPage extends ConsumerWidget {
                   GreenButton(
                     text: '登録',
                     fontSize: 18,
-                    onPressed: imageList.isEmpty || selectCard == noSelectOption
+                    onPressed: imageList.isEmpty || selectCard == noSelectOptionMessage
                       ? null
                       : () {
                       // 画像をstorageに登録

@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
+import '../../../commons/message.dart';
+import '../../../commons/message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
@@ -19,7 +21,7 @@ import '../../widgets/item_cupertino_picker.dart';
 
 final textControllerProvider = StateProvider((ref) => TextEditingController());
 final addressProvider = StateProvider((ref) => 12);
-final birthdayProvider = StateProvider((ref) => '');
+final birthdayProvider = StateProvider((ref) => noSelectOptionMessage);
 
 class UserInfoRegisterPage extends ConsumerWidget {
   const UserInfoRegisterPage({super.key});
@@ -30,11 +32,6 @@ class UserInfoRegisterPage extends ConsumerWidget {
     final textController = ref.watch(textControllerProvider);
     final selectedAddressIndex = ref.watch(addressProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
-
-    // TextFormFieldのカーソルを末尾に設定
-    textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: textController.text.length),
-    );
 
     // 居住地のドラムロール
     void showDialog(Widget child) {
@@ -157,9 +154,14 @@ class UserInfoRegisterPage extends ConsumerWidget {
                 text: '登録',
                 fontSize: 18,
                 // ニックネームと生年月日が入力されていない場合、ボタンを押せなくする
-                onPressed: textController.text == "" || selectedBirthday == ""
+                onPressed: textController.text == "" || selectedBirthday == noSelectOptionMessage
                   ? null
                   : () async {
+                    // ニックネームが10文字より長い場合、ダイアログで警告
+                    if (textController.text.length > 10) {
+                      await messageDialog(context, textOverErrorMessage);
+                      return;
+                    }
                     final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                     final birthday = convertStringToDateTime(selectedBirthday);
                     final now = DateTime.now();

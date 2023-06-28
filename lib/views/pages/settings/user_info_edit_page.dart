@@ -7,6 +7,8 @@ import 'package:harvester/viewModels/user_view_model.dart';
 
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
+import '../../../commons/message.dart';
+import '../../../commons/message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
@@ -38,11 +40,6 @@ class UserInfoEditPage extends ConsumerWidget {
     final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
-    // TextFormFieldのカーソルを末尾に設定
-    textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: textController.text.length),
-    );
-
     // 居住地のドラムロール
     void showDialog(Widget child) {
       showCupertinoModalPopup<void>(
@@ -70,6 +67,17 @@ class UserInfoEditPage extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              // 戻るボタンを押した場合、編集情報は初期値に戻す
+              // 次にまた編集画面開いたときに編集途中の情報が表示されると、それが登録されていると勘違いさせてしまいそう
+              ref.read(textControllerProvider.notifier).state = TextEditingController(text: ref.read(userViewModelProvider).name);
+              ref.read(addressIndexProvider.notifier).state = ref.read(userViewModelProvider).addressIndex;
+              ref.read(birthdayProvider.notifier).state = dateTimeToString(ref.read(userViewModelProvider).birthday!);
+              context.pop();
+            },
+          ),
           title: SizedBox(  // 幅を設定しないとcenterにならない
             width: getW(context, 50),
             child: Row(
@@ -94,7 +102,6 @@ class UserInfoEditPage extends ConsumerWidget {
                 width: getW(context, 90),
                 height: getH(context, 6),
                 child: TextFormField(
-                  /// validator: ,
                   controller: textController,
                   // 入力されたテキストの色
                   style: const TextStyle(
@@ -167,6 +174,11 @@ class UserInfoEditPage extends ConsumerWidget {
                 onPressed: textController.text == ""
                   ? null
                   : () async {
+                  // ニックネームが10文字より長い場合、ダイアログで警告
+                  if (textController.text.length > 10) {
+                    await messageDialog(context, textOverErrorMessage);
+                    return;
+                  }
                   final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                   final birthday = convertStringToDateTime(selectedBirthday);
                   final now = DateTime.now();
@@ -185,8 +197,10 @@ class UserInfoEditPage extends ConsumerWidget {
                   // Hiveでローカルにユーザー情報を保存
                   LocalStorageRepository().putUserInfo(userInfoModel);
 
+                  await messageDialog(context, registerCompleteMessage);
+
                   /// 本当は戻ったページで変更完了のダイアログを表示したい
-                  context.pop(context);
+                  context.pop();
                 }
               ),
             ],
