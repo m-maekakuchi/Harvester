@@ -6,13 +6,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
+import '../../../commons/message.dart';
+import '../../../commons/message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
 import '../../../repositories/local_storage_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
-import '../../../viewModels/card_master_option_view_model.dart';
-import '../../../viewModels/card_master_view_model.dart';
 import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
@@ -21,7 +21,7 @@ import '../../widgets/item_cupertino_picker.dart';
 
 final textControllerProvider = StateProvider((ref) => TextEditingController());
 final addressProvider = StateProvider((ref) => 12);
-final birthdayProvider = StateProvider((ref) => '');
+final birthdayProvider = StateProvider((ref) => noSelectOptionMessage);
 
 class UserInfoRegisterPage extends ConsumerWidget {
   const UserInfoRegisterPage({super.key});
@@ -32,11 +32,6 @@ class UserInfoRegisterPage extends ConsumerWidget {
     final textController = ref.watch(textControllerProvider);
     final selectedAddressIndex = ref.watch(addressProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
-
-    // TextFormFieldのカーソルを末尾に設定
-    textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: textController.text.length),
-    );
 
     // 居住地のドラムロール
     void showDialog(Widget child) {
@@ -159,13 +154,14 @@ class UserInfoRegisterPage extends ConsumerWidget {
                 text: '登録',
                 fontSize: 18,
                 // ニックネームと生年月日が入力されていない場合、ボタンを押せなくする
-                onPressed: textController.text == "" || selectedBirthday == ""
+                onPressed: textController.text == "" || selectedBirthday == noSelectOptionMessage
                   ? null
                   : () async {
-                    // await ref.read(cardMasterListProvider.notifier).getAllCardMasters();
-                    // final cardMasterList = ref.watch(cardMasterListProvider);
-                    // ref.read(cardMasterOptionListProvider.notifier).getCardMasterOption(cardMasterList);
-
+                    // ニックネームが10文字より長い場合、ダイアログで警告
+                    if (textController.text.length > 10) {
+                      await messageDialog(context, textOverErrorMessage);
+                      return;
+                    }
                     final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                     final birthday = convertStringToDateTime(selectedBirthday);
                     final now = DateTime.now();
@@ -183,7 +179,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
                     ref.watch(userViewModelProvider.notifier).setToFireStore();
 
                     // Hiveでローカルにユーザー情報を保存
-                    LocalStorageRepository().putUserInfo(userInfoModel);
+                    await LocalStorageRepository().putUserInfo(userInfoModel);
 
                     // ユーザ情報の登録が完了したことをCustom Claimに登録
                     await ref.read(authViewModelProvider.notifier).registerCustomStatus();

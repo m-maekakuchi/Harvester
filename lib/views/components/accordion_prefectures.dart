@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../handlers/padding_handler.dart';
-import '../widgets/region_accordion.dart';
+import '../widgets/accordion.dart';
 
 class AccordionPrefectures extends ConsumerWidget {
 
@@ -26,16 +26,16 @@ class AccordionPrefectures extends ConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                RegionAccordion(
+                Accordion(
                   title: '北海道',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '北海道'
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '東北',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '青森県',
                     '岩手県',
                     '宮城県',
@@ -45,9 +45,9 @@ class AccordionPrefectures extends ConsumerWidget {
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '関東',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '茨城県',
                     '栃木県',
                     '群馬県',
@@ -58,9 +58,9 @@ class AccordionPrefectures extends ConsumerWidget {
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '中部',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '新潟県',
                     '富山県',
                     '石川県',
@@ -73,9 +73,9 @@ class AccordionPrefectures extends ConsumerWidget {
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '近畿',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '三重県',
                     '滋賀県',
                     '京都府',
@@ -86,9 +86,9 @@ class AccordionPrefectures extends ConsumerWidget {
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '中国',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '鳥取県',
                     '島根県',
                     '岡山県',
@@ -97,9 +97,9 @@ class AccordionPrefectures extends ConsumerWidget {
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '四国',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '徳島県',
                     '香川県',
                     '愛媛県',
@@ -107,9 +107,9 @@ class AccordionPrefectures extends ConsumerWidget {
                   ],
                   provider: provider,
                 ),
-                RegionAccordion(
+                Accordion(
                   title: '九州',
-                  listTileTextAry: const [
+                  tileTextList: const [
                     '福岡県',
                     '佐賀県',
                     '長崎県',
