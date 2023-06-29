@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/address_master_list.dart';
+import '../../commons/card_master_option_str_list.dart';
 import '../../handlers/padding_handler.dart';
 import '../widgets/accordion.dart';
 
 class AccordionCardMasters extends ConsumerWidget {
 
   final StateProvider provider;
-  final Map<String, List<String>> cardMasterMap;
 
   const AccordionCardMasters({
     super.key,
     required this.provider,
-    required this.cardMasterMap,
   });
 
   @override
@@ -25,18 +25,15 @@ class AccordionCardMasters extends ConsumerWidget {
           child: const Text("カードの選択", style: TextStyle(fontSize: 16),)
         ),
         Expanded( // スクロールさせる領域をExpandedで囲むと、それ以外が固定になる
-          child: SingleChildScrollView(
-            child: Column(
-              children: cardMasterMap.entries.map((entry) {
-                String key = entry.key;
-                List<String> value = entry.value;
-                return Accordion(
-                  title: key,
-                  tileTextList: value,
-                  provider: provider,
-                );
-              }).toList(),
-            ),
+          child: ListView.builder(
+            itemCount: cardMasterOptionStrList.length,
+            itemBuilder: (context, index) {
+              return Accordion(
+                title: addressList[index],
+                tileTextList: cardMasterOptionStrList[index],
+                provider: provider,
+              );
+            },
           ),
         ),
       ],
