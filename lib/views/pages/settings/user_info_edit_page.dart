@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/viewModels/user_view_model.dart';
 
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
@@ -14,6 +13,7 @@ import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
 import '../../../repositories/local_storage_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
+import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
 import '../../components/user_select_item_container.dart';
@@ -190,14 +190,18 @@ class UserInfoEditPage extends ConsumerWidget {
                     updatedAt: now,
                   );
 
-                  // userViewModelProviderの状態を変更してFireStoreを更新する
-                  ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
-                  ref.read(userViewModelProvider.notifier).updateOfFireStore();
+                  // 2つの機能を並列処理
+                  await Future.wait([
+                    // userViewModelProviderの状態を変更してFireStoreを更新する
+                    ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
+                      await ref.read(userViewModelProvider.notifier).updateOfFireStore();
+                    }),
+                    // Hiveでローカルにユーザー情報を保存
+                    LocalStorageRepository().putUserInfo(userInfoModel),
+                  ]);
 
-                  // Hiveでローカルにユーザー情報を保存
-                  LocalStorageRepository().putUserInfo(userInfoModel);
-
-                  await messageDialog(context, registerCompleteMessage);
+                  // 登録完了のダイアログを表示
+                  if (context.mounted) await messageDialog(context, registerCompleteMessage);
 
                   if (context.mounted) context.pop();
                 }
