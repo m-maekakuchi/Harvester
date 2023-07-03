@@ -7,13 +7,13 @@ class ImageRepository {
   Future uploadImageToFirebase(List<ImageModel> imageModelList) async {
     for (ImageModel imageModel in imageModelList) {
       // アップロードしたいファイルのパス
-      Reference storageRef = FirebaseStorage.instance.ref().child(imageModel.filePath);
+      Reference storageRef = FirebaseStorage.instance.ref().child(imageModel.filePath!);
       // アップロードしたいファイルのメタデータ
       final metadata = SettableMetadata(contentType: "image/jpeg");
 
       final uploadTask = storageRef
-          .child(imageModel.fileName)
-          .putData(imageModel.imageFile, metadata);
+          .child(imageModel.fileName!)
+          .putData(imageModel.imageFile!, metadata);
 
       uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
         switch (taskSnapshot.state) {

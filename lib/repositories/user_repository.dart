@@ -34,16 +34,31 @@ class UserRepository {
       .doc(userInfoModel.firebaseAuthUid);
     await docRef.set(userInfoModel).then(
       (value) => print("DocumentSnapshot successfully set!"),
-      onError: (e) => print("Error setting document $e"));
+      onError: (e) => print("Error setting document $e")
+    );
   }
 
   // 値が変わらないフィールドは更新されない
-  Future<void> updateOfFireStore(UserInfoModel userInfoModel) async {
+  Future<void> updateProfileFireStore(UserInfoModel userInfoModel) async {
     final washingtonRef = db
       .collection("users")
       .doc(userInfoModel.firebaseAuthUid);
     await washingtonRef.update(userInfoModel.toFirestore()).then(
       (value) => print("DocumentSnapshot successfully updated!"),
-      onError: (e) => print("Error updating document $e"));
+      onError: (e) => print("Error updating document $e")
+    );
+  }
+
+  Future<void> updateCardsFireStore(UserInfoModel userInfoModel) async {
+    final washingtonRef = db
+      .collection("users")
+      .doc(userInfoModel.firebaseAuthUid);
+
+    await washingtonRef.update({
+      "cards": FieldValue.arrayUnion(userInfoModel.cards!),
+    }).then(
+      (value) => print("DocumentSnapshot successfully updated!"),
+      onError: (e) => print("Error updating document $e")
+    );
   }
 }

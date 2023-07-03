@@ -27,7 +27,7 @@ final addressIndexProvider = StateProvider((ref) =>
   ref.read(userViewModelProvider).addressIndex
 );
 final birthdayProvider = StateProvider((ref) =>
-  dateTimeToString(ref.read(userViewModelProvider).birthday!)
+  convertDateTimeToString(ref.read(userViewModelProvider).birthday!)
 );
 
 class UserInfoEditPage extends ConsumerWidget {
@@ -74,7 +74,7 @@ class UserInfoEditPage extends ConsumerWidget {
               // 次にまた編集画面開いたときに編集途中の情報が表示されると、それが登録されていると勘違いさせてしまいそう
               ref.read(textControllerProvider.notifier).state = TextEditingController(text: ref.read(userViewModelProvider).name);
               ref.read(addressIndexProvider.notifier).state = ref.read(userViewModelProvider).addressIndex;
-              ref.read(birthdayProvider.notifier).state = dateTimeToString(ref.read(userViewModelProvider).birthday!);
+              ref.read(birthdayProvider.notifier).state = convertDateTimeToString(ref.read(userViewModelProvider).birthday!);
               context.pop();
             },
           ),
@@ -181,20 +181,19 @@ class UserInfoEditPage extends ConsumerWidget {
                   }
                   final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                   final birthday = convertStringToDateTime(selectedBirthday);
-                  final now = DateTime.now();
                   final userInfoModel = UserInfoModel(
                     firebaseAuthUid: userUid,
                     name: textController.text,
                     addressIndex: selectedAddressIndex,
                     birthday: birthday,
-                    updatedAt: now,
+                    updatedAt: DateTime.now(),
                   );
 
                   // 2つの機能を並列処理
                   await Future.wait([
                     // userViewModelProviderの状態を変更してFireStoreを更新する
                     ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
-                      await ref.read(userViewModelProvider.notifier).updateOfFireStore();
+                      await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
                     }),
                     // Hiveでローカルにユーザー情報を保存
                     LocalStorageRepository().putUserInfo(userInfoModel),

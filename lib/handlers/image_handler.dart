@@ -22,14 +22,12 @@ Future<Uint8List?> compressFile(File file) async{
 
 // 切り抜きをした画像をViewModelに追加
 Future<void> addImageToImageList(CroppedFile croppedFile, WidgetRef ref) async {
-  final firebaseAuthUid = ref.read(authViewModelProvider.notifier).getUid();
   final fileName = croppedFile.path.split('/').last;
 
   final Uint8List? compressedFile = await compressFile(File(croppedFile.path));
 
   final imageModel = ImageModel(
     fileName: fileName,
-    filePath: "$firebaseAuthUid/01-000-B001",   /// 選択したカード番号にしないといけない
     imageFile: compressedFile!,
   );
   ref.read(imageListProvider.notifier).add(imageModel);

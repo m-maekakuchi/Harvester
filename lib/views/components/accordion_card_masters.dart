@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/address_master_list.dart';
-import '../../commons/card_master_option_str_list.dart';
+import '../../commons/card_master_option_list.dart';
 import '../../handlers/padding_handler.dart';
 import '../widgets/accordion.dart';
 

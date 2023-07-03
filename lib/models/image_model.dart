@@ -3,14 +3,14 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ImageModel {
-  final String fileName;
-  final String filePath;
-  final Uint8List imageFile;
+  final String? fileName;
+  late String? filePath;
+  final Uint8List? imageFile;
 
   ImageModel({
-    required this.fileName,
-    required this.filePath,
-    required this.imageFile,
+    this.fileName,
+    this.filePath,
+    this.imageFile,
   });
 
   factory ImageModel.fromFirestore(
@@ -27,9 +27,9 @@ class ImageModel {
 
   Map<String, dynamic> toFirestore() {
     return {
-      'file_name': fileName,
-      'file_path': filePath,
-      'imageFile': imageFile,
+      if (fileName != null) 'file_name': fileName,
+      if (filePath != null) 'file_path': filePath,
+      if (imageFile != null) 'imageFile': imageFile,
     };
   }
 }

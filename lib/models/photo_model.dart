@@ -1,31 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Photo {
+class PhotoModel {
   final String? firebaseAuthUid;
   final String? fileName;
   final String? filePath;
   final DateTime? createdAt;
-  final DateTime? updatedAt;
 
-  Photo({
+  PhotoModel({
     this.firebaseAuthUid,
     this.fileName,
     this.filePath,
     this.createdAt,
-    this.updatedAt,
   });
 
-  factory Photo.fromFirestore(
+  factory PhotoModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    return Photo(
+    return PhotoModel(
       firebaseAuthUid: data?['firebase_auth_uid'],
       fileName: data?['file_name'],
       filePath: data?['file_path'],
       createdAt: data?['created_at'].toDate(),
-      updatedAt: data?['updated_at'].toDate(),
     );
   }
 
@@ -35,7 +32,6 @@ class Photo {
       if (fileName != null) 'file_name': fileName,
       if (filePath != null) 'file_path': filePath,
       if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
     };
   }
 }

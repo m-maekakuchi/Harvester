@@ -18,6 +18,11 @@ class CardMasterRepository {
     return cardMasterList;
   }
 
+  // ドキュメント参照を取得
+  Future<DocumentReference> getCardMasterRef(String cardNumber) async {
+    return ref.doc(cardNumber);
+  }
+
   Future<List<CardMasterModel>> getCardMasters(String prefecture) async {
 
     final List<CardMasterModel> cardMasterList = [];
