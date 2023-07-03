@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,9 +6,18 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/image_num_per_card.dart';
 import '../../../commons/message.dart';
+import '../../../commons/message_dialog.dart';
+import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../../repositories/local_storage_repository.dart';
+import '../../../models/card_model.dart';
+import '../../../models/image_model.dart';
+import '../../../models/user_info_model.dart';
+import '../../../repositories/card_master_repository.dart';
+import '../../../repositories/card_repository.dart';
+import '../../../repositories/photo_repository.dart';
+import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
+import '../../../viewModels/user_view_model.dart';
 import '../../components/accordion_card_masters.dart';
 import '../../components/pick_and_crop_image_container.dart';
 import '../../components/title_container.dart';
@@ -28,10 +38,10 @@ class MyCardAddPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final selectCard = ref.watch(cardProvider);
-    final date = ref.watch(dateProvider);
-    final imageList = ref.watch(imageListProvider);
+    final selectedDate = ref.watch(dateProvider);
+    final selectedImageList = ref.watch(imageListProvider);
 
-    /// 日付のPickerを表示
+    // 日付のPickerを表示
     Future<DateTime?> showDate(date) {
       return showDatePicker(
         context: context,
@@ -42,9 +52,9 @@ class MyCardAddPage extends ConsumerWidget {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: themeColor,      /// ヘッダー背景色
-                onPrimary: textIconColor, /// ヘッダーテキストカラー
-                onSurface: textIconColor, /// カレンダーのテキストカラー
+                primary: themeColor,      // ヘッダー背景色
+                onPrimary: textIconColor, // ヘッダーテキストカラー
+                onSurface: textIconColor, // カレンダーのテキストカラー
               ),
               textButtonTheme: const TextButtonThemeData(
                 style: ButtonStyle(
@@ -84,82 +94,120 @@ class MyCardAddPage extends ConsumerWidget {
           ],
         ),
       body: SingleChildScrollView(
-        child: FutureBuilder<Map<String, List<String>>?>(
-          future: LocalStorageRepository().fetchCardMasterOptionMap(),
-          builder: (context, snapshot) {
-            if(snapshot.hasError){
-              final error  = snapshot.error;
-              return Text('$error', style: TextStyle(fontSize: 60,),);
-            } else if (snapshot.hasData) {
-              Map<String, List<String>> result = snapshot.data!;
-              return Column(
+        child: Column(
+          children: [
+            SizedBox(height: getH(context, 3)),
+            // 写真選択欄
+            for (var i = 0; i < imageNumPerCard / 2; i++) ... {
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: getH(context, 3)),
-                  /// 写真選択欄
-                  for (var i = 0; i < imageNumPerCard / 2; i++) ... {
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var j = 0; j < 2; j++) ... {
-                          PickAndCropImageContainer(index: i * 2 + j),
-                        },
-                      ]
-                    ),
+                  for (var j = 0; j < 2; j++) ... {
+                    PickAndCropImageContainer(index: i * 2 + j),
                   },
-                  const TitleContainer(titleStr: 'カード'),
-                  /// カード選択欄
-                  UserSelectItemContainer(
-                    text: selectCard,
-                    onPressed: () {
-                      whiteShowModalBottomSheet(
-                        context: context,
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(20))
-                          ),
-                          height: getH(context, 90),
-                          child: AccordionCardMasters(
-                            provider: cardProvider,
-                            cardMasterMap: result,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  const TitleContainer(titleStr: '収集日'),
-                  /// 収集日選択欄
-                  UserSelectItemContainer(
-                    text: '${date.year}/${date.month}/${date.day}',
-                    onPressed: () async {
-                      final selectedDate = await showDate(date);
-                      // 日付が選択された場合
-                      if (selectedDate != null) {
-                        final notifier = ref.read(dateProvider.notifier);
-                        notifier.state = selectedDate;
-                      }
-                    },
-                  ),
-                  SizedBox(height: getH(context, 2)),
-                  /// お気に入り選択
-                  BookMarkButton(provider: bookmarkProvider),
-                  SizedBox(height: getH(context, 2),),
-                  GreenButton(
-                    text: '登録',
-                    fontSize: 18,
-                    onPressed: imageList.isEmpty || selectCard == noSelectOptionMessage
-                      ? null
-                      : () {
-                      // 画像をstorageに登録
-                      ref.read(imageListProvider.notifier).uploadImageToFirebase();
-                    },
-                  ),
                 ]
-              );
-            } else {
-              return const Text("しばらくお待ち下さい", style: TextStyle(fontSize: 30,),);
-            }
-          }
+              ),
+            },
+            const TitleContainer(titleStr: 'カード'),
+            // カード選択欄
+            UserSelectItemContainer(
+              text: selectCard,
+              onPressed: () {
+                whiteShowModalBottomSheet(
+                  context: context,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20))
+                    ),
+                    height: getH(context, 90),
+                    child: AccordionCardMasters(
+                      provider: cardProvider,
+                    ),
+                  ),
+                );
+              },
+            ),
+            const TitleContainer(titleStr: '収集日'),
+            // 収集日選択欄
+            UserSelectItemContainer(
+              text: '${selectedDate.year}/${selectedDate.month}/${selectedDate.day}',
+              onPressed: () async {
+                final selectedDayFromCalendar = await showDate(selectedDate);
+                // 日付が選択された場合
+                if (selectedDayFromCalendar != null) {
+                  final notifier = ref.read(dateProvider.notifier);
+                  notifier.state = selectedDayFromCalendar;
+                }
+              },
+            ),
+            SizedBox(height: getH(context, 2)),
+            // お気に入り選択
+            BookMarkButton(provider: bookmarkProvider),
+            SizedBox(height: getH(context, 2),),
+            GreenButton(
+              text: '登録',
+              fontSize: 18,
+              onPressed: selectedImageList.isEmpty || selectCard == noSelectOptionMessage
+                ? null
+                : () async {
+                // 選択されたカード番号取得
+                RegExp regex = RegExp(r'\s');
+                String selectedCardMasterNumber = selectCard.split(regex)[0];
+
+                // imageListProviderの各imageModelのfilePathを設定
+                final uid = ref.read(authViewModelProvider.notifier).getUid();
+                for(ImageModel model in selectedImageList) {
+                  model.filePath = "$uid/$selectedCardMasterNumber";
+                }
+
+                // 画像をstorageに登録
+                await ref.read(imageListProvider.notifier).uploadImageToFirebase();
+
+                // photoモデルリストの作成
+                final photoModelList = convertListData(ref.read(imageListProvider), ref);
+
+                // photosコレクションに登録（戻り値：ドキュメント参照の配列）
+                // --------ここで失敗したらstorageに登録したやつ削除-----------------
+                List<DocumentReference> photoDocRefList = await PhotoRepository().setToFireStore(photoModelList);
+
+                //　選択したマスターカードのドキュメント参照を取得
+                final cardMasterDocRef = await CardMasterRepository().getCardMasterRef(selectedCardMasterNumber);
+                final now = DateTime.now();
+                // cardモデルの作成
+                final cardModel = CardModel(
+                  cardMaster: cardMasterDocRef,
+                  photos: photoDocRefList,
+                  favorite: ref.read(bookmarkProvider),
+                  collectDay: selectedDate,
+                  createdAt: now,
+                  updatedAt: now,
+                );
+                // cardsコレクションに登録（戻り値：ドキュメント参照）
+                // -------------ここで失敗したらstorageとphotoコレクションに登録したやつ削除--------------------
+                final cardDocRef = await CardRepository().setToFireStore(cardModel, "$uid$selectedCardMasterNumber");
+
+                // userモデルの作成
+                final userModel = UserInfoModel(
+                  firebaseAuthUid: uid,
+                  cards: [cardDocRef],
+                );
+                await ref.read(userViewModelProvider.notifier).setState(userModel);
+                // cardの情報をFireStoreに登録
+                // -------------ここで失敗したらstorageとphotoコレクションとcardsコレクションに登録したやつ削除--------------------
+                await ref.read(userViewModelProvider.notifier).updateCardsFireStore();
+
+                // プロバイダをリセット
+                await ref.read(imageListProvider.notifier).init();
+                ref.read(cardProvider.notifier).state = noSelectOptionMessage;
+                ref.read(dateProvider.notifier).state = DateTime.now();
+                ref.read(bookmarkProvider.notifier).state = false;
+
+                // 登録完了のダイアログを表示
+                if (context.mounted) await messageDialog(context, registerCompleteMessage);
+              },
+            ),
+          ]
         ),
       ),
     );

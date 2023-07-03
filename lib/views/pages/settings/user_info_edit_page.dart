@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/viewModels/user_view_model.dart';
 
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
@@ -14,6 +13,7 @@ import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
 import '../../../repositories/local_storage_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
+import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
 import '../../widgets/green_button.dart';
 import '../../components/user_select_item_container.dart';
@@ -27,7 +27,7 @@ final addressIndexProvider = StateProvider((ref) =>
   ref.read(userViewModelProvider).addressIndex
 );
 final birthdayProvider = StateProvider((ref) =>
-  dateTimeToString(ref.read(userViewModelProvider).birthday!)
+  convertDateTimeToString(ref.read(userViewModelProvider).birthday!)
 );
 
 class UserInfoEditPage extends ConsumerWidget {
@@ -74,7 +74,7 @@ class UserInfoEditPage extends ConsumerWidget {
               // 次にまた編集画面開いたときに編集途中の情報が表示されると、それが登録されていると勘違いさせてしまいそう
               ref.read(textControllerProvider.notifier).state = TextEditingController(text: ref.read(userViewModelProvider).name);
               ref.read(addressIndexProvider.notifier).state = ref.read(userViewModelProvider).addressIndex;
-              ref.read(birthdayProvider.notifier).state = dateTimeToString(ref.read(userViewModelProvider).birthday!);
+              ref.read(birthdayProvider.notifier).state = convertDateTimeToString(ref.read(userViewModelProvider).birthday!);
               context.pop();
             },
           ),
@@ -181,26 +181,28 @@ class UserInfoEditPage extends ConsumerWidget {
                   }
                   final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                   final birthday = convertStringToDateTime(selectedBirthday);
-                  final now = DateTime.now();
                   final userInfoModel = UserInfoModel(
                     firebaseAuthUid: userUid,
                     name: textController.text,
                     addressIndex: selectedAddressIndex,
                     birthday: birthday,
-                    updatedAt: now,
+                    updatedAt: DateTime.now(),
                   );
 
-                  // userViewModelProviderの状態を変更してFireStoreを更新する
-                  ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
-                  ref.read(userViewModelProvider.notifier).updateOfFireStore();
+                  // 2つの機能を並列処理
+                  await Future.wait([
+                    // userViewModelProviderの状態を変更してFireStoreを更新する
+                    ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
+                      await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
+                    }),
+                    // Hiveでローカルにユーザー情報を保存
+                    LocalStorageRepository().putUserInfo(userInfoModel),
+                  ]);
 
-                  // Hiveでローカルにユーザー情報を保存
-                  LocalStorageRepository().putUserInfo(userInfoModel);
+                  // 登録完了のダイアログを表示
+                  if (context.mounted) await messageDialog(context, registerCompleteMessage);
 
-                  await messageDialog(context, registerCompleteMessage);
-
-                  /// 本当は戻ったページで変更完了のダイアログを表示したい
-                  context.pop();
+                  if (context.mounted) context.pop();
                 }
               ),
             ],

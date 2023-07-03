@@ -24,7 +24,11 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
     await repository.setToFireStore(state);
   }
 
-  Future<void> updateOfFireStore() async {
-    await repository.updateOfFireStore(state);
+  Future<void> updateProfileFireStore() async {
+    await repository.updateProfileFireStore(state);
+  }
+
+  Future<void> updateCardsFireStore() async {
+    await repository.updateCardsFireStore(state);
   }
 }

@@ -42,7 +42,7 @@ class PickAndCropImageContainer extends ConsumerWidget {
         child: Stack(
           alignment: AlignmentDirectional.topEnd,
           children: [
-            Image.memory(imageList[index].imageFile),
+            Image.memory(imageList[index].imageFile!),
             deleteButton(),
           ],
         ),

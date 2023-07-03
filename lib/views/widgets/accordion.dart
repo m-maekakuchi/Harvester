@@ -21,6 +21,7 @@ class Accordion extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final length = tileTextList.length;
+    final GlobalKey expansionTileKey = GlobalKey(); // key property to get the current context of the ExpansionTile
 
     // リストタイル
     Widget listTileContainer (String title, StateProvider provider) {
@@ -65,6 +66,10 @@ class Accordion extends ConsumerWidget {
         title,
         style: const TextStyle(fontSize: 16),
       ),
+      key: expansionTileKey,
+      onExpansionChanged: (value) {
+        if (value) _scrollToSelectedContent(expansionTileKey: expansionTileKey);
+      },
       children: [
         // 中身のコンテナ
         for (int i = 0; i < length; i++) ... {
@@ -74,4 +79,14 @@ class Accordion extends ConsumerWidget {
     );
   }
 
+  // ExpansionTileを開いたときにスクロールする
+  void _scrollToSelectedContent({required GlobalKey expansionTileKey}) {
+    final keyContext = expansionTileKey.currentContext;
+    if (keyContext != null) {
+      Future.delayed(const Duration(milliseconds: 200)).then((value) {
+        Scrollable.ensureVisible(keyContext,
+            duration: const Duration(milliseconds: 200));
+      });
+    }
+  }
 }
