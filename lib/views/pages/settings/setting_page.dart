@@ -154,8 +154,8 @@ class SettingPage extends ConsumerWidget {
                   var userInfoModel = await LocalStorageRepository().fetchUserInfo();
                   // ローカルにユーザー情報が保存されていない場合、Firebaseから取得
                   if (userInfoModel == null) {
-                    final userUid = ref.watch(authViewModelProvider.notifier).getUid();
-                    await ref.watch(userViewModelProvider.notifier).getFromFireStore(userUid);
+                    final uid = ref.watch(authViewModelProvider.notifier).getUid();
+                    await ref.read(userViewModelProvider.notifier).getOnlyInfoFromFireStore(uid);
                   } else {
                     // ローカルにユーザー情報があった場合は、UserViewModelにセット
                     await ref.read(userViewModelProvider.notifier).setState(userInfoModel);

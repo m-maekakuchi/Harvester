@@ -23,21 +23,14 @@ class CardMasterRepository {
     return ref.doc(cardNumber);
   }
 
-  Future<List<CardMasterModel>> getCardMasters(String prefecture) async {
-
-    final List<CardMasterModel> cardMasterList = [];
-    // const card = Card(
-    //   cardMasterList: [
-    //     CardMaster(
-    //
-    //     ),
-    //   ],
-    //   photos: [
-    //
-    //   ],
-    //   collectionDay: "2023/5/6",
-    //   createdAt
-    // );
-    return cardMasterList;
+  // ドキュメント参照から、マスターカード1枚を取得
+  Future<CardMasterModel?> getOneCardMaster(DocumentReference<Map<String, dynamic>> docRef) async {
+    final ref = docRef.withConverter(
+      fromFirestore: CardMasterModel.fromFirestore,
+      toFirestore: (CardMasterModel cardMasterModel, _) => cardMasterModel.toFirestore(),
+    );
+    final docSnapshot = await ref.get();
+    final cardMasterModel = docSnapshot.data();
+    return cardMasterModel;
   }
 }

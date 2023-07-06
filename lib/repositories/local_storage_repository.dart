@@ -31,6 +31,17 @@ class LocalStorageRepository {
     });
   }
 
+  Future<List<String>?> fetchMyCardNumber() async {
+    var box = await Hive.openBox('cardBox');
+    var myCardNumber = box.get('myCardNumber');
+    return myCardNumber;
+  }
+
+  Future<void> putMyCardNumber(List<String> cardNumberList) async {
+    var box = await Hive.openBox('cardBox');
+    await box.put('myCardNumber', cardNumberList);
+  }
+
   // Future<List<CardMasterModel>?> fetchCardMasterList() async {
   //   var box = await Hive.openBox('cardMasterBox');
   //   var cardMasterMapList = box.get('cardMasterList');

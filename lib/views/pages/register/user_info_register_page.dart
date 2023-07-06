@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
-import '../../../commons/message_dialog.dart';
+import '../../components/message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
