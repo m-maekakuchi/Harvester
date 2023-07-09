@@ -40,7 +40,7 @@ class MyCardAddPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final selectCard = ref.watch(cardProvider);
-    final selectedDate = ref.watch(dateProvider);
+    final selectedDay = ref.watch(dateProvider);
     final selectedImageList = ref.watch(imageListProvider);
 
     // 日付のPickerを表示
@@ -133,9 +133,9 @@ class MyCardAddPage extends ConsumerWidget {
             const TitleContainer(titleStr: '収集日'),
             // 収集日選択欄
             UserSelectItemContainer(
-              text: '${selectedDate.year}/${selectedDate.month}/${selectedDate.day}',
+              text: '${selectedDay.year}/${selectedDay.month}/${selectedDay.day}',
               onPressed: () async {
-                final selectedDayFromCalendar = await showDate(selectedDate);
+                final selectedDayFromCalendar = await showDate(selectedDay);
                 // 日付が選択された場合
                 if (selectedDayFromCalendar != null) {
                   final notifier = ref.read(dateProvider.notifier);
@@ -163,8 +163,8 @@ class MyCardAddPage extends ConsumerWidget {
                 List<String>? cardNumberList = await LocalStorageRepository().fetchMyCardNumber();
                 print("ローカルのカード情報：$cardNumberList");
 
-                // ローカルにデータがない場合、DBから取得してローカルに登録
-                // cardsフィールドがない又はカードフィールドの配列が空の場合戻り値はnull
+                // ローカルにデータがない場合FireStoreから取得
+                // cardsフィールドがない又はcardsフィールドの配列が空の場合、戻り値はnull
                 cardNumberList ??= await getCardMasterNumberList(uid, ref);
                 print("cardNumberList：$cardNumberList");
 
@@ -178,59 +178,75 @@ class MyCardAddPage extends ConsumerWidget {
                 for(ImageModel model in selectedImageList) {
                   model.filePath = "$uid/$selectedCardMasterNumber";
                 }
+
                 // 画像をstorageに登録
                 await ref.read(imageListProvider.notifier).uploadImageToFirebase();
 
                 // photoモデルリストの作成
                 final photoModelList = convertListData(ref.read(imageListProvider), ref);
-                // photosコレクションに登録（戻り値：ドキュメント参照の配列）
-                List<DocumentReference> photoDocRefList = await PhotoRepository().setToFireStore(photoModelList);
 
-                //　選択したマスターカードのドキュメント参照を取得
-                final cardMasterDocRef = await CardMasterRepository().getCardMasterRef(selectedCardMasterNumber);
-                final now = DateTime.now();
-                // cardモデルの作成
-                final cardModel = CardModel(
-                  cardMaster: cardMasterDocRef,
-                  photos: photoDocRefList,
-                  favorite: ref.read(bookmarkProvider),
-                  collectDay: selectedDate,
-                  createdAt: now,
-                  updatedAt: now,
+                // トランザクションでfireStoreにマイカードを登録
+                await FirebaseFirestore.instance.runTransaction((transaction) async {
+                  // photosコレクションに登録（戻り値：ドキュメント参照の配列）
+                  List<DocumentReference> photoDocRefList = await PhotoRepository().setToFireStore(photoModelList, transaction);
+
+                  //　選択したマスターカードのドキュメント参照を取得
+                  final cardMasterDocRef = await CardMasterRepository().getCardMasterRef(selectedCardMasterNumber);
+                  final now = DateTime.now();
+                  // cardモデルの作成
+                  final cardModel = CardModel(
+                    cardMaster: cardMasterDocRef,
+                    photos: photoDocRefList,
+                    favorite: ref.read(bookmarkProvider),
+                    collectDay: selectedDay,
+                    createdAt: now,
+                    updatedAt: now,
+                  );
+                  // cardsコレクションに登録（戻り値：ドキュメント参照）
+                  final cardDocRef = await CardRepository().setToFireStore(cardModel, "$uid$selectedCardMasterNumber", transaction);
+
+                  // userモデルの作成
+                  final userModel = UserInfoModel(
+                    firebaseAuthUid: uid,
+                    cards: [cardDocRef],
+                  );
+                  await ref.read(userViewModelProvider.notifier).setState(userModel);
+                  // cardの情報をFireStoreに登録
+                  await ref.read(userViewModelProvider.notifier).updateCardsFireStore(transaction);
+                  // throw Exception("エラー発生");
+                }).then(
+                  // トランザクションが成功したとき
+                  (value) async {
+                    print("***********MyCard successfully updated!***********");
+                    // ローカルのマイカード情報にカードを追加
+                    // cardNumberListがnullだったら初めての登録
+                    if (cardNumberList == null) {
+                      print("はじめてのカード追加です");
+                      print("cardNumberList：$cardNumberList");
+                      await LocalStorageRepository().putMyCardNumber([selectedCardMasterNumber]);
+                    } else {
+                      print("カード追加2回目以降です");
+                      cardNumberList.add(selectedCardMasterNumber);
+                      print("cardNumberList：$cardNumberList");
+                      await LocalStorageRepository().putMyCardNumber(cardNumberList);
+                    }
+
+                    // プロバイダをリセット
+                    await ref.read(imageListProvider.notifier).init();
+                    ref.read(cardProvider.notifier).state = noSelectOptionMessage;
+                    ref.read(dateProvider.notifier).state = DateTime.now();
+                    ref.read(bookmarkProvider.notifier).state = false;
+
+                    // 登録完了のダイアログを表示
+                    if (context.mounted) await messageDialog(context, registerCompleteMessage);
+                  },
+                  // トランザクションが失敗したとき
+                  onError: (e) async {
+                    print("Error updating document $e");
+                    await ref.read(imageListProvider.notifier).deleteImageFromFireStore();
+                    return;
+                  },
                 );
-                // cardsコレクションに登録（戻り値：ドキュメント参照）
-                final cardDocRef = await CardRepository().setToFireStore(cardModel, "$uid$selectedCardMasterNumber");
-
-                // userモデルの作成
-                final userModel = UserInfoModel(
-                  firebaseAuthUid: uid,
-                  cards: [cardDocRef],
-                );
-                await ref.read(userViewModelProvider.notifier).setState(userModel);
-                // cardの情報をFireStoreに登録
-                await ref.read(userViewModelProvider.notifier).updateCardsFireStore();
-
-                // ローカルのマイカード情報にカードを追加
-                // cardNumberListがnullだったら初めての登録
-                if (cardNumberList == null) {
-                  print("はじめてのカード追加です");
-                  print("cardNumberList：$cardNumberList");
-                  await LocalStorageRepository().putMyCardNumber([selectedCardMasterNumber]);
-                } else {
-                  print("カード追加2回目以降です");
-                  cardNumberList.add(selectedCardMasterNumber);
-                  print("cardNumberList：$cardNumberList");
-                  await LocalStorageRepository().putMyCardNumber(cardNumberList);
-                }
-
-                // プロバイダをリセット
-                await ref.read(imageListProvider.notifier).init();
-                ref.read(cardProvider.notifier).state = noSelectOptionMessage;
-                ref.read(dateProvider.notifier).state = DateTime.now();
-                ref.read(bookmarkProvider.notifier).state = false;
-
-                // 登録完了のダイアログを表示
-                if (context.mounted) await messageDialog(context, registerCompleteMessage);
               },
             ),
           ]

@@ -15,23 +15,19 @@ class PhotoRepository {
     return photoModel;
   }
 
-  Future<List<DocumentReference>> setToFireStore(List<PhotoModel> list) async {
+  Future<List<DocumentReference>> setToFireStore(List<PhotoModel> list, Transaction transaction) async {
     final List<DocumentReference> docList = [];
+    final collectionRef = db.collection("photos");
+
     for(var photoModel in list) {
-      final docRef = db
-        .collection("photos")
+      final docRef = collectionRef
         .withConverter(
           fromFirestore: PhotoModel.fromFirestore,
           toFirestore: (PhotoModel photoModel, options) => photoModel.toFirestore(),
         )
         .doc();
       docList.add(docRef);
-      await docRef.set(photoModel).then(
-        (value) => print("DocumentSnapshot successfully set!"),
-        onError: (e) {
-          print("Error setting document $e");
-        }
-      );
+      transaction.set(docRef, photoModel);
     }
     return docList;
   }

@@ -31,18 +31,16 @@ class CardRepository {
     return cardModel;
   }
 
-  Future<DocumentReference> setToFireStore(CardModel model, String docName) async {
-    final docRef = db
-      .collection("cards")
+  Future<DocumentReference> setToFireStore(CardModel cardModel, String docName, Transaction transaction) async {
+    final collectionRef = db.collection("cards");
+
+    final docRef = collectionRef
       .withConverter(
         fromFirestore: CardModel.fromFirestore,
         toFirestore: (CardModel cardModel, options) => cardModel.toFirestore(),
       )
       .doc(docName);
-    await docRef.set(model).then(
-      (value) => print("DocumentSnapshot successfully set!"),
-      onError: (e) => print("Error setting document $e")
-    );
+    transaction.set(docRef, cardModel);
     return db.collection("cards").doc(docName);
   }
 }

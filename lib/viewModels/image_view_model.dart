@@ -33,15 +33,11 @@ class ImageListViewModel extends StateNotifier<List<ImageModel>> {
     state = [...imageList];
   }
 
-  // Future<void> getImageFromFirebase() async {
-  //   state = await repository.getImageFromFirebase(state);
-  // }
-  //
-  // Future<void> deleteImageOfFirebase() async {
-  //   await repository.deleteImageOfFirebase(state);
-  // }
-
   Future<void> uploadImageToFirebase() async {
     await repository.uploadImageToFirebase(state);
+  }
+
+  Future<void> deleteImageFromFireStore() async {
+    await repository.deleteImageFromFireStore(state);
   }
 }

@@ -82,16 +82,13 @@ class UserRepository {
     );
   }
 
-  Future<void> updateCardsFireStore(UserInfoModel userInfoModel) async {
-    final washingtonRef = db
-      .collection("users")
+  Future<void> updateCardsFireStore(UserInfoModel userInfoModel, Transaction transaction) async {
+    final collectionRef = db.collection("users");
+    final docRef = collectionRef
       .doc(userInfoModel.firebaseAuthUid);
 
-    await washingtonRef.update({
+    transaction.update(docRef, {
       "cards": FieldValue.arrayUnion(userInfoModel.cards!),
-    }).then(
-      (value) => print("DocumentSnapshot successfully updated!"),
-      onError: (e) => print("Error updating document $e")
-    );
+    });
   }
 }
