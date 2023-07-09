@@ -5,23 +5,29 @@ import '../models/photo_model.dart';
 class PhotoRepository {
   final db = FirebaseFirestore.instance;
 
-  Future<List<DocumentReference>> setToFireStore(List<PhotoModel> list) async {
+  Future<PhotoModel?> getFromFireStore(DocumentReference<Map<String, dynamic>> docRef) async {
+    final ref = docRef.withConverter(
+      fromFirestore: PhotoModel.fromFirestore,
+      toFirestore: (PhotoModel photoModel, _) => photoModel.toFirestore(),
+    );
+    final docSnapshot = await ref.get();
+    final photoModel = docSnapshot.data();
+    return photoModel;
+  }
+
+  Future<List<DocumentReference>> setToFireStore(List<PhotoModel> list, Transaction transaction) async {
     final List<DocumentReference> docList = [];
+    final collectionRef = db.collection("photos");
+
     for(var photoModel in list) {
-      final docRef = db
-        .collection("photos")
+      final docRef = collectionRef
         .withConverter(
           fromFirestore: PhotoModel.fromFirestore,
           toFirestore: (PhotoModel photoModel, options) => photoModel.toFirestore(),
         )
         .doc();
       docList.add(docRef);
-      await docRef.set(photoModel).then(
-        (value) => print("DocumentSnapshot successfully set!"),
-        onError: (e) {
-          print("Error setting document $e");
-        }
-      );
+      transaction.set(docRef, photoModel);
     }
     return docList;
   }

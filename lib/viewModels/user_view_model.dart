@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/user_info_model.dart';
@@ -15,8 +16,13 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
     state = model;
   }
 
-  Future<void> getFromFireStore(String userUid) async {
-    final userInfoModel = await repository.getFromFireStore(userUid);
+  Future<void> getOnlyInfoFromFireStore(String userUid) async {
+    final userInfoModel = await repository.getUserInfoFromFireStore(userUid);
+    if (userInfoModel != null) state = userInfoModel;
+  }
+
+  Future<void> getOnlyCardsFromFireStore(String userUid) async {
+    final userInfoModel = await repository.getOnlyCardsFromFireStore(userUid);
     if (userInfoModel != null) state = userInfoModel;
   }
 
@@ -28,7 +34,7 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
     await repository.updateProfileFireStore(state);
   }
 
-  Future<void> updateCardsFireStore() async {
-    await repository.updateCardsFireStore(state);
+  Future<void> updateCardsFireStore(Transaction transaction) async {
+    await repository.updateCardsFireStore(state, transaction);
   }
 }
