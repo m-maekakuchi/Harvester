@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/models/photo_model.dart';
+import 'package:hive_flutter/adapters.dart';
 
 import '../commons/message.dart';
 import '../handlers/card_master_handler.dart';
@@ -13,7 +14,7 @@ import '../repositories/card_master_repository.dart';
 import '../repositories/card_repository.dart';
 import '../repositories/local_storage_repository.dart';
 import '../repositories/photo_repository.dart';
-import '../views/components/message_dialog.dart';
+import '../views/widgets/error_message_dialog.dart';
 import '../views/pages/collections/my_card_add_page.dart';
 import 'auth_view_model.dart';
 import 'image_view_model.dart';
@@ -34,7 +35,8 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
     WidgetRef ref,
     BuildContext context
   ) async {
-    List<String>? cardNumberList = [];
+
+    List<String>? cardNumberList;
     List<PhotoModel> photoModelList = [];
     final uid = ref.watch(authViewModelProvider.notifier).getUid();
 
@@ -49,8 +51,7 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
       // throw Exception("エラー発生");
 
       // Hiveでローカルからマイカードの番号を取得
-      List<String>? cardNumberList = await LocalStorageRepository()
-          .fetchMyCardNumber();
+      cardNumberList = await LocalStorageRepository().fetchMyCardNumber();
       print("***********ローカルのカード情報：$cardNumberList***********");
 
       // ローカルにデータがない場合FireStoreから取得
@@ -59,10 +60,11 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
       print("***********cardNumberList：$cardNumberList***********");
 
       // 追加しようとしているカードが既に登録されていたらダイアログで警告
-      if (cardNumberList != null &&
-          cardNumberList.contains(selectedCardMasterNumber)) {
+      if (cardNumberList != null
+          && cardNumberList.contains(selectedCardMasterNumber)
+      ) {
         state = const AsyncValue.data(false);
-        if (context.mounted) await messageDialog(context, registeredCardErrorMessage);
+        if (context.mounted) await errorMessageDialog(context, registeredCardErrorMessage);
         return;
       }
 

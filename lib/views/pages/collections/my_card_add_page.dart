@@ -8,7 +8,7 @@ import '../../../viewModels/card_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../components/date_picker.dart';
-import '../../components/message_dialog.dart';
+import '../../widgets/done_message_dialog.dart';
 import '../../components/accordion_card_masters.dart';
 import '../../components/pick_and_crop_image_container.dart';
 import '../../components/title_container.dart';
@@ -98,7 +98,7 @@ class MyCardAddPage extends ConsumerWidget {
                     () => context.pop(),
                   );
                   // 登録完了のダイアログを表示
-                  if (context.mounted) await messageDialog(context, registerCompleteMessage);
+                  if (context.mounted) await doneMessageDialog(context);
                 }
             },
           ),
