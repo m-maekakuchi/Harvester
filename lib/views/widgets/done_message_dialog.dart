@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../commons/app_color.dart';
 import '../../commons/message.dart';
 
-Future<void> messageDialog(BuildContext context, String text) {
+Future<void> doneMessageDialog(BuildContext context) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -11,12 +11,12 @@ Future<void> messageDialog(BuildContext context, String text) {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20))
         ),
-          title: Icon(
-            Icons.done_rounded,
-            size: 80,
-            color: textIconColor
-          ),
-          content: Text(registerCompleteMessage, textAlign: TextAlign.center),
+        title: Icon(
+          Icons.done_rounded,
+          size: 80,
+          color: textIconColor
+        ),
+        content: Text(registerCompleteMessage, textAlign: TextAlign.center),
       );
     },
   );
