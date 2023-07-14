@@ -199,6 +199,10 @@ class UserInfoEditPage extends ConsumerWidget {
                     LocalStorageRepository().putUserInfo(userInfoModel),
                   ]);
 
+                  Future.delayed(   // 1秒後にダイアログを閉じる
+                    const Duration(seconds: 1),
+                    () => context.pop(),
+                  );
                   // 登録完了のダイアログを表示
                   if (context.mounted) await messageDialog(context, registerCompleteMessage);
 

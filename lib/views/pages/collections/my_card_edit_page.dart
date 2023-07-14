@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 
 import '../../../handlers/padding_handler.dart';
+import '../../components/date_picker.dart';
 import '../../widgets/bookmark_button.dart';
 import '../../components/title_container.dart';
 import '../../components/user_select_item_container.dart';
@@ -32,7 +33,7 @@ class MyCardEditPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final cardIndex = ref.watch(cardProvider);
-    final date = ref.watch(dateProvider);
+    final selectedDay = ref.watch(dateProvider);
 
     // ドラムロール(カード選択)
     void showDialog(Widget child) {
@@ -52,33 +53,6 @@ class MyCardEditPage extends ConsumerWidget {
               ),
             );
           }
-      );
-    }
-
-    // 日付のPickerを表示
-    Future<DateTime?> showDate(date) {
-      return showDatePicker(
-        context: context,
-        initialDate: date,
-        firstDate: DateTime(2000),
-        lastDate: DateTime.now(),
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.light(
-                primary: themeColor, // ヘッダー背景色
-                onPrimary: textIconColor, // ヘッダーテキストカラー
-                onSurface: textIconColor, // カレンダーのテキストカラー
-              ),
-              textButtonTheme: const TextButtonThemeData(
-                style: ButtonStyle(
-                  foregroundColor: MaterialStatePropertyAll(textIconColor), // ボタンの色
-                ),
-              ),
-            ),
-            child: child!,
-          );
-        },
       );
     }
 
@@ -143,9 +117,9 @@ class MyCardEditPage extends ConsumerWidget {
                   const TitleContainer(titleStr: '収集日'),
                   // 収集日の選択欄
                   UserSelectItemContainer(
-                    text: '${date.year}/${date.month}/${date.day}',
+                    text: '${selectedDay.year}/${selectedDay.month}/${selectedDay.day}',
                     onPressed: () async {
-                      final selectedDate = await showDate(date);
+                      final selectedDate = await DatePicker(context: context).showDate(selectedDay);
                       // 日付が選択された場合
                       if (selectedDate != null) {
                         final notifier = ref.read(dateProvider.notifier);

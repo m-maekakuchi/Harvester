@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-// 文字とアイコンの色
+//  文字とアイコンの色
 const textIconColor = Color.fromRGBO(95, 99, 104, 1);
-// テーマカラー
-const themeColor = Color.fromRGBO(205, 235, 195, 1);
-// Indicatorの最初の色
+//  Indicatorの最初の色
 const indicatorBeginColor = Color.fromRGBO(172, 221, 156, 1);
 //　Indicatorの最後の色
 const indicatorEndColor = Color.fromRGBO(65, 129, 44, 1.0);
 //  背景色
 const scaffoldBackgroundColor = Color.fromRGBO(248, 251, 242, 1);
-//  テーマカラーの選択肢
+//  ダイアログを表示したときの背景色
+const modalBarrierColor = Colors.black54;
+// テーマカラーの選択肢
 const themeColorChoice = [
   Color.fromRGBO(250, 180, 195, 1),
   Color.fromRGBO(250, 205, 180, 1),
@@ -25,3 +25,5 @@ const themeColorChoice = [
   Color.fromRGBO(200, 180, 215, 1),
   Color.fromRGBO(225, 175, 215, 1),
 ];
+//  デフォルトのテーマカラー
+final themeColor = themeColorChoice[5];

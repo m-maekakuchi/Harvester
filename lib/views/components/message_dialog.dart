@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+
+import '../../commons/app_color.dart';
+import '../../commons/message.dart';
 
 Future<void> messageDialog(BuildContext context, String text) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        shape: const RoundedRectangleBorder(
+      return const AlertDialog(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20))
         ),
-        content: Text(text),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: const Text(
-              'OK',
-              style: TextStyle(fontSize: 16),
-            ),
-            onPressed: () {
-              context.pop();
-            },
+          title: Icon(
+            Icons.done_rounded,
+            size: 80,
+            color: textIconColor
           ),
-        ],
-        actionsAlignment: MainAxisAlignment.center
+          content: Text(registerCompleteMessage, textAlign: TextAlign.center),
       );
     },
   );

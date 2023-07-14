@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../handlers/padding_handler.dart';
 
-void whiteShowModalBottomSheet({
+void showWhiteModalBottomSheet({
   required BuildContext context,
-  required Widget child,
+  required Widget widget,
 }) {
   showModalBottomSheet<void>(
     backgroundColor: Colors.transparent, // ModalBottomSheetを角丸にするための設定
@@ -17,7 +17,7 @@ void whiteShowModalBottomSheet({
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         height: getH(context, 90),
-        child: child,
+        child: widget,
       );
     },
   );
