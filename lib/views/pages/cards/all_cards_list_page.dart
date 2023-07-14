@@ -57,17 +57,10 @@ class AllCardsListPage extends ConsumerWidget {
             fontSize: 16,
             onPressed: () {
               // 都道府県の選択のためのModalBottomSheetを出す
-              whiteShowModalBottomSheet(
+              showWhiteModalBottomSheet(
                 context: context,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20))
-                  ),
-                  height: getH(context, 90),
-                  child: AccordionPrefectures(
-                    provider: prefectureProvider,
-                  ),
+                widget: AccordionPrefectures(
+                  provider: prefectureProvider,
                 )
               );
             },

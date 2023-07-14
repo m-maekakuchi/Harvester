@@ -58,9 +58,9 @@ class MyApp extends ConsumerWidget {
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         textTheme: const TextTheme(bodyMedium: TextStyle(color: textIconColor)),
         // primaryColorDark: Colors.black,
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           centerTitle: true,
-          iconTheme: IconThemeData(
+          iconTheme: const IconThemeData(
             color: textIconColor,
             size: 30,
           ),
