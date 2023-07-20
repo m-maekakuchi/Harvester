@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../commons/image_num_per_card.dart';
+import '../../../commons/app_const_num.dart';
 import '../../../commons/message.dart';
 import '../../../viewModels/card_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
@@ -107,30 +107,6 @@ class MyCardAddPage extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-          title: SizedBox(
-            width: getW(context, 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-              children: [
-                Image.asset(
-                  width: getW(context, 10),
-                  height: getH(context, 10),
-                  'images/AppBar_logo.png'
-                ),
-                const Text("My Card 追加"),
-              ]
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.push('/settings/setting_page');
-              },
-              icon: const Icon(Icons.settings_rounded),
-            ),
-          ],
-        ),
       body: cardAddState.when(
         data: (value) {
           return bodyWidget;
