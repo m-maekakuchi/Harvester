@@ -31,6 +31,7 @@ class MyCardAddPage extends ConsumerWidget {
     final selectedCard = ref.watch(cardProvider);
     final selectedDay = ref.watch(dateProvider);
     final selectedImageList = ref.watch(imageListProvider);
+    final bookmark = ref.watch(bookmarkProvider);
 
     AsyncValue<bool> cardAddState = ref.watch(cardViewModelProvider);
 
@@ -85,7 +86,11 @@ class MyCardAddPage extends ConsumerWidget {
             onPressed: selectedImageList.isEmpty || selectedCard == noSelectOptionMessage
               ? null
               : () async {
-                await ref.watch(cardViewModelProvider.notifier).cardAdd(selectedCard, selectedImageList, selectedDay, ref, context);
+                // var box = await Hive.openBox('cardBox');
+                // box.delete("myCardNumber");
+                // return;
+
+                await ref.watch(cardViewModelProvider.notifier).cardAdd(selectedCard, selectedImageList, selectedDay, bookmark, ref, context);
                 if (ref.read(cardViewModelProvider).value != false) {  // 最後まで登録処理ができた場合
                   // プロバイダをリセット
                   await ref.read(imageListProvider.notifier).init();

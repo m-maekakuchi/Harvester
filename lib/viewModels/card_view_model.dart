@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/models/photo_model.dart';
-import 'package:hive_flutter/adapters.dart';
 
 import '../commons/message.dart';
 import '../handlers/card_master_handler.dart';
@@ -32,18 +31,20 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
     String selectedCard,
     List<ImageModel> selectedImageList,
     DateTime selectedDay,
+    bool favorite,
     WidgetRef ref,
     BuildContext context
   ) async {
 
-    List<String>? cardNumberList;
+    List<String>? cardNumberList = [];  // ローカルに登録されているカード番号を格納する配列
+    List<Map<String, dynamic>>? localMyCardInfoList;  // ローカルに登録されているマイカード情報を格納する配列
     List<PhotoModel> photoModelList = [];
     final uid = ref.watch(authViewModelProvider.notifier).getUid();
 
     // 選択されたカード番号取得
     RegExp regex = RegExp(r'\s');
     final selectedCardMasterNumber = selectedCard.split(regex)[0];
-
+    //
     /// 例外処理は後でまとめて処理できるようにしたい
     try {
       state = const AsyncValue.loading();
@@ -51,16 +52,22 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
       // throw Exception("エラー発生");
 
       // Hiveでローカルからマイカードの番号を取得
-      cardNumberList = await LocalStorageRepository().fetchMyCardNumber();
-      print("***********ローカルのカード情報：$cardNumberList***********");
+      localMyCardInfoList = await LocalStorageRepository().fetchMyCardNumber();
+      print("***********ローカルのカード情報：$localMyCardInfoList***********");
 
       // ローカルにデータがない場合FireStoreから取得
       // cardsフィールドがない又はcardsフィールドの配列が空の場合、戻り値はnull
-      cardNumberList ??= await getCardMasterNumberList(uid, ref);
+      localMyCardInfoList ??= await getCardMasterNumberList(uid, ref);
+
+      if (localMyCardInfoList != null) {
+        for (Map<String, dynamic> localMyCardInfo in localMyCardInfoList) {
+          if (localMyCardInfo.isNotEmpty) cardNumberList.add(localMyCardInfo['id']);
+        }
+      }
       print("***********cardNumberList：$cardNumberList***********");
 
       // 追加しようとしているカードが既に登録されていたらダイアログで警告
-      if (cardNumberList != null
+      if (localMyCardInfoList != null
           && cardNumberList.contains(selectedCardMasterNumber)
       ) {
         state = const AsyncValue.data(false);
@@ -119,13 +126,17 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
         print("***********MyCard successfully updated!***********");
         // ローカルのマイカード情報にカードを追加
         // cardNumberListがnullだったら初めての登録
-        if (cardNumberList == null) {
-          print("***********はじめてのカード追加です cardNumberList：$cardNumberList***********");
-          await LocalStorageRepository().putMyCardNumber([selectedCardMasterNumber]);
+        final localMyCardInfo = {
+          "id": selectedCardMasterNumber,
+          "favorite": favorite
+        };
+        if (localMyCardInfoList == null) {
+          print("***********はじめてのカード追加です 次のデータをローカルに追加 localMyCardInfoList：$localMyCardInfo***********");
+          await LocalStorageRepository().putMyCardNumber([localMyCardInfo]);
         } else {
-          cardNumberList.add(selectedCardMasterNumber);
-          print("***********カード追加2回目以降です cardNumberList：$cardNumberList***********");
-          await LocalStorageRepository().putMyCardNumber(cardNumberList);
+          localMyCardInfoList.add(localMyCardInfo);
+          print("***********カード追加2回目以降です 次のリストをローカルに追加 localMyCardInfoList：$localMyCardInfoList***********");
+          await LocalStorageRepository().putMyCardNumber(localMyCardInfoList);
         }
         state = const AsyncValue.data(true);
       },
