@@ -57,6 +57,7 @@ dependencies:
   cloud_functions: ^4.3.3
   hive_flutter: ^1.1.0
   firebase_crashlytics: ^3.3.3
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -104,6 +105,7 @@ flutter:
     - images/Harvester_logo.png
     - images/Harvester_only_icon.png
     - images/manhole.png
+    - images/GrayBackImg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

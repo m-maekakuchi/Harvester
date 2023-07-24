@@ -10,7 +10,7 @@ const myCardAppBarTabWidth = 25;
 const allCardAppBarTabWidth = 50;
 
 // カード一覧画面のローディング数
-const loadingNum = 300;
+const loadingNum = 30;
 
 // マスターカードの枚数
 final cardMasterNum = getListNum();

@@ -17,7 +17,7 @@ Future<List<Map<String, dynamic>>?> getCardMasterNumberList(String uid, WidgetRe
     cardNumberList = [];
     for (DocumentReference<Map<String, dynamic>> docRef in cardDocRefList) {
       // カードのドキュメント参照からカードモデルを取得
-      final cardModel = await CardRepository().getFromFireStore(docRef);
+      final cardModel = await CardRepository().getFromFireStoreUsingDocRef(docRef);
       // cardsコレクションに、ドキュメント参照のドキュメントがちゃんと存在する場合
       if (cardModel != null) {
         final cardMasterDocRef = cardModel.cardMaster as DocumentReference<Map<String, dynamic>>;
