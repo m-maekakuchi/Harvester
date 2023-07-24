@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:harvester/viewModels/scroll_my_card_contain_view_model.dart';
 
 import '../../../commons/app_const_num.dart';
 import '../../../viewModels/scroll_card_master_view_model.dart';
+import '../../../viewModels/scroll_favorite_view_model.dart';
 import '../../../viewModels/scroll_image_view_model.dart';
+import '../../../viewModels/scroll_my_card_contain_view_model.dart';
 import '../../components/card_short_info_container.dart';
 import '../../components/accordion_prefectures.dart';
 import '../../components/white_show_modal_bottom_sheet.dart';
@@ -20,9 +21,6 @@ class AllCardsListPage extends ConsumerWidget {
     final selectedPrefecture = ref.watch(prefectureProvider);
 
     Future<void> getContents() async {
-
-      await Future.delayed(const Duration(seconds: 1));
-
       await ref.read(scrollCardMasterViewModelProvider.notifier).add();
 
       final cardMasterModelList = ref.read(scrollCardMasterViewModelProvider);
@@ -30,6 +28,8 @@ class AllCardsListPage extends ConsumerWidget {
 
       final myCardContainList = ref.read(scrollMyCardContainViewModelProvider);
       await ref.read(scrollImageUrlListProvider.notifier).init(cardMasterModelList, myCardContainList);
+
+      await ref.read(scrollFavoriteViewModelProvider.notifier).init(cardMasterModelList);
     }
 
     // 「全国」タブのbody
@@ -118,10 +118,10 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
         // 全てのマスターカードデータを取得していないとき
         // 現在のスクロール位置が、最大スクロールの0.95の位置を超えた、かつ読み込み中でない時
         if (
-        cardMasterList.length != cardMasterNum
-            && _scrollController.position.pixels >=
+          cardMasterList.length != cardMasterNum
+          && _scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent * 0.95
-            && !_isLoading
+          && !_isLoading
         ) {
           _isLoading = true;
           await widget.getContents();
@@ -145,10 +145,12 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
 
     final cardMasterList = ref.watch(scrollCardMasterViewModelProvider);
     final imgUrlList = ref.watch(scrollImageUrlListProvider);
+    final favoriteList = ref.watch(scrollFavoriteViewModelProvider);
 
     return ListView.separated(
       controller: _scrollController,
-      itemCount: imgUrlList.length + 1,
+      // 一番最後にデータ取得が終わるfavoriteListの個数に設定
+      itemCount: favoriteList.length + 1,
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(
           height: 2,
@@ -178,6 +180,7 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
                   city: cardMasterList[index].city,
                   version: cardMasterList[index].version,
                   serialNumber: cardMasterList[index].serialNumber,
+                  favorite: favoriteList[index],
                 ),
               ],
             );

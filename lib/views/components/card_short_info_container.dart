@@ -19,6 +19,8 @@ class CardShortInfoContainer extends ConsumerWidget {
   final int version;
   /// カード番号
   final String serialNumber;
+  /// お気に入り登録
+  final bool? favorite;
 
   const CardShortInfoContainer({
     Key? key,
@@ -27,21 +29,23 @@ class CardShortInfoContainer extends ConsumerWidget {
     required this.city,
     required this.version,
     required this.serialNumber,
+    required this.favorite,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+    final sizedBoxFixedHeight = SizedBox(height: getH(context, 0.2));
 
     return GestureDetector(
       onTap: () {
         context.push('/cards/card_detail_page');
       },
       child: Container(
-        height: getH(context, 14),
+        height: getH(context, 16),
         width: getW(context, 95),
         clipBehavior: Clip.antiAlias,
-        // Containerから画像がはみ出ないように設定
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.centerLeft,  // Containerから画像がはみ出ないように設定
         decoration: BoxDecoration(
           border: Border.all(width: 1, color: textIconColor),
           borderRadius: BorderRadius.circular(20),
@@ -57,68 +61,62 @@ class CardShortInfoContainer extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            /// DBからの取得するので後で変更
-            if (imageUrl != null) ... {
-              CachedNetworkImage(
+            (imageUrl != null)
+              ? CachedNetworkImage(
                 imageUrl: imageUrl!,
                 placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => const Center(child: Icon(Icons.error_rounded)),
-              ),
-            } else ... {
-              Image.asset(
+              )
+              : Image.asset(
                 'images/GrayBackImg.png'
               ),
-            },
             // カード情報
             Expanded(
               child: Stack(
                 children: [
                   Center(
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // favoriteがnullでなければその値が使われ、nullであれば??隣の値（false）が使われる
-                          // MyCardsでお気に入り登録していたらアイコンが表示される
-                          // Container(
-                          //   child: (favorite ?? false)
-                          //     ? const Icon(Icons.bookmark_outlined) // favoriteがtrueの場合
-                          //     : const SizedBox(), // favoriteがfalseの場合
-                          // ),
-                          Text(prefecture,
-                            style: const TextStyle(fontSize: 14),),
-                          SizedBox(height: getH(context, 0.2),),
-                          FittedBox(
-                            fit: BoxFit.fitHeight,
-                            child: Text(
-                              city,
-                              style: TextStyle(fontSize: 17),
-                            ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        sizedBoxFixedHeight,
+                        Text(
+                          prefecture,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        sizedBoxFixedHeight,
+                        FittedBox(
+                          fit: BoxFit.fitHeight,
+                          child: Text(
+                            city,
+                            style: const TextStyle(fontSize: 18),
                           ),
-                          // Text(city, style: const TextStyle(fontSize: 17),),
-                          SizedBox(height: getH(context, 0.2),),
-                          Text("第${version}弾",
-                            style: const TextStyle(fontSize: 14),),
-                          SizedBox(height: getH(context, 0.5),),
-                          Text(serialNumber,
-                            style: const TextStyle(fontSize: 14),),
-                        ]
+                        ),
+                        sizedBoxFixedHeight,
+                        Text(
+                          "第$version弾",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        sizedBoxFixedHeight,
+                        Text(
+                          serialNumber,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        SizedBox(height: getH(context, 0.2),),
+                      ]
                     ),
                   ),
-
-                  /// ----お気に入り登録してたら表示したい----
                   Positioned( // お気に入りアイコンを親の右下に配置
                     bottom: getW(context, 2),
                     right: getW(context, 2),
-                    child: Icon(
-                      Icons.bookmark_outlined,
-                      size: 25,
-                      color: Colors.yellow[700],
-                    ),
+                    child: (favorite ?? false)  // favoriteがtrueの場合
+                      ? Icon(
+                          Icons.bookmark_outlined,
+                          size: 25,
+                          color: Colors.yellow[700]
+                        )
+                      : const SizedBox(), // favoriteがfalseの場合
                   ),
-
-                  /// ------------------------------------
                 ],
-                // ),
               ),
             ),
           ],
@@ -126,7 +124,6 @@ class CardShortInfoContainer extends ConsumerWidget {
       )
     );
   }
-
 
 }
 
