@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../commons/app_color.dart';
-import '../../../commons/my_card_list_tab.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../components/card_short_info_container.dart';
-import '../../components/colored_tab_bar.dart';
 import '../../components/accordion_prefectures.dart';
 import '../../components/white_show_modal_bottom_sheet.dart';
 import '../../widgets/white_button.dart';
@@ -211,56 +206,15 @@ class MyCardsListPage extends ConsumerWidget {
       ),
     );
 
-    return DefaultTabController(
-      length: myCardListTab.length,
-      child: Builder(builder: (context) {
-        final TabController tabController = DefaultTabController.of(context);
-        // タブを切り替えたときに呼び出される
-        tabController.addListener(() {});
-        return Scaffold(
-          appBar: AppBar(
-            title: SizedBox(
-              width: getW(context, 60),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-                children: [
-                  Image.asset(
-                    width: getW(context, 10),
-                    height: getH(context, 10),
-                    'images/AppBar_logo.png'
-                  ),
-                  const Text("My Manhole Cards"),
-                ]
-              ),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  context.push('/settings/setting_page');
-                },
-                icon: const Icon(Icons.settings_rounded),
-              ),
-            ],
-            bottom: const ColoredTabBar(
-              tabBar: TabBar(
-                indicatorColor: textIconColor,
-                labelColor: textIconColor,
-                labelStyle: TextStyle(fontSize: 13),
-                tabs: myCardListTab,
-              ),
-              color: scaffoldBackgroundColor,
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              body0,
-              body1,
-              body2,
-              body3,
-            ]
-          ),
-        );
-      }),
+    return Scaffold(
+      body: TabBarView(
+        children: [
+          body0,
+          body1,
+          body2,
+          body3,
+        ]
+      ),
     );
   }
 }

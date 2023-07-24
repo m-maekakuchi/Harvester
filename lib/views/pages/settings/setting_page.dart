@@ -165,7 +165,10 @@ class SettingPage extends ConsumerWidget {
               ],
               [
                 'ログアウト',
-                () {},
+                () {
+                  // サインアウトするときのコード
+                  ref.watch(authViewModelProvider.notifier).signOut();
+                },
               ],
               [
                 '退会する',

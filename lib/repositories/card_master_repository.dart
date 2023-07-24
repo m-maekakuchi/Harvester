@@ -1,20 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../commons/app_const_num.dart';
 import '../models/card_master_model.dart';
 
 class CardMasterRepository {
+
+  DocumentSnapshot? _lastDocument;
 
   final ref = FirebaseFirestore.instance.collection("card_master").withConverter(
     fromFirestore: CardMasterModel.fromFirestore,
     toFirestore: (CardMasterModel city, _) => city.toFirestore(),
   );
 
-  Future<List<CardMasterModel>> getAllCardMasters() async {
+  // 取得したい数分だけマスターカードコレクションからドキュメントを取得
+  Future<List<CardMasterModel>> getLimitCountCardMasters() async {
     final List<CardMasterModel> cardMasterList = [];
-    final querySnapshot = await ref.get();
+    var query = ref.limit(loadingNum);
+
+    // 前回取得したドキュメントの次のドキュメントから取得
+    if (_lastDocument != null) {
+      query = query.startAfterDocument(_lastDocument!);
+    }
+
+    final querySnapshot = await query.get();
     for (var docSnapshot in querySnapshot.docs) {
       cardMasterList.add(docSnapshot.data());
     }
+    _lastDocument = querySnapshot.docs.last;
+
     return cardMasterList;
   }
 

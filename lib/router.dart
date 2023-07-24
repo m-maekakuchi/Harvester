@@ -5,6 +5,7 @@ import 'package:harvester/viewModels/auth_view_model.dart';
 import 'package:harvester/views/pages/bottom_bar.dart';
 import 'package:harvester/views/pages/cards/card_detail_page.dart';
 import 'package:harvester/views/pages/register/tel_sms_code_page.dart';
+import 'package:harvester/views/pages/test_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/all_cards_list_page.dart';
 import 'package:harvester/views/pages/collections/my_card_edit_page.dart';
@@ -17,7 +18,6 @@ import 'package:harvester/views/pages/settings/user_info_edit_page.dart';
 import 'package:harvester/views/pages/register/tel_identification_page.dart';
 import 'package:harvester/views/pages/register/user_info_register_page.dart';
 import 'commons/redirect_path.dart';
-import 'views/pages/test_page.dart';
 
 
 Provider<GoRouter> router() {
@@ -29,9 +29,6 @@ Provider<GoRouter> router() {
         // authControllerProviderに変更があった場合に動くイメージ
         final auth = ref.watch(authViewModelProvider);
         bool isSignedIn = auth.value != null;
-
-        // サインアウトするときのコード
-        // ref.watch(authViewModelProvider.notifier).signOut();
 
         // AuthControllerメソッド呼ぶときnotifierつける
         final user = ref.watch(authViewModelProvider.notifier).getCurrentUser();
@@ -80,7 +77,7 @@ Provider<GoRouter> router() {
         GoRoute(
           path: '/test_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const TestPage();
+            return TestPage();
           },
         ),
         /// ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
@@ -192,30 +191,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: SizedBox(
-          width: getW(context, 60),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-            children: [
-              Image.asset(
-                width: getW(context, 10),
-                height: getH(context, 10),
-                'images/AppBar_logo.png'
-              ),
-              const Text("My Manhole Cards"),
-            ]
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/settings/setting_page');
-            },
-            icon: const Icon(Icons.settings_rounded),
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
