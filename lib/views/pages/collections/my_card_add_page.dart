@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../commons/app_const_num.dart';
+import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
 import '../../../viewModels/card_view_model.dart';
 import '../../../viewModels/image_view_model.dart';

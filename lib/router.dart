@@ -18,13 +18,14 @@ import 'package:harvester/views/pages/settings/user_info_edit_page.dart';
 import 'package:harvester/views/pages/register/tel_identification_page.dart';
 import 'package:harvester/views/pages/register/user_info_register_page.dart';
 import 'commons/redirect_path.dart';
+import 'views/pages/test_scroll_page.dart';
 
 
 Provider<GoRouter> router() {
   return Provider((ref) =>
     GoRouter(
       redirect: (context, state) async {
-        // return '/test_page';
+        // return '/test_scroll_page';
 
         // authControllerProviderに変更があった場合に動くイメージ
         final auth = ref.watch(authViewModelProvider);
@@ -77,10 +78,16 @@ Provider<GoRouter> router() {
         GoRoute(
           path: '/test_page',
           builder: (BuildContext context, GoRouterState state) {
-            return TestPage();
+            return const TestPage();
           },
         ),
-        /// ＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+        GoRoute(
+          path: '/test_scroll_page',
+          builder: (BuildContext context, GoRouterState state) {
+            return const TestScrollPage();
+          },
+        ),
+        /// ＊＊＊＊＊＊＊最後に消す＊＊＊＊＊＊＊
         GoRoute(
           path: '/register/tel_identification_page',
           builder: (BuildContext context, GoRouterState state) {

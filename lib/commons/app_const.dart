@@ -9,6 +9,26 @@ const myCardAppBarTabWidth = 25;
 // 全てのカード一覧画面　AppBarのbottomのTabの横幅
 const allCardAppBarTabWidth = 50;
 
+const pageTitleList = [
+  "My Manhole Cards",
+  "My Manhole Cards",
+  "All Manhole Cards",
+  "My Card 追加",
+  "Photo"
+];
+
+const allCardTabTitleList = [
+  '全国',
+  '都道府県'
+];
+
+const myCardTabTitleList = [
+  '日付',
+  'お気に入り',
+  '全国',
+  '都道府県'
+];
+
 // カード一覧画面のローディング数
 const loadingNum = 30;
 

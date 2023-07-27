@@ -3,22 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../commons/app_color.dart';
-import '../../commons/app_const_num.dart';
+import '../../commons/app_const.dart';
 import '../../commons/bottom_navigation_bar_item.dart';
 import '../../handlers/fetch_my_card_handler.dart';
 import '../../handlers/padding_handler.dart';
 import '../../provider/my_card_info_list_provider.dart';
 import '../../provider/my_card_number_list_provider.dart';
+import '../../provider/providers.dart';
 import '../components/colored_tab_bar.dart';
 import 'cards/all_cards_list_page.dart';
 import 'collections/my_card_add_page.dart';
 import 'collections/my_cards_list_page.dart';
 import 'home_page.dart';
 import 'photos/photos_list_page.dart';
-
-final indexProvider = StateProvider((ref) {
-  return 0;
-});
 
 // 画面
 const pages = [
@@ -29,14 +26,6 @@ const pages = [
   PhotosListPage(),
 ];
 
-const title = [
-  "My Manhole Cards",
-  "My Manhole Cards",
-  "All Manhole Cards",
-  "My Card 追加",
-  "Photo"
-];
-
 SizedBox tabBox(BuildContext context, int width, String tabName) {
   return SizedBox(
     width: getW(context, width.toDouble()),
@@ -44,20 +33,16 @@ SizedBox tabBox(BuildContext context, int width, String tabName) {
   );
 }
 
-List<SizedBox> myCardTabList(BuildContext context) {
-  return [
-    tabBox(context, myCardAppBarTabWidth, '日付'),
-    tabBox(context, myCardAppBarTabWidth, 'お気に入り'),
-    tabBox(context, myCardAppBarTabWidth, '全国'),
-    tabBox(context, myCardAppBarTabWidth, '都道府県'),
-  ];
+List<SizedBox> allCardTabList(BuildContext context) {
+  return List.generate(allCardTabTitleList.length, (index) =>
+      tabBox(context, allCardAppBarTabWidth, allCardTabTitleList[index])
+  );
 }
 
-List<SizedBox> allCardTabList(BuildContext context) {
-  return [
-    tabBox(context, allCardAppBarTabWidth, '全国'),
-    tabBox(context, allCardAppBarTabWidth, '都道府県'),
-  ];
+List<SizedBox> myCardTabList(BuildContext context) {
+  return List.generate(myCardTabTitleList.length, (index) =>
+      tabBox(context, myCardAppBarTabWidth, myCardTabTitleList[index])
+  );
 }
 
 List<int> appBarBottomLength(BuildContext context) {
@@ -123,7 +108,7 @@ class BottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final index = ref.watch(indexProvider);
+    final index = ref.watch(bottomBarIndexProvider);
 
     return DefaultTabController(
       length: appBarBottomLength(context)[index],
@@ -133,7 +118,7 @@ class BottomBar extends ConsumerWidget {
         tabController.addListener(() {});
         return Scaffold(
           appBar: AppBar(
-            title: titleBox(title[index], context),
+            title: titleBox(pageTitleList[index], context),
             actions: [
               IconButton(
                 onPressed: () {
@@ -170,7 +155,7 @@ class BottomBar extends ConsumerWidget {
                   ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
                 }
               }
-              ref.read(indexProvider.notifier).state = index;
+              ref.read(bottomBarIndexProvider.notifier).state = index;
             },
           )
         );

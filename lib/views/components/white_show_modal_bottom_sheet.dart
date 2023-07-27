@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../handlers/padding_handler.dart';
 
-void showWhiteModalBottomSheet({
+Future<void> showWhiteModalBottomSheet({
   required BuildContext context,
   required Widget widget,
-}) {
-  showModalBottomSheet<void>(
+}) async {
+  await showModalBottomSheet (
     backgroundColor: Colors.transparent, // ModalBottomSheetを角丸にするための設定
     isScrollControlled: true, // ModalBottomSheetの画面を半分以上にできる
     context: context,
