@@ -44,7 +44,7 @@ class ImageRepository {
   }
 
   // Storageから画像のURLを取得するメソッド
-  Future<String?> downloadOneImageFromFireStore(String dir, String img, Ref ref) async{
+  Future<String?> downloadOneImageFromFireStore(String dir, String img, WidgetRef ref) async{
     try {
       String uid = ref.read(authViewModelProvider.notifier).getUid();
       String fileFullPath = "$uid/$dir/$img";

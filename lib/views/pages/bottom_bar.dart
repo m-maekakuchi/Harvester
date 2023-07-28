@@ -3,23 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../commons/app_color.dart';
-import '../../commons/app_const_num.dart';
+import '../../commons/app_const.dart';
 import '../../commons/bottom_navigation_bar_item.dart';
-import '../../handlers/card_master_handler.dart';
+import '../../handlers/fetch_my_card_handler.dart';
 import '../../handlers/padding_handler.dart';
-import '../../provider/my_card_serial_number_List_provider.dart';
-import '../../repositories/local_storage_repository.dart';
-import '../../viewModels/auth_view_model.dart';
+import '../../provider/providers.dart';
 import '../components/colored_tab_bar.dart';
 import 'cards/all_cards_list_page.dart';
 import 'collections/my_card_add_page.dart';
 import 'collections/my_cards_list_page.dart';
 import 'home_page.dart';
 import 'photos/photos_list_page.dart';
-
-final indexProvider = StateProvider((ref) {
-  return 0;
-});
 
 // 画面
 const pages = [
@@ -30,14 +24,6 @@ const pages = [
   PhotosListPage(),
 ];
 
-const title = [
-  "My Manhole Cards",
-  "My Manhole Cards",
-  "All Manhole Cards",
-  "My Card 追加",
-  "Photo"
-];
-
 SizedBox tabBox(BuildContext context, int width, String tabName) {
   return SizedBox(
     width: getW(context, width.toDouble()),
@@ -45,20 +31,16 @@ SizedBox tabBox(BuildContext context, int width, String tabName) {
   );
 }
 
-List<SizedBox> myCardTabList(BuildContext context) {
-  return [
-    tabBox(context, myCardAppBarTabWidth, '日付'),
-    tabBox(context, myCardAppBarTabWidth, 'お気に入り'),
-    tabBox(context, myCardAppBarTabWidth, '全国'),
-    tabBox(context, myCardAppBarTabWidth, '都道府県'),
-  ];
+List<SizedBox> allCardTabList(BuildContext context) {
+  return List.generate(allCardTabTitleList.length, (index) =>
+      tabBox(context, allCardAppBarTabWidth, allCardTabTitleList[index])
+  );
 }
 
-List<SizedBox> allCardTabList(BuildContext context) {
-  return [
-    tabBox(context, allCardAppBarTabWidth, '全国'),
-    tabBox(context, allCardAppBarTabWidth, '都道府県'),
-  ];
+List<SizedBox> myCardTabList(BuildContext context) {
+  return List.generate(myCardTabTitleList.length, (index) =>
+      tabBox(context, myCardAppBarTabWidth, myCardTabTitleList[index])
+  );
 }
 
 List<int> appBarBottomLength(BuildContext context) {
@@ -124,7 +106,7 @@ class BottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final index = ref.watch(indexProvider);
+    final index = ref.watch(bottomBarIndexProvider);
 
     return DefaultTabController(
       length: appBarBottomLength(context)[index],
@@ -134,7 +116,7 @@ class BottomBar extends ConsumerWidget {
         tabController.addListener(() {});
         return Scaffold(
           appBar: AppBar(
-            title: titleBox(title[index], context),
+            title: titleBox(pageTitleList[index], context),
             actions: [
               IconButton(
                 onPressed: () {
@@ -154,30 +136,26 @@ class BottomBar extends ConsumerWidget {
             unselectedItemColor: textIconColor, // 選ばれていないアイテムの色
             currentIndex: index,
             onTap: (index) async {
-              // 全カードが押されたとき
+              // 全カードボタンが押された場合
               if (index == 2) {
-                /// ここもインジケーターにしないと、ローカルになくてDBから取得しているときフリーズしたように感じる
-                /// /////////////////////カード追加と同じ処理しているので共通化する//////////
-                // ローカルに登録されているマイカードの番号の配列を生成
-                List<String> myCardSerialNumberList = [];
-                List<Map<String, dynamic>>? localMyCardInfoList = await LocalStorageRepository().fetchMyCardNumber();
-                print("ローカルのマイカード情報：${localMyCardInfoList.toString()}");
-                // ローカルから取得できない場合、FireStoreから取得
-                final uid = ref.watch(authViewModelProvider.notifier).getUid();
-                localMyCardInfoList ??= await getCardMasterNumberList(uid, ref);
-                print("上がnullの場合DBから取得したあとのマイカード情報：${localMyCardInfoList.toString()}");
+                List<Map<String, dynamic>>? localMyCardInfoList = await fetchMyCardInfoFromLocalOrDB(ref);
 
+                // マイカード情報がローカルかFireStoreから取得できたら、マイカード情報をプロバイダで管理
                 if (localMyCardInfoList != null) {
-                  for (Map<String, dynamic> localMyCardInfo in localMyCardInfoList) {
-                    if(localMyCardInfo.isNotEmpty) myCardSerialNumberList.add(localMyCardInfo['id']);
-                  }
+                  ref.read(myCardInfoListProvider.notifier).state = localMyCardInfoList;
                 }
-                /// ///////////////////////////////////////////////////////////////////
-                print(myCardSerialNumberList);
-                ref.read(myCardSerialNumberListProvider.notifier).state = myCardSerialNumberList;
+                // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
+                final myCardNumberList = [];
+                if (localMyCardInfoList != null) {
+                  for(Map myCardInfo in localMyCardInfoList) {
+                    myCardNumberList.add(myCardInfo["id"]);
+                  }
+                  ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
+                }
+                // リストの最後のドキュメントを初期化（ページを再表示したとき、これがないとリスト表示がリセットされない）
+                ref.read(allCardsListLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);
               }
-
-              ref.read(indexProvider.notifier).state = index;
+              ref.read(bottomBarIndexProvider.notifier).state = index;
             },
           )
         );

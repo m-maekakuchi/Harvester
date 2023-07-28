@@ -5,7 +5,7 @@ import '../repositories/card_master_repository.dart';
 import '../repositories/card_repository.dart';
 import '../viewModels/user_view_model.dart';
 
-// ユーザーが登録済みのマイカードの番号リストを取得
+// ユーザーが登録済みのマイカード情報のリストを取得
 Future<List<Map<String, dynamic>>?> getCardMasterNumberList(String uid, WidgetRef ref) async{
   List<Map<String, dynamic>>? cardNumberList;
   // ユーザーのカード情報を取得

@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/models/photo_model.dart';
 
 import '../commons/message.dart';
-import '../handlers/card_master_handler.dart';
 import '../handlers/convert_data_type_handler.dart';
+import '../handlers/fetch_my_card_handler.dart';
 import '../models/card_model.dart';
 import '../models/image_model.dart';
 import '../models/user_info_model.dart';
@@ -50,14 +50,7 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
       state = const AsyncValue.loading();
 
       // throw Exception("エラー発生");
-
-      // Hiveでローカルからマイカードの番号を取得
-      localMyCardInfoList = await LocalStorageRepository().fetchMyCardNumber();
-      print("***********ローカルのカード情報：$localMyCardInfoList***********");
-
-      // ローカルにデータがない場合FireStoreから取得
-      // cardsフィールドがない又はcardsフィールドの配列が空の場合、戻り値はnull
-      localMyCardInfoList ??= await getCardMasterNumberList(uid, ref);
+      localMyCardInfoList = await fetchMyCardInfoFromLocalOrDB(ref);
 
       if (localMyCardInfoList != null) {
         for (Map<String, dynamic> localMyCardInfo in localMyCardInfoList) {
@@ -67,8 +60,9 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
       print("***********cardNumberList：$cardNumberList***********");
 
       // 追加しようとしているカードが既に登録されていたらダイアログで警告
-      if (localMyCardInfoList != null
-          && cardNumberList.contains(selectedCardMasterNumber)
+      if (
+        localMyCardInfoList != null
+        && cardNumberList.contains(selectedCardMasterNumber)
       ) {
         state = const AsyncValue.data(false);
         if (context.mounted) await errorMessageDialog(context, registeredCardErrorMessage);
