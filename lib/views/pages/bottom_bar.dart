@@ -7,8 +7,6 @@ import '../../commons/app_const.dart';
 import '../../commons/bottom_navigation_bar_item.dart';
 import '../../handlers/fetch_my_card_handler.dart';
 import '../../handlers/padding_handler.dart';
-import '../../provider/my_card_info_list_provider.dart';
-import '../../provider/my_card_number_list_provider.dart';
 import '../../provider/providers.dart';
 import '../components/colored_tab_bar.dart';
 import 'cards/all_cards_list_page.dart';
@@ -138,7 +136,7 @@ class BottomBar extends ConsumerWidget {
             unselectedItemColor: textIconColor, // 選ばれていないアイテムの色
             currentIndex: index,
             onTap: (index) async {
-              // 全カードボタンが押されたとき、マイカード情報をプロバイダに設定
+              // 全カードボタンが押された場合
               if (index == 2) {
                 List<Map<String, dynamic>>? localMyCardInfoList = await fetchMyCardInfoFromLocalOrDB(ref);
 
@@ -154,6 +152,8 @@ class BottomBar extends ConsumerWidget {
                   }
                   ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
                 }
+                // リストの最後のドキュメントを初期化（ページを再表示したとき、これがないとリスト表示がリセットされない）
+                ref.read(allCardsListLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);
               }
               ref.read(bottomBarIndexProvider.notifier).state = index;
             },
