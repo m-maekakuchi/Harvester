@@ -111,23 +111,21 @@ class MyCardAddPage extends ConsumerWidget {
       ),
     );
 
-    return Scaffold(
-      body: cardAddState.when(
-        data: (value) {
-          return bodyWidget;
-        },
-        error: (err, _) {
-          return Center(child: Text(err.toString()));
-        },
-        loading: () {
-          return Stack(
-            children: [
-              bodyWidget,
-              modalBarrier
-            ]
-          );
-        }
-      )
+    return cardAddState.when(
+      data: (value) {
+        return bodyWidget;
+      },
+      error: (err, _) {
+        return Center(child: Text(err.toString()));
+      },
+      loading: () {
+        return Stack(
+          children: [
+            bodyWidget,
+            modalBarrier
+          ]
+        );
+      }
     );
   }
 
