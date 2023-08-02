@@ -52,6 +52,21 @@ class CardRepository {
     return cardModel;
   }
 
+  // ドキュメント名から収集日のみ取得
+  Future<DateTime?> getCollectDay(String docName) async {
+    final docSnapshot = await db.collection("cards").doc(docName).get();
+    final card = docSnapshot.data();
+
+    DateTime? collectDay;
+    if (card != null) {
+      collectDay = card["collect_day"].toDate();
+    } else {
+      print("No such document.");
+      collectDay = null;
+    }
+    return collectDay;
+  }
+
   Future<DocumentReference> setToFireStore(CardModel cardModel, String docName, Transaction transaction) async {
     final collectionRef = db.collection("cards");
 

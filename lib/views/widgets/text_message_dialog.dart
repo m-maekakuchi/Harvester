@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-Future<void> errorMessageDialog(BuildContext context, String text) {
+Future<void> textMessageDialog(BuildContext context, String text) {
   return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
@@ -9,7 +9,7 @@ Future<void> errorMessageDialog(BuildContext context, String text) {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20))
         ),
-        content: Text(text),
+        content: Text(text, textAlign: TextAlign.center),
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(

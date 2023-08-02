@@ -39,8 +39,8 @@ class CardMasterModel {
       comment: data?['comment'],
       stockLink: data?['stock_link'],
       distributeLocations: List.from(data?['distribute_locations']),
-      distributeAddresses: List.from(data?['location_links']),
-      locationLinks: List.from(data?['distribute_addresses']),
+      distributeAddresses: List.from(data?['distribute_addresses']),
+      locationLinks: List.from(data?['location_links']),
     );
   }
 

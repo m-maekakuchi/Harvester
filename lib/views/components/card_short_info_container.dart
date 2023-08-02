@@ -1,35 +1,37 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:harvester/repositories/card_repository.dart';
+import 'package:harvester/viewModels/auth_view_model.dart';
 
 import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
+import '../../models/card_master_model.dart';
+import '../../models/card_model.dart';
+import '../../repositories/image_repository.dart';
+import '../../repositories/photo_repository.dart';
+import '../pages/cards/card_detail_page.dart';
+import '../widgets/cached_network_image.dart';
 
 // カード一覧画面のカード情報のContainer
 class CardShortInfoContainer extends ConsumerWidget {
 
+  /// マスターカード
+  final CardMasterModel cardMasterModel;
   /// 画像
-  final String? imageUrl;
-  /// 都道府県
-  final String prefecture;
-  /// 市町村
-  final String city;
-  /// 段数
-  final int version;
-  /// カード番号
-  final String serialNumber;
+  final String? imgUrl;
   /// お気に入り登録
   final bool? favorite;
+  /// マイカードに登録されているか
+  final bool myContain;
 
   const CardShortInfoContainer({
     Key? key,
-    this.imageUrl,
-    required this.prefecture,
-    required this.city,
-    required this.version,
-    required this.serialNumber,
+    required this.cardMasterModel,
+    this.imgUrl,
     required this.favorite,
+    required this.myContain,
   }) : super(key: key);
 
   @override
@@ -38,8 +40,49 @@ class CardShortInfoContainer extends ConsumerWidget {
     final sizedBoxFixedHeight = SizedBox(height: getH(context, 0.2));
 
     return GestureDetector(
-      onTap: () {
-        context.push('/cards/card_detail_page');
+      onTap: () async {
+        final uid = ref.read(authViewModelProvider.notifier).getUid();
+        DateTime? collectDay;
+        List<String?>? imgUrlList;
+        // マイカードに登録していた場合
+        if (myContain) {
+          // 収集日を取得
+          collectDay = await CardRepository().getCollectDay("$uid${cardMasterModel.serialNumber}");
+          // 画像のURLリストを取得
+          CardModel? cardModel = await CardRepository().getFromFireStoreUsingDocName("$uid${cardMasterModel.serialNumber}");
+          // マイカードが取得できて、photoフィールドが空ではないとき
+          if (cardModel != null && cardModel.photos!.isNotEmpty) {
+            // 登録されている画像を取得
+            final photoDocRefList = cardModel.photos;
+            if (photoDocRefList != null) {
+              imgUrlList = [];
+              await Future.forEach(photoDocRefList, (photoDocRef) async {
+                final photoModel = await PhotoRepository().getFromFireStore(photoDocRef as DocumentReference<Map<String, dynamic>>);
+                if (photoModel != null) {
+                  // 画像URLを取得
+                  final imgUrl = await ImageRepository().downloadOneImageFromFireStore(cardMasterModel.serialNumber, photoModel.fileName!, ref);
+                  imgUrlList!.add(imgUrl);
+                }
+              });
+            }
+          }
+        }
+        // showModalBottomSheetを使用して、カード詳細画面を表示
+        if (context.mounted) {
+          showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            builder: (BuildContext context) {
+              return CardDetailPage(
+                cardMasterModel: cardMasterModel,
+                imgUrlList: imgUrlList,
+                favorite: favorite,
+                collectDay: collectDay,
+                myContain: myContain,
+              );
+            }
+          );
+        }
       },
       child: Container(
         height: getH(context, 16),
@@ -61,15 +104,10 @@ class CardShortInfoContainer extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            (imageUrl != null)
-              ? CachedNetworkImage(
-                imageUrl: imageUrl!,
-                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => const Center(child: Icon(Icons.error_rounded)),
-              )
-              : Image.asset(
-                'images/GrayBackImg.png'
-              ),
+            // 画像
+            imgUrl != null
+              ? cachedNetworkImage(imgUrl!)
+              : Image.asset('images/GrayBackImg.png'),
             // カード情報
             Expanded(
               child: Stack(
@@ -80,39 +118,40 @@ class CardShortInfoContainer extends ConsumerWidget {
                       children: [
                         sizedBoxFixedHeight,
                         Text(
-                          prefecture,
+                          cardMasterModel.prefecture,
                           style: const TextStyle(fontSize: 14),
                         ),
                         sizedBoxFixedHeight,
                         FittedBox(
                           fit: BoxFit.fitHeight,
                           child: Text(
-                            city,
+                            cardMasterModel.city,
                             style: const TextStyle(fontSize: 18),
                           ),
                         ),
                         sizedBoxFixedHeight,
                         Text(
-                          "第$version弾",
+                          "第${cardMasterModel.version}弾",
                           style: const TextStyle(fontSize: 14),
                         ),
                         sizedBoxFixedHeight,
                         Text(
-                          serialNumber,
+                          cardMasterModel.serialNumber,
                           style: const TextStyle(fontSize: 14),
                         ),
-                        SizedBox(height: getH(context, 0.2),),
+                        sizedBoxFixedHeight,
                       ]
                     ),
                   ),
-                  Positioned( // お気に入りアイコンを親の右下に配置
+                  // お気に入りアイコン
+                  Positioned( // 親Widgetの右下に配置
                     bottom: getW(context, 2),
                     right: getW(context, 2),
                     child: (favorite ?? false)  // favoriteがtrueの場合
                       ? Icon(
                           Icons.bookmark_outlined,
                           size: 25,
-                          color: Colors.yellow[700]
+                          color: favoriteColor
                         )
                       : const SizedBox(), // favoriteがfalseの場合
                   ),

@@ -190,52 +190,50 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: getH(context, 3),
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: getH(context, 3),
+            ),
+            // 全国のインジケーター
+            _indicator(15, 20, getW(context, 40), indicatorPlace[0], myCardsNum[0] / allCardsNum[0], myCardsNum[0], allCardsNum[0], context),
+            // 地方のインジケーター
+            for (int i = 1; i < areaNum; i += 2) ... {
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int j = 0; j <= 1; j ++) ... {
+                    _indicator(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
+                  }
+                ],
               ),
-              // 全国のインジケーター
-              _indicator(15, 20, getW(context, 40), indicatorPlace[0], myCardsNum[0] / allCardsNum[0], myCardsNum[0], allCardsNum[0], context),
-              // 地方のインジケーター
-              for (int i = 1; i < areaNum; i += 2) ... {
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int j = 0; j <= 1; j ++) ... {
-                      _indicator(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
-                    }
-                  ],
-                ),
-              },
-              // 都道府県のインジケーター
-              for (int i = 9; i < 55; i += 3) ... {
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                      for (int j = 0; j <= 2; j ++) ... {
-                        // 最後の行が1つ分空くので空白を設置
-                        if (i == 54 && j == 2) ... {
-                          SizedBox(
-                            width: getW(context, 30) + getW(context, 30) * 0.06,
-                          ),
-                        } else ... {
-                          _indicator(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
-                        }
-                      },
-                    // }
-                  ],
-                ),
-              },
-              SizedBox(
-                height: getH(context, 3),
+            },
+            // 都道府県のインジケーター
+            for (int i = 9; i < 55; i += 3) ... {
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                    for (int j = 0; j <= 2; j ++) ... {
+                      // 最後の行が1つ分空くので空白を設置
+                      if (i == 54 && j == 2) ... {
+                        SizedBox(
+                          width: getW(context, 30) + getW(context, 30) * 0.06,
+                        ),
+                      } else ... {
+                        _indicator(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
+                      }
+                    },
+                  // }
+                ],
               ),
-            ],
-          ),
+            },
+            SizedBox(
+              height: getH(context, 3),
+            ),
+          ],
         ),
       ),
     );

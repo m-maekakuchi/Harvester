@@ -2,65 +2,95 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final indicatorIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+import '../../handlers/padding_handler.dart';
+import '../../provider/providers.dart';
+import 'cached_network_image.dart';
 
 class CarouselSliderPhotos extends ConsumerWidget {
 
-  final List<String> imgList;
+  final List<String?>? imgUrlList;
 
   CarouselSliderPhotos({
     super.key,
-    required this.imgList
+    required this.imgUrlList
   });
 
+  // カルーセルのコントローラー
   final CarouselController _controller = CarouselController();
 
-  List<Widget> createImageSlider(List<String> imgList) {
-    final List<Widget> imageSliders = imgList.map((item) => Container(
-      margin: const EdgeInsets.all(5.0),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: Image.network(item, fit: BoxFit.cover, width: 1000.0),
-      ),
-    )).toList();
-    return imageSliders;
+  // スライドする画像のリスト
+  List<Widget> imageSliderList(BuildContext context) {
+    List<Widget> imgSliders = [];
+    if (imgUrlList != null) {
+      for (String? imgUrl in imgUrlList!) {
+        if (imgUrl != null) {
+          final imgWidget = ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            child: cachedNetworkImage(imgUrl),
+          );
+          imgSliders.add(imgWidget);
+        }
+      }
+    }
+    // imgSlidersが空の場合（マイカード登録がない or マイカード登録しているが画像が取得できなかった）
+    if (imgSliders.isEmpty) {
+      final imgWidget = ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        child: Image.asset('images/GrayBackImg.png'),
+      );
+      imgSliders.add(imgWidget);
+    }
+    return imgSliders;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final indicatorIndex = ref.watch(indicatorIndexProvider);
+    final indicatorIndex = ref.watch(carouselSliderIndexProvider);
+
+    // 写真下部にある黒丸
+    Widget blackCircle(MapEntry<int, Widget> entry) {
+      return GestureDetector(
+        onTap: () => _controller.animateToPage(entry.key),
+        child: Container(
+          width: 12.0,
+          height: 12.0,
+          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: (Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black)
+                .withOpacity(indicatorIndex == entry.key ? 0.9 : 0.4)
+          ),
+        ),
+      );
+    }
+
     return Column(
       children: [
+        SizedBox(
+          height: getH(context, 2),
+        ),
         CarouselSlider(
-          items: createImageSlider(imgList),
+          items: imageSliderList(context),
           carouselController: _controller,
           options: CarouselOptions(
+            viewportFraction: 0.7,        // 左右のカードがどのくらい見えるかのバランスを決める
+            aspectRatio: 4.0 / 3.0 / 0.7,
+            enableInfiniteScroll: false,  // 無限スクロールしない
+            reverse: false,
             enlargeCenterPage: true,
-            // aspectRatio: 1.618,
             onPageChanged: (index, reason) {
-              ref.watch(indicatorIndexProvider.notifier).state = index;
+              ref.watch(carouselSliderIndexProvider.notifier).state = index;
             }
           ),
         ),
         // 写真下部にある黒丸
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: imgList.asMap().entries.map((entry) {
-            return GestureDetector(
-              onTap: () => _controller.animateToPage(entry.key),
-              child: Container(
-                width: 12.0,
-                height: 12.0,
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: (Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black)
-                    .withOpacity(indicatorIndex == entry.key ? 0.9 : 0.4)),
-              ),
-            );
-          }).toList(),
+          children: imageSliderList(context).asMap().entries.map((entry) =>
+            blackCircle(entry)
+          ).toList(),
         ),
       ],
     );

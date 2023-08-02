@@ -16,46 +16,44 @@ class PhotosListPage extends StatelessWidget {
       );
     }
 
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                ],
-              ),
-              Row(
-                children: [
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                ],
-              ),
-              Row(
-                children: [
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                ],
-              ),
-              Row(
-                children: [
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                ],
-              ),
-              Row(
-                children: [
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                ],
-              ),
-            ],
-          ),
-        )
-      ),
+    return SingleChildScrollView(
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+              ],
+            ),
+            Row(
+              children: [
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+              ],
+            ),
+            Row(
+              children: [
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+              ],
+            ),
+            Row(
+              children: [
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+              ],
+            ),
+            Row(
+              children: [
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+              ],
+            ),
+          ],
+        ),
+      )
     );
   }
 }

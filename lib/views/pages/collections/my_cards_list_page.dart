@@ -206,15 +206,13 @@ class MyCardsListPage extends ConsumerWidget {
       ),
     );
 
-    return Scaffold(
-      body: TabBarView(
-        children: [
-          body0,
-          body1,
-          body2,
-          body3,
-        ]
-      ),
+    return TabBarView(
+      children: [
+        body0,
+        body1,
+        body2,
+        body3,
+      ]
     );
   }
 }

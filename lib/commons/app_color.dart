@@ -10,6 +10,10 @@ const indicatorEndColor = Color.fromRGBO(65, 129, 44, 1.0);
 const scaffoldBackgroundColor = Color.fromRGBO(248, 251, 242, 1);
 //  ダイアログを表示したときの背景色
 const modalBarrierColor = Colors.black54;
+//  お気に入りアイコンの色
+final favoriteColor = Colors.yellow[600];
+//  カード詳細情報のタブバーの選択されていないときの色
+final cadInfoTabBarNoSelectColor = Colors.grey[200];
 // テーマカラーの選択肢
 const themeColorChoice = [
   Color.fromRGBO(250, 180, 195, 1),

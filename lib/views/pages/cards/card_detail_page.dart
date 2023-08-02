@@ -1,42 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
-import '../../../commons/card_detail_info_tab.dart';
+import '../../../commons/app_const.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../models/card_master_model.dart';
 import '../../widgets/carousel_slider_photos.dart';
+import '../../widgets/text_message_dialog.dart';
 import '../../widgets/white_button.dart';
 
-/// 写真
-const List<String> imgList = [
-  'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-  'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-  'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-  'https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1',
-];
-
-/// カード情報
-const card = {
-  "version": "1",
-  "card_number": "01-454-A001",
-  "prefecture": "北海道",
-  "city": "当麻町",
-  "distribute_place": "【火曜日】当麻町役場まちづくりりりりりりりりりりり\n北海道上川郡当麻町4条3丁目1番41号\n\n【火曜日以外】当麻町郷土資料ここから\n北海道上川郡当麻町3条2丁目11番1号\nあ\nあ\nあ\nあ\nあ",
-  "distribute_time": "【火曜日】8:30～17:15\n【火曜日以外】10:00～19:00\nあ\nあ\nあ\nあ\nあ\nあ\nあ\nあ\nあ\nあ",
-  "issue_date": "2021/1/28",
-  "url": 'https://www.jswa.go.jp/company/50th-anniversary/manhole-card.html',
-};
-
-// 収集日
-const collectionDay = "2023/4/5";
-// お気に入り登録されているかどうか
-const bookmark = true;
-
 class CardDetailPage extends ConsumerWidget {
-  const CardDetailPage({super.key});
+  final CardMasterModel cardMasterModel;
+  final List<String?>? imgUrlList;
+  final bool? favorite;
+  final DateTime? collectDay;
+  final bool myContain;
 
+  const CardDetailPage({
+    super.key,
+    required this.cardMasterModel,
+    required this.imgUrlList,
+    required this.favorite,
+    required this.collectDay,
+    required this.myContain
+  });
+
+  // URLをWebブラウザで表示
   Future<void> _launchInBrowser(Uri url) async {
     if (!await launchUrl(
       url,
@@ -46,68 +38,144 @@ class CardDetailPage extends ConsumerWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  // カード番号・都道府県・市町村・弾数のColumnウィジェット
+  Column cardMainInfo(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          "第${cardMasterModel.version}弾",
+          style: const TextStyle(fontSize: 18),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              cardMasterModel.serialNumber,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            // お気入り登録していたら、bookmarkアイコンを表示する
+            favorite != null && favorite == true
+              ? Row (
+                children: [
+                  SizedBox(width: getW(context, 1)),
+                  Icon(Icons.bookmark_rounded, color: favoriteColor)
+                ],
+              )
+              : const SizedBox(),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "${cardMasterModel.prefecture} ${cardMasterModel.city}",
+              style: const TextStyle(fontSize: 18),
+            )
+          ],
+        )
+      ]
+    );
+  }
 
-    final ScrollController controllerOne = ScrollController();
-    final toLaunch = Uri.parse(card["url"]!);
+  // カード情報のタブのリスト
+  List<Tab> cardDetailInfoTabList() {
+    return List.generate(cardDetailInfoTabTitleList.length, (index) =>
+        Tab(child: Text(cardDetailInfoTabTitleList[index], style: const TextStyle(fontSize: 16)))
+    );
+  }
 
-    // 詳細情報のTabBar
-    final cardInfoTabBar = TabBar(
-      labelColor: textIconColor,  // 選択時の文字色
+  // カード情報のTabBar
+  TabBar cardInfoTabBar() {
+    return TabBar(
+      labelColor: textIconColor,            // 選択時の文字色
       unselectedLabelColor: textIconColor,  // 未選択時の文字色
       indicator: BoxDecoration(
         color: themeColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      tabs: cardDetailInfoTab,
+      tabs: cardDetailInfoTabList(),
     );
+  }
 
-    // 詳細情報の内容
-    Widget singleCardDetailInfo(text) {
-      return Scrollbar(
-        // thumbVisibility: true,
-        controller: controllerOne,
-        thickness: 6,
-        child: SingleChildScrollView(
-          controller: controllerOne,
-          child: Container(
-            padding: EdgeInsets.all(getH(context, 2)),
-            child: Text(text, style: const TextStyle(fontSize: 16),),
+  // 配布場所と住所のColumnウィジェット（この2つだけリストでFireStoreに登録されているため）
+  Column cardListInfo(BuildContext context) {
+    final length = cardMasterModel.distributeLocations.length;
+
+    return Column (
+      children: [
+        for (var i = 0; i < length; i ++) ... {
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              cardMasterModel.distributeLocations[i]!,
+              textAlign: TextAlign.left,
+              style: const TextStyle(fontSize: 16)
+            ),
           ),
-        ),
-      );
-    }
+          if (cardMasterModel.distributeAddresses[i] != null) ... {
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                cardMasterModel.distributeAddresses[i]!,
+                textAlign: TextAlign.left,
+                style: const TextStyle(fontSize: 16)
+              ),
+            ),
+          },
+          if (i != length - 1) SizedBox(height: getH(context, 3)),
+        },
+      ],
+    );
+  }
 
-    // TabBarと詳細内容のWidget
-    final cardDetailInfo = DefaultTabController(
-      length: 3, // タブの個数
+  // 配置場所、配布時間、発行日（スクロール可能）
+  Widget scrollContainer(BuildContext context, Widget widget) {
+    final ScrollController controller = ScrollController();
+    return Scrollbar(
+      thumbVisibility: true,
+      controller: controller,
+      thickness: 10,
+      radius: const Radius.circular(20),
+      child: SingleChildScrollView(
+        controller: controller,
+        child: Container(
+          padding: EdgeInsets.all(getH(context, 2)),
+          child: widget,
+        ),
+      ),
+    );
+  }
+
+  // タブと情報合わせた、実線で囲んでいる部分
+  Widget tabAndCardInfoContainer(BuildContext context) {
+    return DefaultTabController(
+      length: cardDetailInfoTabTitleList.length, // タブの個数
       initialIndex: 0,
       child: Container(
         width: getW(context, 95),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: textIconColor, width: 0.6)
         ),
         child: Column(
           children: [
-            // TabBar
+            // タブの部分
             Container(
               margin: EdgeInsets.only(top: getW(context, 2), left: getW(context, 2), right: getW(context, 2)),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: Colors.grey[200]
+                color: cadInfoTabBarNoSelectColor,
               ),
-              child: cardInfoTabBar,
+              child: cardInfoTabBar(),
             ),
-            // カードの詳細情報
+            // カードの詳細情報の部分
             SizedBox(
-              height: getH(context, 20),  // TabBarViewの高さ
+              height: getH(context, 20), // TabBarViewの高さ
               child: TabBarView(
                 children: [
-                  singleCardDetailInfo(card["distribute_place"]!),
-                  singleCardDetailInfo(card["distribute_time"]!),
-                  singleCardDetailInfo(card["issue_date"]!),
+                  scrollContainer(context, cardListInfo(context)),
+                  scrollContainer(context, Text(cardMasterModel.comment, style: const TextStyle(fontSize: 16))),
+                  scrollContainer(context, Text(cardMasterModel.issueDay.replaceAll("-", "/"), style: const TextStyle(fontSize: 16))),
                 ]
               ),
             )
@@ -115,31 +183,15 @@ class CardDetailPage extends ConsumerWidget {
         ),
       )
     );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
 
     return Scaffold(
       appBar: AppBar(
-        title: SizedBox(  // 幅を設定しないとcenterにならない
-          width: getW(context, 50),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-            children: [
-              Image.asset(
-                  width: getW(context, 10),
-                  height: getH(context, 10),
-                  'images/AppBar_logo.png'
-              ),
-              const Text("Manhole Card"),
-            ]
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/settings/setting_page');
-            },
-            icon: const Icon(Icons.settings_rounded),
-          ),
-        ],
+        title: titleBox('Manhole Card', context),
+        actions: actionList(context),
       ),
       body: Column(
         children: [
@@ -150,73 +202,52 @@ class CardDetailPage extends ConsumerWidget {
                 children: [
                   SizedBox(height: getH(context, 1)),
                   // 写真のスライダー
-                  CarouselSliderPhotos(imgList: imgList),
+                  CarouselSliderPhotos(imgUrlList: imgUrlList),
                   SizedBox(height: getW(context, 1)),
-                  // カード番号・都道府県・市町村
-                  Column(
-                    children: [
-                      Text(
-                        "第${card["version"]!}弾",
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            card["card_number"]!,
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          /// お気に入り登録していたら以下の2行を追加
-                          if (bookmark) ... {
-                            SizedBox(width: getW(context, 1)),
-                            const Icon(Icons.bookmark_rounded, color: textIconColor)
-                          }
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "${card["prefecture"]!} ${card["city"]!}",
-                            style: const TextStyle(fontSize: 18),
-                          )
-                        ],
-                      )
-                    ]
-                  ),
+                  // カード番号・都道府県・市町村・段数
+                  cardMainInfo(context),
                   SizedBox(height: getW(context, 3)),
                   //  配布場所・配布時間・発行日
-                  cardDetailInfo,
+                  tabAndCardInfoContainer(context),
                   SizedBox(height: getW(context, 3)),
                   //  収集日とお気に入りマーク
-                  const Text('収集日: $collectionDay', style: TextStyle(fontSize: 16)),
+                  collectDay != null
+                    ? Text('収集日: ${DateFormat('yyyy/MM/dd').format(collectDay!)}', style: const TextStyle(fontSize: 16))
+                    : const SizedBox(),
                   //  配布状況ボタン
                   WhiteButton(
                     text: '配布状況',
                     fontSize: 16,
-                    onPressed: () {
-                      _launchInBrowser(toLaunch);
+                    onPressed: () async {
+                      // stockLinkが「http」から始まるURLの場合、ブラウザで表示
+                      // それ以外はstockLinkの文字列をダイアログで表示
+                      if (cardMasterModel.stockLink!.startsWith("http")) {
+                        _launchInBrowser(Uri.parse(cardMasterModel.stockLink!));
+                      } else {
+                        // 「〇〇までお問い合わせください」の「お問い合わせ」の前に改行を挿入する
+                        String targetText = 'お問い合わせ';
+                        int index = cardMasterModel.stockLink!.indexOf(targetText);
+                        String newMessage = cardMasterModel.stockLink!.replaceFirst(targetText, '\n$targetText', index);
+                        if (context.mounted) await textMessageDialog(context, newMessage);
+                      }
                     },
                   ),
                 ],
               ),
             ),
           ),
-          Container(
-            width: double.infinity,
-            height: getH(context, 6),
-            color: textIconColor,
-            child: IconButton(
-              onPressed: () {
-                context.push('/cards/my_card_edit_page');
-              },
-              icon: const Icon(Icons.edit_rounded),
-              iconSize: 30,
-              color: Colors.white,
-            ),
-          ),
         ],
       ),
+      // マイカードに登録していたら、編集画面に遷移するためのアイコンを表示
+      floatingActionButton: myContain == true
+        ? FloatingActionButton(
+            onPressed: () {
+
+            },
+            backgroundColor: themeColor,
+            child: const Icon(Icons.edit_rounded, color: textIconColor),
+          )
+        : const SizedBox()
     );
   }
 

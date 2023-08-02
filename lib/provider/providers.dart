@@ -17,3 +17,6 @@ final bottomBarIndexProvider = StateProvider((ref) => 0);
 final StateProvider<List<DocumentSnapshot?>> allCardsListLastDocumentProvider = StateProvider((ref) => List.filled(allCardTabTitleList.length, null));
 // 選択された都道府県（初期値：東京都）
 final allCardsPagePrefectureProvider = StateProvider((ref) => addressList[12]);
+
+/// カード詳細画面
+final carouselSliderIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
