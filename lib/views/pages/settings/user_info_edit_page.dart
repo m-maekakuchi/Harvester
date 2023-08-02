@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/address_master_list.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
-import '../../widgets/error_message_dialog.dart';
+import '../../widgets/text_message_dialog.dart';
 import '../../widgets/done_message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
@@ -177,7 +177,7 @@ class UserInfoEditPage extends ConsumerWidget {
                   : () async {
                   // ニックネームが10文字より長い場合、ダイアログで警告
                   if (textController.text.length > 10) {
-                    await errorMessageDialog(context, textOverErrorMessage);
+                    await textMessageDialog(context, textOverErrorMessage);
                     return;
                   }
                   final userUid = ref.watch(authViewModelProvider.notifier).getUid();

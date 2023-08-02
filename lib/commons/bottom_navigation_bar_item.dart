@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // ナビゲーションバーのアイテム
-const items = [
+const bottomNavigationItems = [
   BottomNavigationBarItem(
     icon: Icon(Icons.home_rounded),
     label: 'ホーム',

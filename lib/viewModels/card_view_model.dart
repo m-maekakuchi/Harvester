@@ -13,7 +13,7 @@ import '../repositories/card_master_repository.dart';
 import '../repositories/card_repository.dart';
 import '../repositories/local_storage_repository.dart';
 import '../repositories/photo_repository.dart';
-import '../views/widgets/error_message_dialog.dart';
+import '../views/widgets/text_message_dialog.dart';
 import '../views/pages/collections/my_card_add_page.dart';
 import 'auth_view_model.dart';
 import 'image_view_model.dart';
@@ -65,7 +65,7 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
         && cardNumberList.contains(selectedCardMasterNumber)
       ) {
         state = const AsyncValue.data(false);
-        if (context.mounted) await errorMessageDialog(context, registeredCardErrorMessage);
+        if (context.mounted) await textMessageDialog(context, registeredCardErrorMessage);
         return;
       }
 

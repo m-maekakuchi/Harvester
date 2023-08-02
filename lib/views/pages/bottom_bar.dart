@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../commons/app_bar_contents.dart';
 import '../../commons/app_color.dart';
 import '../../commons/app_const.dart';
 import '../../commons/bottom_navigation_bar_item.dart';
@@ -24,6 +24,7 @@ const pages = [
   PhotosListPage(),
 ];
 
+// タブのWidget
 SizedBox tabBox(BuildContext context, int width, String tabName) {
   return SizedBox(
     width: getW(context, width.toDouble()),
@@ -31,18 +32,21 @@ SizedBox tabBox(BuildContext context, int width, String tabName) {
   );
 }
 
+// マイカード一覧のTab Widgetのリスト
 List<SizedBox> allCardTabList(BuildContext context) {
   return List.generate(allCardTabTitleList.length, (index) =>
-      tabBox(context, allCardAppBarTabWidth, allCardTabTitleList[index])
+    tabBox(context, allCardAppBarTabWidth, allCardTabTitleList[index])
   );
 }
 
+// 全カード一覧のTab Widgetのリスト
 List<SizedBox> myCardTabList(BuildContext context) {
   return List.generate(myCardTabTitleList.length, (index) =>
-      tabBox(context, myCardAppBarTabWidth, myCardTabTitleList[index])
+    tabBox(context, myCardAppBarTabWidth, myCardTabTitleList[index])
   );
 }
 
+// 各画面のタブ数のリスト
 List<int> appBarBottomLength(BuildContext context) {
   return [
     0,
@@ -53,36 +57,13 @@ List<int> appBarBottomLength(BuildContext context) {
   ];
 }
 
-SizedBox titleBox(String title, BuildContext context) {
-  return SizedBox(
-    width: getW(context, 60),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center, // アイコンと文字列セットでセンターに配置
-      children: [
-        Image.asset(
-          width: getW(context, 10),
-          height: getH(context, 10),
-          'images/AppBar_logo.png'
-        ),
-        Flexible(
-          child: FittedBox(
-            fit: BoxFit.fitWidth,
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 24),
-            ),
-          ),
-        )
-      ]
-    ),
-  );
-}
-
-PreferredSizeWidget appBarBottom(List<SizedBox> tabList) {
+// TabBarのWidget
+PreferredSizeWidget coloredTabBar(List<SizedBox> tabList) {
   return ColoredTabBar(
     tabBar: TabBar(
       isScrollable: true,
       indicatorColor: textIconColor,
+      indicatorWeight: 4,
       labelColor: textIconColor,
       labelStyle: const TextStyle(fontSize: 16),
       tabs: tabList,
@@ -90,16 +71,16 @@ PreferredSizeWidget appBarBottom(List<SizedBox> tabList) {
   );
 }
 
-List<PreferredSizeWidget?> appBarBottomList(BuildContext context) {
+// 各画面のTabBarを格納するリスト
+List<PreferredSizeWidget?> tabBarList(BuildContext context) {
   return [
     null,
-    appBarBottom(myCardTabList(context)),
-    appBarBottom(allCardTabList(context)),
+    coloredTabBar(myCardTabList(context)),
+    coloredTabBar(allCardTabList(context)),
     null,
     null
   ];
 }
-
 
 class BottomBar extends ConsumerWidget {
   const BottomBar({super.key});
@@ -111,26 +92,18 @@ class BottomBar extends ConsumerWidget {
     return DefaultTabController(
       length: appBarBottomLength(context)[index],
       child: Builder(builder: (context) {
-        final TabController tabController = DefaultTabController.of(context);
-        // タブを切り替えたときに呼び出される
-        tabController.addListener(() {});
+        TabController tabController = DefaultTabController.of(context);
+        tabController.addListener(() {}); // タブを切り替えたときに呼び出される
         return Scaffold(
           appBar: AppBar(
             title: titleBox(pageTitleList[index], context),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  context.push('/settings/setting_page');
-                },
-                icon: const Icon(Icons.settings_rounded),
-              ),
-            ],
-            bottom: appBarBottomList(context)[index],
+            actions: actionList(context),
+            bottom: tabBarList(context)[index],
           ),
           body: pages[index],
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,  // すべてのアイテムが表示されるように設定
-            items: items,
+            items: bottomNavigationItems,
             backgroundColor: Colors.white, // バーの色
             selectedItemColor: themeColor, // 選ばれたアイテムの色
             unselectedItemColor: textIconColor, // 選ばれていないアイテムの色

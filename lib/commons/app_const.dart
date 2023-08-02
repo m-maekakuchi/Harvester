@@ -19,14 +19,20 @@ const pageTitleList = [
 
 const allCardTabTitleList = [
   '全国',
-  '都道府県'
+  '都道府県',
 ];
 
 const myCardTabTitleList = [
   '日付',
   'お気に入り',
   '全国',
-  '都道府県'
+  '都道府県',
+];
+
+const cardDetailInfoTabTitleList = [
+  '配布場所',
+  '配布時間',
+  '発行日',
 ];
 
 // カード一覧画面のローディング数

@@ -97,12 +97,10 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
             children: [
               const SizedBox(height: 10),
               CardShortInfoContainer(
-                imageUrl: widget.imgUrlList[index],
-                prefecture: widget.items[index].prefecture,
-                city: widget.items[index].city,
-                version: widget.items[index].version,
-                serialNumber: widget.items[index].serialNumber,
+                cardMasterModel: widget.items[index],
+                imgUrl: widget.imgUrlList[index],
                 favorite: widget.favoriteList[index],
+                myContain: widget.myCardContainList[index],
               ),
             ],
           );
