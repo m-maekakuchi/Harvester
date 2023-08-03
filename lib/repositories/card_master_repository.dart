@@ -14,7 +14,7 @@ class CardMasterRepository {
 
   // 取得したい数分だけドキュメントを取得
   Future<List<CardMasterModel>> getLimitCountCardMasters(WidgetRef ref, int tabIndex) async {
-    final lastDocument = ref.read(allCardsListLastDocumentProvider)[tabIndex];
+    final lastDocument = ref.read(allCardsPageLastDocumentProvider)[tabIndex];
     final selectedPrefecture = ref.read(allCardsPagePrefectureProvider);
 
     final List<CardMasterModel> cardMasterList = [];
@@ -34,7 +34,7 @@ class CardMasterRepository {
       cardMasterList.add(docSnapshot.data());
     }
 
-    ref.read(allCardsListLastDocumentProvider.notifier).state[tabIndex] = querySnapshot.docs.last;
+    ref.read(allCardsPageLastDocumentProvider.notifier).state[tabIndex] = querySnapshot.docs.last;
 
     return cardMasterList;
   }

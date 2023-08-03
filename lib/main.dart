@@ -45,6 +45,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,  // 画面右上の「DEBUG」表示を消す
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

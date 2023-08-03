@@ -19,7 +19,7 @@ Future<void> getScrollItemList(
   List<String?> imgUrlList,
   List<bool?> favoriteList,
 ) async {
-  final myCardInfoList = ref.read(myCardInfoListProvider);            // マイカード情報リスト（例： [{"id": "00-101-A001", "favorite": true}]）
+  final myCardIdAndFavoriteList = ref.read(myCardIdAndFavoriteListProvider);   // マイカード情報リスト（例： [{"id": "00-101-A001", "favorite": true}]）
   final myCardSerialNumberList = ref.read(myCardNumberListProvider);  // マイカードの番号リスト
   final uid = ref.read(authViewModelProvider.notifier).getUid();
   int tabIndex = DefaultTabController.of(context).index;
@@ -77,8 +77,8 @@ Future<void> getScrollItemList(
   for (CardMasterModel cardMasterModel in newCardMasterModelList) {
     if (myCardSerialNumberList.contains(cardMasterModel.serialNumber)) {
       // ローカルのマイカード情報は追加した順で登録されているので、インデックス検索する
-      int index = myCardInfoList.indexWhere((element) => element["id"] == cardMasterModel.serialNumber);
-      favoriteList.add(myCardInfoList[index]["favorite"]);
+      int index = myCardIdAndFavoriteList.indexWhere((element) => element["id"] == cardMasterModel.serialNumber);
+      favoriteList.add(myCardIdAndFavoriteList[index]["favorite"]);
     } else {
       favoriteList.add(null);
     }

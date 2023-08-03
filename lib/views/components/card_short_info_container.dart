@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,18 +20,18 @@ class CardShortInfoContainer extends ConsumerWidget {
   final CardMasterModel cardMasterModel;
   /// 画像
   final String? imgUrl;
-  /// お気に入り登録
+  /// お気に入り登録されているか
   final bool? favorite;
   /// マイカードに登録されているか
   final bool myContain;
 
   const CardShortInfoContainer({
-    Key? key,
+    super.key,
     required this.cardMasterModel,
     this.imgUrl,
     required this.favorite,
     required this.myContain,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

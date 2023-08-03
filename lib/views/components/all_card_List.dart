@@ -7,7 +7,7 @@ import '../../models/card_master_model.dart';
 import '../widgets/infinity_list_view.dart';
 
 class AllCardList extends ConsumerStatefulWidget {
-  const AllCardList({Key? key}) : super(key: key);
+  const AllCardList({super.key});
 
   @override
   AllCardsListState createState() => AllCardsListState();
@@ -18,9 +18,8 @@ class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAli
   List<bool> myCardContainList = [];
   List<String?> imgUrlList = [];
   List<bool?> favoriteList = [];
-  int lastIndex = 0;
 
-  Future<void> getListItemsAndSetLastIndex() async {
+  Future<void> getListItems() async {
     await getScrollItemList(
       context,
       ref,
@@ -29,7 +28,6 @@ class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAli
       imgUrlList,
       favoriteList,
     );
-    lastIndex += loadingNum;
   }
 
   @override
@@ -38,7 +36,7 @@ class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAli
 
     return Center(
       child: FutureBuilder(
-        future: getListItemsAndSetLastIndex(),
+        future: getListItems(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -47,12 +45,12 @@ class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAli
             return Text('${snapshot.stackTrace}');
           }
           return InfinityListView(
-            items: cardMasterModelList,
+            cardMasterModelList: cardMasterModelList,
             myCardContainList: myCardContainList,
             imgUrlList: imgUrlList,
             favoriteList: favoriteList,
-            itemsMaxIndex: cardMasterNum,
-            getListItems: getListItemsAndSetLastIndex,
+            listAllItemLength: cardMasterNum,
+            getListItems: getListItems,
           );
         },
       ),

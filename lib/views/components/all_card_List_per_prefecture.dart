@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/address_master_list.dart';
-import '../../commons/app_const.dart';
 import '../../commons/card_master_option_list.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
@@ -13,7 +12,7 @@ import 'accordion_prefectures.dart';
 import 'white_show_modal_bottom_sheet.dart';
 
 class AllCardListPerPrefecture extends ConsumerStatefulWidget {
-  const AllCardListPerPrefecture({Key? key}) : super(key: key);
+  const AllCardListPerPrefecture({super.key});
 
   @override
   AllCardsListPerPrefectureState createState() => AllCardsListPerPrefectureState();
@@ -24,9 +23,8 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
   List<bool> myCardContainList = [];
   List<String?> imgUrlList = [];
   List<bool?> favoriteList = [];
-  int lastIndex = 0;
 
-  Future<void> getListItemsAndSetLastIndex() async {
+  Future<void> getListItems() async {
     await getScrollItemList(
       context,
       ref,
@@ -35,7 +33,6 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
       imgUrlList,
       favoriteList,
     );
-    lastIndex += loadingNum;
   }
 
   @override
@@ -47,7 +44,7 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
 
     return Center(
       child: FutureBuilder(
-        future: getListItemsAndSetLastIndex(),
+        future: getListItems(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
@@ -78,27 +75,20 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
                         myCardContainList = [];
                         imgUrlList = [];
                         favoriteList = [];
-                        // FireStoreから取得していたリストのlastDocumentを初期化
-                        ref.read(allCardsListLastDocumentProvider.notifier).state[tabIndex] = null;
-                        // リストのインデックスを初期化
-                        lastIndex = 0;
+                        // FireStoreから取得していたlastDocumentを初期化
+                        ref.read(allCardsPageLastDocumentProvider.notifier).state[tabIndex] = null;
                         // 再ビルド
                         setState(() {});
                       },
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10),
-                      width: double.infinity,
-                      child: Text(selectedPrefecture, style: const TextStyle(fontSize: 18)),
-                    ),
                     Expanded(
                       child: InfinityListView(
-                        items: cardMasterModelList,
+                        cardMasterModelList: cardMasterModelList,
                         myCardContainList: myCardContainList,
                         imgUrlList: imgUrlList,
                         favoriteList: favoriteList,
-                        itemsMaxIndex: selectedPrefectureCardsNum,
-                        getListItems: getListItemsAndSetLastIndex,
+                        listAllItemLength: selectedPrefectureCardsNum,
+                        getListItems: getListItems,
                       ),
                     ),
                   ],
