@@ -21,7 +21,7 @@ Future<List<Map<String, dynamic>>?> getCardMasterNumberList(String uid, WidgetRe
       // cardsコレクションに、ドキュメント参照のドキュメントがちゃんと存在する場合
       if (cardModel != null) {
         final cardMasterDocRef = cardModel.cardMaster as DocumentReference<Map<String, dynamic>>;
-        final cardMasterModel = await CardMasterRepository().getOneCardMaster(cardMasterDocRef);
+        final cardMasterModel = await CardMasterRepository().getCardMasterUsingDocRef(cardMasterDocRef);
         // card_masterコレクションに、ドキュメント参照のドキュメントがちゃんと存在する場合
         if (cardMasterModel != null) {
           cardNumberList.add(

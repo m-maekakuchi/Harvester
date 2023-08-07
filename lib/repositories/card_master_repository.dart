@@ -44,9 +44,20 @@ class CardMasterRepository {
     return collRef.doc(cardNumber);
   }
 
-  // ドキュメント参照から、マスターカード1枚を取得
-  Future<CardMasterModel?> getOneCardMaster(DocumentReference<Map<String, dynamic>> docRef) async {
+  // ドキュメント参照から、CardMasterModel 1つを取得
+  Future<CardMasterModel?> getCardMasterUsingDocRef(DocumentReference<Map<String, dynamic>> docRef) async {
     final ref = docRef.withConverter(
+      fromFirestore: CardMasterModel.fromFirestore,
+      toFirestore: (CardMasterModel cardMasterModel, _) => cardMasterModel.toFirestore(),
+    );
+    final docSnapshot = await ref.get();
+    final cardMasterModel = docSnapshot.data();
+    return cardMasterModel;
+  }
+
+  // ドキュメント名から、CardMasterModel 1つを取得
+  Future<CardMasterModel?> getOneCardMasterUsingDocName(String cardNumber) async {
+    final ref = collRef.doc(cardNumber).withConverter(
       fromFirestore: CardMasterModel.fromFirestore,
       toFirestore: (CardMasterModel cardMasterModel, _) => cardMasterModel.toFirestore(),
     );

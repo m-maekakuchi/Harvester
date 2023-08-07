@@ -25,7 +25,7 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
   List<bool?> favoriteList = [];
 
   Future<void> getListItems() async {
-    await getScrollItemList(
+    await getAllCardsPageScrollItemList(
       context,
       ref,
       cardMasterModelList,

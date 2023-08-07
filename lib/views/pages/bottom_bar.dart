@@ -109,8 +109,8 @@ class BottomBar extends ConsumerWidget {
             unselectedItemColor: textIconColor, // 選ばれていないアイテムの色
             currentIndex: index,
             onTap: (index) async {
-              // 全カードボタンが押された場合
-              if (index == 2) {
+              // マイカードボタンか全カードボタンが押された場合
+              if (index == 1 || index == 2) {
                 List<Map<String, dynamic>>? myCardIdAndFavoriteList = await fetchMyCardInfoFromLocalOrDB(ref);
 
                 // マイカード情報がローカルかFireStoreから取得できたら、マイカード情報をプロバイダで管理
@@ -118,15 +118,15 @@ class BottomBar extends ConsumerWidget {
                   ref.read(myCardIdAndFavoriteListProvider.notifier).state = myCardIdAndFavoriteList;
                 }
                 // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
-                final myCardNumberList = [];
                 if (myCardIdAndFavoriteList != null) {
-                  for(Map myCardInfo in myCardIdAndFavoriteList) {
-                    myCardNumberList.add(myCardInfo["id"]);
-                  }
+                  final myCardNumberList = myCardIdAndFavoriteList.map((value) =>
+                    value["id"] as String).toList();
+                  //  マイカードの番号の配列を、カード番号順に並べ替え
                   ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
                 }
                 // リストの最後のドキュメントを初期化（ページを再表示したとき、これがないとリスト表示がリセットされない）
-                ref.read(allCardsPageLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);
+                if (index == 1) ref.read(myCardsPageFirstIndexProvider.notifier).state = List.filled(myCardTabTitleList.length, 0);
+                if (index == 2) ref.read(allCardsPageLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);
               }
               ref.read(bottomBarIndexProvider.notifier).state = index;
             },

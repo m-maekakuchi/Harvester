@@ -212,7 +212,7 @@ class CardDetailPage extends ConsumerWidget {
                   SizedBox(height: getW(context, 3)),
                   //  収集日とお気に入りマーク
                   collectDay != null
-                    ? Text('収集日: ${DateFormat('yyyy/MM/dd').format(collectDay!)}', style: const TextStyle(fontSize: 16))
+                    ? Text('収集日　${DateFormat('yyyy/MM/dd').format(collectDay!)}', style: const TextStyle(fontSize: 16))
                     : const SizedBox(),
                   //  配布状況ボタン
                   WhiteButton(

@@ -15,12 +15,12 @@ class AllCardList extends ConsumerStatefulWidget {
 
 class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAliveClientMixin{
   final List<CardMasterModel> cardMasterModelList = [];
-  List<bool> myCardContainList = [];
-  List<String?> imgUrlList = [];
-  List<bool?> favoriteList = [];
+  final List<bool> myCardContainList = [];
+  final List<String?> imgUrlList = [];
+  final List<bool?> favoriteList = [];
 
   Future<void> getListItems() async {
-    await getScrollItemList(
+    await getAllCardsPageScrollItemList(
       context,
       ref,
       cardMasterModelList,
