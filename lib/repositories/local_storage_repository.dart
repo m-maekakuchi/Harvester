@@ -42,7 +42,7 @@ class LocalStorageRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>?> fetchMyCardNumber() async {
+  Future<List<Map<String, dynamic>>?> fetchMyCardIdAndFavorites() async {
     try {
       var box = await Hive.openBox('cardBox');
       final myCardInfoList = box.get('myCardNumber');
@@ -67,7 +67,7 @@ class LocalStorageRepository {
     }
   }
 
-  Future<void> putMyCardNumber(List<Map<String, dynamic>> cardNumberList) async {
+  Future<void> putMyCardIdAndFavorites(List<Map<String, dynamic>> cardNumberList) async {
     try {
       var box = await Hive.openBox('cardBox');
       await box.put('myCardNumber', cardNumberList);

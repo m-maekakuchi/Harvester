@@ -19,13 +19,17 @@ class SelectedItemAndIcon extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: textIconColor,
+          child: SizedBox(
+            width: double.infinity,
+            child: FittedBox(
+              alignment: Alignment.centerLeft,
+              fit: BoxFit.scaleDown,  // 親の中に収まるまで縮小する。すでに収まっている場合、拡大はしない。
+              child: Text(
+                text,
+                style: const TextStyle(color: textIconColor),
+                maxLines: 1,
+              )
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ),
         const Icon(

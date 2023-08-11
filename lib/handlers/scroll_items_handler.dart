@@ -22,13 +22,9 @@ Future<void> getAllCardsPageScrollItemList(
   List<bool?> favoriteList,
 ) async {
   final myCardIdAndFavoriteList = ref.read(myCardIdAndFavoriteListProvider);   // マイカード情報リスト（例： [{"id": "00-101-A001", "favorite": true}]）
-  final sortedMyCardNumberList = ref.read(myCardNumberListProvider);  // マイカードの番号リスト
+  final myCardNumberList = ref.read(myCardNumberListProvider);  // マイカードの番号リスト
   final uid = ref.read(authViewModelProvider.notifier).getUid();
   int tabIndex = DefaultTabController.of(context).index;
-
-  /// -----------後で削除--------------
-  await Future.delayed(const Duration(seconds: 1));
-  /// -----------後で削除--------------
 
   // 設定したローディング数分のマスターカードを取得してリストにセット（都道府県タブ選択中であれば、選択された都道府県で絞る）
   List<CardMasterModel> newCardMasterModelList = await CardMasterRepository().getLimitCountCardMasters(ref, tabIndex);
@@ -39,7 +35,7 @@ Future<void> getAllCardsPageScrollItemList(
   // 取得したマスターカードが、マイカードに含まれているかどうかを判定し、リストにセット
   List<bool> newMyCardContainList = [];
   for (CardMasterModel cardMasterModel in newCardMasterModelList) {
-    final myCardContain = sortedMyCardNumberList.contains(cardMasterModel.serialNumber);
+    final myCardContain = myCardNumberList.contains(cardMasterModel.serialNumber);
     newMyCardContainList.add(myCardContain);
   }
   for (bool myCardContain in newMyCardContainList) {
@@ -77,7 +73,7 @@ Future<void> getAllCardsPageScrollItemList(
 
   // 取得したマスターカードがマイカードに含まれていた場合、お気に入りされているかどうかを取得してリストにセット（マイカードになければnull）
   for (CardMasterModel cardMasterModel in newCardMasterModelList) {
-    if (sortedMyCardNumberList.contains(cardMasterModel.serialNumber)) {
+    if (myCardNumberList.contains(cardMasterModel.serialNumber)) {
       // ローカルのマイカード情報は追加した順で登録されているので、インデックス検索する
       int index = myCardIdAndFavoriteList.indexWhere((element) => element["id"] == cardMasterModel.serialNumber);
       favoriteList.add(myCardIdAndFavoriteList[index]["favorite"]);

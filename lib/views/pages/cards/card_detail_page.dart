@@ -1,32 +1,77 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
+import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/card_master_model.dart';
+import '../../../models/card_model.dart';
+import '../../../models/image_model.dart';
+import '../../../provider/providers.dart';
+import '../../../repositories/card_repository.dart';
+import '../../../repositories/image_repository.dart';
+import '../../../repositories/photo_repository.dart';
+import '../../../viewModels/auth_view_model.dart';
+import '../../../viewModels/image_view_model.dart';
+import '../../components/shimmer_loading_with_app_bar.dart';
 import '../../widgets/carousel_slider_photos.dart';
 import '../../widgets/text_message_dialog.dart';
 import '../../widgets/white_button.dart';
+import '../collections/my_card_edit_page.dart';
 
+// immutable（不変）でない変数があるので、以下で警告文が表示されないようにしている
+// ignore: must_be_immutable
 class CardDetailPage extends ConsumerWidget {
+
   final CardMasterModel cardMasterModel;
-  final List<String?>? imgUrlList;
-  final bool? favorite;
-  final DateTime? collectDay;
   final bool myContain;
 
-  const CardDetailPage({
+  final List<String?> imgUrlList = [];      // マイカードの画像URLのリスト
+  final List<ImageModel> imgModelList = []; // マイカードのImageModelのリスト
+  CardModel? cardModel;                     // マイカードに登録していない（あるいは取得に失敗した）場合は null
+
+  CardDetailPage({
     super.key,
     required this.cardMasterModel,
-    required this.imgUrlList,
-    required this.favorite,
-    required this.collectDay,
     required this.myContain
   });
+
+  Future<void> fetchCardModelAndImgUrl(WidgetRef ref) async {
+    final uid = ref.read(authViewModelProvider.notifier).getUid();
+
+    // マイカードに含まれていたら以下の処理を実行
+    if (myContain) {
+      cardModel = await CardRepository().getFromFireStoreUsingDocName("$uid${cardMasterModel.serialNumber}");
+      // マイカードが取得できた場合
+      if (cardModel != null) {
+        // 画像のDocument参照を取得
+        final photoDocRefList = cardModel!.photos;
+        // photoフィールドが空ではないとき（空でなければリストが登録されている）
+        if (photoDocRefList != null) {
+          await Future.forEach(photoDocRefList, (photoDocRef) async {
+            final photoModel = await PhotoRepository().getFromFireStore(photoDocRef as DocumentReference<Map<String, dynamic>>);
+            if (photoModel != null) {
+              // 画像URLのリストを作成
+              final imgUrl = await ImageRepository().downloadOneImageFromFireStore(cardMasterModel.serialNumber, photoModel.fileName!, ref);
+              imgUrlList.add(imgUrl);
+              // メモリにダウンロードした画像リストを作成
+              final data = await ImageRepository().downloadImageToMemoryFromFireStore(cardMasterModel.serialNumber, photoModel.fileName!, ref);
+              final imgModel = ImageModel(
+                fileName: photoModel.fileName,
+                filePath: photoModel.filePath,
+                imageFile: data
+              );
+              imgModelList.add(imgModel);
+            }
+          });
+        }
+      }
+    }
+  }
 
   // URLをWebブラウザで表示
   Future<void> _launchInBrowser(Uri url) async {
@@ -38,7 +83,7 @@ class CardDetailPage extends ConsumerWidget {
     }
   }
 
-  // カード番号・都道府県・市町村・弾数のColumnウィジェット
+  // カードのメインデータ（カード番号・都道府県・市町村・弾数）のColumnウィジェット
   Column cardMainInfo(BuildContext context) {
     return Column(
       children: [
@@ -54,7 +99,7 @@ class CardDetailPage extends ConsumerWidget {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             // お気入り登録していたら、bookmarkアイコンを表示する
-            favorite != null && favorite == true
+            cardModel != null && cardModel!.favorite == true
               ? Row (
                 children: [
                   SizedBox(width: getW(context, 1)),
@@ -64,14 +109,9 @@ class CardDetailPage extends ConsumerWidget {
               : const SizedBox(),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "${cardMasterModel.prefecture} ${cardMasterModel.city}",
-              style: const TextStyle(fontSize: 18),
-            )
-          ],
+        Text(
+          "${cardMasterModel.prefecture} ${cardMasterModel.city}",
+          style: const TextStyle(fontSize: 18),
         )
       ]
     );
@@ -80,7 +120,7 @@ class CardDetailPage extends ConsumerWidget {
   // カード情報のタブのリスト
   List<Tab> cardDetailInfoTabList() {
     return List.generate(cardDetailInfoTabTitleList.length, (index) =>
-        Tab(child: Text(cardDetailInfoTabTitleList[index], style: const TextStyle(fontSize: 16)))
+      Tab(child: Text(cardDetailInfoTabTitleList[index], style: const TextStyle(fontSize: 16)))
     );
   }
 
@@ -128,7 +168,7 @@ class CardDetailPage extends ConsumerWidget {
     );
   }
 
-  // 配置場所、配布時間、発行日（スクロール可能）
+  // カード詳細情報部分のスクロールバー
   Widget scrollContainer(BuildContext context, Widget widget) {
     final ScrollController controller = ScrollController();
     return Scrollbar(
@@ -146,7 +186,7 @@ class CardDetailPage extends ConsumerWidget {
     );
   }
 
-  // タブと情報合わせた、実線で囲んでいる部分
+  // タブとカード詳細情報（配置場所、配布時間、発行日）を合わせた、実線で囲んでいる部分
   Widget tabAndCardInfoContainer(BuildContext context) {
     return DefaultTabController(
       length: cardDetailInfoTabTitleList.length, // タブの個数
@@ -159,23 +199,36 @@ class CardDetailPage extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            // タブの部分
+            /// タブの部分
             Container(
-              margin: EdgeInsets.only(top: getW(context, 2), left: getW(context, 2), right: getW(context, 2)),
+              margin: EdgeInsets.all(getW(context, 2)),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: cadInfoTabBarNoSelectColor,
               ),
               child: cardInfoTabBar(),
             ),
-            // カードの詳細情報の部分
+            /// カードの詳細情報の部分
             SizedBox(
-              height: getH(context, 20), // TabBarViewの高さ
+              height: getH(context, 25), // TabBarViewの高さ
               child: TabBarView(
                 children: [
-                  scrollContainer(context, cardListInfo(context)),
-                  scrollContainer(context, Text(cardMasterModel.comment, style: const TextStyle(fontSize: 16))),
-                  scrollContainer(context, Text(cardMasterModel.issueDay.replaceAll("-", "/"), style: const TextStyle(fontSize: 16))),
+                  scrollContainer(  // 配布場所
+                    context,
+                    cardListInfo(context)
+                  ),
+                  scrollContainer(  // 配布時間
+                    context,
+                    Text(
+                      cardMasterModel.comment,
+                      style: const TextStyle(fontSize: 16)
+                    )
+                  ),
+                  scrollContainer(  // 発行日
+                    context,
+                    Text(cardMasterModel.issueDay.replaceAll("-", "/"),
+                    style: const TextStyle(fontSize: 16))
+                  ),
                 ]
               ),
             )
@@ -188,66 +241,103 @@ class CardDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    return Scaffold(
-      appBar: AppBar(
-        title: titleBox('Manhole Card', context),
-        actions: actionList(context),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: getH(context, 1)),
-                  // 写真のスライダー
-                  CarouselSliderPhotos(imgUrlList: imgUrlList),
-                  SizedBox(height: getW(context, 1)),
-                  // カード番号・都道府県・市町村・段数
-                  cardMainInfo(context),
-                  SizedBox(height: getW(context, 3)),
-                  //  配布場所・配布時間・発行日
-                  tabAndCardInfoContainer(context),
-                  SizedBox(height: getW(context, 3)),
-                  //  収集日とお気に入りマーク
-                  collectDay != null
-                    ? Text('収集日　${DateFormat('yyyy/MM/dd').format(collectDay!)}', style: const TextStyle(fontSize: 16))
-                    : const SizedBox(),
-                  //  配布状況ボタン
-                  WhiteButton(
-                    text: '配布状況',
-                    fontSize: 16,
-                    onPressed: () async {
-                      // stockLinkが「http」から始まるURLの場合、ブラウザで表示
-                      // それ以外はstockLinkの文字列をダイアログで表示
-                      if (cardMasterModel.stockLink!.startsWith("http")) {
-                        _launchInBrowser(Uri.parse(cardMasterModel.stockLink!));
-                      } else {
-                        // 「〇〇までお問い合わせください」の「お問い合わせ」の前に改行を挿入する
-                        String targetText = 'お問い合わせ';
-                        int index = cardMasterModel.stockLink!.indexOf(targetText);
-                        String newMessage = cardMasterModel.stockLink!.replaceFirst(targetText, '\n$targetText', index);
-                        if (context.mounted) await textMessageDialog(context, newMessage);
-                      }
-                    },
-                  ),
-                ],
-              ),
+    return FutureBuilder(
+      future: fetchCardModelAndImgUrl(ref),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          /// ///////////Shimmerのloading画面/////////////////
+          return const ShimmerLoadingWithAppBar();
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              title: titleBox('Manhole Card', context),
+              actions: actionList(context),
             ),
-          ),
-        ],
-      ),
-      // マイカードに登録していたら、編集画面に遷移するためのアイコンを表示
-      floatingActionButton: myContain == true
-        ? FloatingActionButton(
-            onPressed: () {
+            body: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: getH(context, 1)),
+                        /// 写真のスライダー
+                        CarouselSliderPhotos(imgUrlList: imgUrlList),
+                        SizedBox(height: getW(context, 1)),
+                        /// カード番号・都道府県・市町村・段数
+                        cardMainInfo(context),
+                        SizedBox(height: getW(context, 3)),
+                        ///  配布場所・配布時間・発行日
+                        tabAndCardInfoContainer(context),
+                        SizedBox(height: getW(context, 3)),
+                        ///  収集日とお気に入りマーク
+                        cardModel != null && cardModel!.collectDay != null
+                          ? Text(
+                              "収集日　${convertDateTimeToString(cardModel!.collectDay!)}",
+                              style: const TextStyle(
+                                fontSize: 16,
+                              )
+                            )
+                          : const SizedBox(),
+                        ///  配布状況ボタン
+                        WhiteButton(
+                          text: '配布状況',
+                          fontSize: 16,
+                          onPressed: () async {
+                            // stockLinkが「http」から始まるURLの場合、ブラウザで表示
+                            // それ以外はstockLinkの文字列をダイアログで表示
+                            if (cardMasterModel.stockLink!.startsWith("http")) {
+                              _launchInBrowser(Uri.parse(cardMasterModel.stockLink!));
+                            } else {
+                              // 「〇〇までお問い合わせください」の「お問い合わせ」の前に改行を挿入する
+                              String targetText = 'お問い合わせ';
+                              int index = cardMasterModel.stockLink!.indexOf(targetText);
+                              String newMessage = cardMasterModel.stockLink!.replaceFirst(targetText, '\n$targetText', index);
+                              if (context.mounted) await textMessageDialog(context, newMessage);
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // マイカードに登録していたら、編集画面に遷移するためのアイコンを表示
+            floatingActionButton: cardModel != null
+              ? FloatingActionButton(
+                onPressed: () async {
+                  if (cardModel!.collectDay != null) ref.read(cardEditPageCollectDayProvider.notifier).state = cardModel!.collectDay!;
+                  if (cardModel!.favorite != null) ref.read(cardEditPageFavoriteProvider.notifier).state = cardModel!.favorite!;
 
-            },
-            backgroundColor: themeColor,
-            child: const Icon(Icons.edit_rounded, color: textIconColor),
-          )
-        : const SizedBox()
+                  ref.read(imageListProvider.notifier).init();
+                  await Future.forEach(imgModelList, (item) async {
+                    await ref.read(imageListProvider.notifier).add(item);
+                  });
+
+                  // showModalBottomSheetを使用して、カード編集画面を表示
+                  if (context.mounted) {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext context) {
+                        return MyCardEditPage(
+                          cardMasterModel: cardMasterModel,
+                          cardModel: cardModel!,
+                        );
+                      }
+                    );
+                  }
+                },
+                backgroundColor: themeColor,
+                child: const Icon(Icons.edit_rounded, color: textIconColor),
+              )
+              : const SizedBox()
+          );
+        }
+      }
     );
   }
 

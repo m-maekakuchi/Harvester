@@ -9,6 +9,7 @@ import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
 import '../widgets/white_button.dart';
 import 'accordion_prefectures.dart';
+import 'shimmer_loading.dart';
 import 'white_show_modal_bottom_sheet.dart';
 
 class MyCardListPerPrefecture extends ConsumerStatefulWidget {
@@ -35,7 +36,8 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
 
   // リストのアイテムを生成
   void getExtractedSortedMyCardNumberList() {
-    final myCardNumberList = ref.read(myCardNumberListProvider);
+    final myCardNumberList = [];
+    myCardNumberList.addAll(ref.read(myCardNumberListProvider));
     myCardNumberList.sort();  // カード番号順に並べ替え
 
     final selectedPrefecture = ref.read(myCardsPagePrefectureProvider);
@@ -80,65 +82,63 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Center(
-      child: FutureBuilder(
-        future: getListItems(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          if (snapshot.hasError) {
-            return Text('${snapshot.stackTrace}');
-          }
-          return Column(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    WhiteButton(
-                      text: '都道府県の選択',
-                      fontSize: 16,
-                      onPressed: () async {
-                        int tabIndex = DefaultTabController.of(context).index;
+    return FutureBuilder(
+      future: getListItems(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const ShimmerLoading();
+        }
+        if (snapshot.hasError) {
+          return Text('${snapshot.stackTrace}');
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  WhiteButton(
+                    text: '都道府県の選択',
+                    fontSize: 16,
+                    onPressed: () async {
+                      int tabIndex = DefaultTabController.of(context).index;
 
-                        // 都道府県の選択のためのModalBottomSheetを出す
-                        await showWhiteModalBottomSheet(
-                          context: context,
-                          widget: AccordionPrefectures(
-                            provider: myCardsPagePrefectureProvider,
-                          )
-                        );
-                        // リストを初期化
-                        cardMasterModelList = [];
-                        myCardContainList = [];
-                        imgUrlList = [];
-                        favoriteList = [];
-                        extractedSortedMyCardNumberList = [];
-                        // リストのインデックス番号を管理するプロバイダを初期化
-                        ref.read(myCardsPageFirstIndexProvider.notifier).state[tabIndex] = 0;
-                        // 選択した都道府県のマイカード番号のリストを再生成
-                        getExtractedSortedMyCardNumberList();
-                        // 再ビルド
-                        setState(() {});
-                      },
+                      // 都道府県の選択のためのModalBottomSheetを出す
+                      await showWhiteModalBottomSheet(
+                        context: context,
+                        widget: AccordionPrefectures(
+                          provider: myCardsPagePrefectureProvider,
+                        )
+                      );
+                      // リストを初期化
+                      cardMasterModelList = [];
+                      myCardContainList = [];
+                      imgUrlList = [];
+                      favoriteList = [];
+                      extractedSortedMyCardNumberList = [];
+                      // リストのインデックス番号を管理するプロバイダを初期化
+                      ref.read(myCardsPageFirstIndexProvider.notifier).state[tabIndex] = 0;
+                      // 選択した都道府県のマイカード番号のリストを再生成
+                      getExtractedSortedMyCardNumberList();
+                      // 再ビルド
+                      setState(() {});
+                    },
+                  ),
+                  Expanded(
+                    child: InfinityListView(
+                      cardMasterModelList: cardMasterModelList,
+                      myCardContainList: myCardContainList,
+                      imgUrlList: imgUrlList,
+                      favoriteList: favoriteList,
+                      listAllItemLength: extractedSortedMyCardNumberList.length,
+                      getListItems: getListItems,
                     ),
-                    Expanded(
-                      child: InfinityListView(
-                        cardMasterModelList: cardMasterModelList,
-                        myCardContainList: myCardContainList,
-                        imgUrlList: imgUrlList,
-                        favoriteList: favoriteList,
-                        listAllItemLength: extractedSortedMyCardNumberList.length,
-                        getListItems: getListItems,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      },
     );
   }
 

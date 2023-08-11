@@ -44,13 +44,12 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
     // 選択されたカード番号取得
     RegExp regex = RegExp(r'\s');
     final selectedCardMasterNumber = selectedCard.split(regex)[0];
-    //
-    /// 例外処理は後でまとめて処理できるようにしたい
+
     try {
       state = const AsyncValue.loading();
 
       // throw Exception("エラー発生");
-      localMyCardInfoList = await fetchMyCardInfoFromLocalOrDB(ref);
+      localMyCardInfoList = await fetchMyCardIdAndFavoriteFromLocalOrDB(ref);
 
       if (localMyCardInfoList != null) {
         for (Map<String, dynamic> localMyCardInfo in localMyCardInfoList) {
@@ -126,11 +125,11 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
         };
         if (localMyCardInfoList == null) {
           print("***********はじめてのカード追加です 次のデータをローカルに追加 localMyCardInfoList：$localMyCardInfo***********");
-          await LocalStorageRepository().putMyCardNumber([localMyCardInfo]);
+          await LocalStorageRepository().putMyCardIdAndFavorites([localMyCardInfo]);
         } else {
           localMyCardInfoList.add(localMyCardInfo);
           print("***********カード追加2回目以降です 次のリストをローカルに追加 localMyCardInfoList：$localMyCardInfoList***********");
-          await LocalStorageRepository().putMyCardNumber(localMyCardInfoList);
+          await LocalStorageRepository().putMyCardIdAndFavorites(localMyCardInfoList);
         }
         state = const AsyncValue.data(true);
       },

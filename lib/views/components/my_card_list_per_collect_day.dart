@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:harvester/repositories/card_master_repository.dart';
-import 'package:harvester/repositories/card_repository.dart';
-import 'package:harvester/viewModels/auth_view_model.dart';
-import 'package:harvester/viewModels/user_view_model.dart';
 
 import '../../models/card_master_model.dart';
+import '../../repositories/card_master_repository.dart';
+import '../../repositories/card_repository.dart';
+import '../../viewModels/auth_view_model.dart';
+import '../../viewModels/user_view_model.dart';
 import '../widgets/infinity_list_view.dart';
+import 'shimmer_loading.dart';
 
 class MyCardListPerCollectDay extends ConsumerStatefulWidget {
   const MyCardListPerCollectDay({super.key});
@@ -80,26 +81,24 @@ class MyCardListPerCollectDayState extends ConsumerState<MyCardListPerCollectDay
     //   ],
     // );
 
-    return Center(
-      child: FutureBuilder(
-        future: getListItems(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          if (snapshot.hasError) {
-            return Text('${snapshot.stackTrace}');
-          }
-          return InfinityListView(
-            cardMasterModelList: cardMasterModelList,
-            myCardContainList: myCardContainList,
-            imgUrlList: imgUrlList,
-            favoriteList: favoriteList,
-            listAllItemLength: 0,
-            getListItems: getListItems,
-          );
-        },
-      ),
+    return FutureBuilder(
+      future: getListItems(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const ShimmerLoading();
+        }
+        if (snapshot.hasError) {
+          return Text('${snapshot.stackTrace}');
+        }
+        return InfinityListView(
+          cardMasterModelList: cardMasterModelList,
+          myCardContainList: myCardContainList,
+          imgUrlList: imgUrlList,
+          favoriteList: favoriteList,
+          listAllItemLength: 0,
+          getListItems: getListItems,
+        );
+      },
     );
   }
 

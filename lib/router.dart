@@ -7,7 +7,6 @@ import 'package:harvester/views/pages/register/tel_sms_code_page.dart';
 import 'package:harvester/views/pages/test_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/all_cards_list_page.dart';
-import 'package:harvester/views/pages/collections/my_card_edit_page.dart';
 import 'package:harvester/views/pages/collections/my_cards_list_page.dart';
 import 'package:harvester/views/pages/collections/my_card_add_page.dart';
 import 'package:harvester/views/pages/home_page.dart';
@@ -17,7 +16,6 @@ import 'package:harvester/views/pages/settings/user_info_edit_page.dart';
 import 'package:harvester/views/pages/register/tel_identification_page.dart';
 import 'package:harvester/views/pages/register/user_info_register_page.dart';
 import 'commons/redirect_path.dart';
-import 'views/pages/test_page2.dart';
 import 'views/pages/test_scroll_page.dart';
 
 
@@ -82,12 +80,6 @@ Provider<GoRouter> router() {
           },
         ),
         GoRoute(
-          path: '/test_page2',
-          builder: (BuildContext context, GoRouterState state) {
-            return TestPage2();
-          },
-        ),
-        GoRoute(
           path: '/test_scroll_page',
           builder: (BuildContext context, GoRouterState state) {
             return const TestScrollPage();
@@ -142,12 +134,6 @@ Provider<GoRouter> router() {
           path: '/cards/cards_list_page',
           builder: (BuildContext context, GoRouterState state) {
             return const AllCardsListPage();
-          },
-        ),
-        GoRoute(
-          path: '/cards/my_card_edit_page',
-          builder: (BuildContext context, GoRouterState state) {
-            return const MyCardEditPage();
           },
         ),
         GoRoute(

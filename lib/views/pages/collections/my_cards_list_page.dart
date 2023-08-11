@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:harvester/provider/providers.dart';
 
 import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_const.dart';
+import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../components/colored_tab_bar.dart';
 import '../../components/my_card_list.dart';
@@ -26,6 +28,13 @@ class MyCardsListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final myCardNumber = ref.read(myCardNumberListProvider).length;
+
+    // マイカードが登録されていない場合は、メッセージのText Widgetをタブ分生成
+    List<Widget> noMyCardTextList = [];
+    if (myCardNumber == 0) {
+      noMyCardTextList = List.filled(myCardTabTitleList.length, const Center(child: Text(noMyCardMessage)));
+    }
 
     return DefaultTabController(
       length: tabList(context).length,
@@ -37,17 +46,20 @@ class MyCardsListPage extends ConsumerWidget {
             tabBar: tabBar(tabList(context)),
           ),
         ),
-        body: const TabBarView(
-          children: [
-            MyCardList(),
-            MyCardListPerPrefecture(),
-            MyCardListPerCollectDay(),
-            MyFavoriteCardList(),
-          ]
-        ),
+        body: myCardNumber != 0
+          ? const TabBarView(
+            children: [
+              MyCardList(),
+              MyCardListPerPrefecture(),
+              MyCardListPerCollectDay(),
+              MyFavoriteCardList(),
+            ]
+          )
+          : TabBarView(
+            children: noMyCardTextList,
+          ),
       ),
     );
-
   }
 
 }

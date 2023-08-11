@@ -9,6 +9,7 @@ import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
 import '../widgets/white_button.dart';
 import 'accordion_prefectures.dart';
+import 'shimmer_loading.dart';
 import 'white_show_modal_bottom_sheet.dart';
 
 class AllCardListPerPrefecture extends ConsumerStatefulWidget {
@@ -42,62 +43,60 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
     final selectedPrefecture = ref.read(allCardsPagePrefectureProvider);  // 選択された都道府県
     final selectedPrefectureCardsNum = cardMasterOptionStrList[addressList.indexOf(selectedPrefecture)].length;  // 選択された都道府県のカード枚数
 
-    return Center(
-      child: FutureBuilder(
-        future: getListItems(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          }
-          if (snapshot.hasError) {
-            return Text('${snapshot.stackTrace}');
-          }
-          return Column(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    WhiteButton(
-                      text: '都道府県の選択',
-                      fontSize: 16,
-                      onPressed: () async {
-                        int tabIndex = DefaultTabController.of(context).index;
+    return FutureBuilder(
+      future: getListItems(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const ShimmerLoading();
+        }
+        if (snapshot.hasError) {
+          return Text('${snapshot.stackTrace}');
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  WhiteButton(
+                    text: '都道府県の選択',
+                    fontSize: 16,
+                    onPressed: () async {
+                      int tabIndex = DefaultTabController.of(context).index;
 
-                        // 都道府県の選択のためのModalBottomSheetを出す
-                        await showWhiteModalBottomSheet(
-                          context: context,
-                          widget: AccordionPrefectures(
-                            provider: allCardsPagePrefectureProvider,
-                          )
-                        );
-                        // リストを初期化
-                        cardMasterModelList = [];
-                        myCardContainList = [];
-                        imgUrlList = [];
-                        favoriteList = [];
-                        // FireStoreから取得していたlastDocumentを初期化
-                        ref.read(allCardsPageLastDocumentProvider.notifier).state[tabIndex] = null;
-                        // 再ビルド
-                        setState(() {});
-                      },
+                      // 都道府県の選択のためのModalBottomSheetを出す
+                      await showWhiteModalBottomSheet(
+                        context: context,
+                        widget: AccordionPrefectures(
+                          provider: allCardsPagePrefectureProvider,
+                        )
+                      );
+                      // リストを初期化
+                      cardMasterModelList = [];
+                      myCardContainList = [];
+                      imgUrlList = [];
+                      favoriteList = [];
+                      // FireStoreから取得していたlastDocumentを初期化
+                      ref.read(allCardsPageLastDocumentProvider.notifier).state[tabIndex] = null;
+                      // 再ビルド
+                      setState(() {});
+                    },
+                  ),
+                  Expanded(
+                    child: InfinityListView(
+                      cardMasterModelList: cardMasterModelList,
+                      myCardContainList: myCardContainList,
+                      imgUrlList: imgUrlList,
+                      favoriteList: favoriteList,
+                      listAllItemLength: selectedPrefectureCardsNum,
+                      getListItems: getListItems,
                     ),
-                    Expanded(
-                      child: InfinityListView(
-                        cardMasterModelList: cardMasterModelList,
-                        myCardContainList: myCardContainList,
-                        imgUrlList: imgUrlList,
-                        favoriteList: favoriteList,
-                        listAllItemLength: selectedPrefectureCardsNum,
-                        getListItems: getListItems,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      },
     );
   }
 

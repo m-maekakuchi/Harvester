@@ -83,12 +83,22 @@ class UserRepository {
   }
 
   Future<void> updateCardsFireStore(UserInfoModel userInfoModel, Transaction transaction) async {
-    final collectionRef = db.collection("users");
-    final docRef = collectionRef
-      .doc(userInfoModel.firebaseAuthUid);
+    final collectionRef = db
+      .collection("users");
+    final docRef = collectionRef.doc(userInfoModel.firebaseAuthUid);
 
     transaction.update(docRef, {
       "cards": FieldValue.arrayUnion(userInfoModel.cards!),
+    });
+  }
+
+  Future<void> removeElementOfCards(String uid, DocumentReference removeDocRef, Transaction transaction) async {
+    final docRef = db
+      .collection("users")
+      .doc(uid);
+
+    transaction.update(docRef, {
+      "cards": FieldValue.arrayRemove([removeDocRef]),
     });
   }
 }

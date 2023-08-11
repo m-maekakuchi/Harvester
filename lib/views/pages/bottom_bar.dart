@@ -6,6 +6,7 @@ import '../../commons/app_const.dart';
 import '../../commons/bottom_navigation_bar_item.dart';
 import '../../handlers/fetch_my_card_handler.dart';
 import '../../provider/providers.dart';
+import '../../viewModels/image_view_model.dart';
 import 'cards/all_cards_list_page.dart';
 import 'collections/my_card_add_page.dart';
 import 'collections/my_cards_list_page.dart';
@@ -40,7 +41,7 @@ class BottomBar extends ConsumerWidget {
         onTap: (index) async {
           // マイカードボタンか全カードボタンが押された場合
           if (index == 1 || index == 2) {
-            List<Map<String, dynamic>>? myCardIdAndFavoriteList = await fetchMyCardInfoFromLocalOrDB(ref);
+            List<Map<String, dynamic>>? myCardIdAndFavoriteList = await fetchMyCardIdAndFavoriteFromLocalOrDB(ref);
 
             // マイカード情報がローカルかFireStoreから取得できたら、マイカード情報をプロバイダで管理
             if (myCardIdAndFavoriteList != null) {
@@ -49,14 +50,20 @@ class BottomBar extends ConsumerWidget {
             // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
             if (myCardIdAndFavoriteList != null) {
               final myCardNumberList = myCardIdAndFavoriteList.map((value) =>
-                value["id"] as String).toList();
-              //  マイカードの番号の配列を、カード番号順に並べ替え
+                value["id"] as String
+              ).toList();
               ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
             }
             // リストの最後のドキュメントを初期化（ページを再表示したとき、これがないとリスト表示がリセットされない）
             if (index == 1) ref.read(myCardsPageFirstIndexProvider.notifier).state = List.filled(myCardTabTitleList.length, 0);
             if (index == 2) ref.read(allCardsPageLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);
           }
+
+          if (index == 3) {
+            //  追加画面の画像が残っている場合があるのでViewModelを初期化
+            ref.read(imageListProvider.notifier).init();
+          }
+
           ref.read(bottomBarIndexProvider.notifier).state = index;
         },
       )

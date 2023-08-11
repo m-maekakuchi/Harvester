@@ -80,7 +80,7 @@ class MyCardAddPage extends ConsumerWidget {
           SizedBox(height: getH(context, 2)),
           // お気に入り選択
           BookMarkButton(provider: bookmarkProvider),
-          SizedBox(height: getH(context, 2),),
+          SizedBox(height: getH(context, 2)),
           GreenButton(
             text: '登録',
             fontSize: 18,
@@ -104,7 +104,7 @@ class MyCardAddPage extends ConsumerWidget {
                     () => context.pop(),
                   );
                   // 登録完了のダイアログを表示
-                  if (context.mounted) await doneMessageDialog(context);
+                  if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
                 }
             },
           ),

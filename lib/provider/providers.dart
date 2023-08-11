@@ -6,7 +6,7 @@ import '../commons/app_const.dart';
 
 // ローカルに登録したマイカード情報を保持（例： [{"id": "00-101-A001", "favorite": true}]）
 final myCardIdAndFavoriteListProvider = StateProvider((ref) => []);
-// ローカルに登録したマイカード番号を保持（カード番号順）
+// ローカルに登録したマイカード番号を保持
 final StateProvider<List<String>> myCardNumberListProvider = StateProvider((ref) => []);
 
 /// bottom_bar
@@ -24,3 +24,11 @@ final myCardsPagePrefectureProvider = StateProvider((ref) => addressList[12]);
 
 /// カード詳細画面
 final carouselSliderIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+
+/// カード編集画面
+final cardEditPageImageModelListProvider = StateProvider((ref) => []);
+final cardEditPageCollectDayProvider = StateProvider((ref) => DateTime.now());
+final cardEditPageFavoriteProvider = StateProvider((ref) => false);
+final cardRemoveStateProvider = StateProvider((_) => const AsyncValue.data(null));
+
+final loadingStateProvider = StateProvider((ref) => false);
