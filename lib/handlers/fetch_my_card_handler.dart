@@ -4,9 +4,9 @@ import '../repositories/local_storage_repository.dart';
 import '../viewModels/auth_view_model.dart';
 import 'card_master_handler.dart';
 
-Future<List<Map<String, dynamic>>?> fetchMyCardInfoFromLocalOrDB (WidgetRef ref) async {
+Future<List<Map<String, dynamic>>?> fetchMyCardIdAndFavoriteFromLocalOrDB (WidgetRef ref) async {
   // Hiveでローカルからマイカードの番号を取得
-  List<Map<String, dynamic>>? localMyCardInfoList = await LocalStorageRepository().fetchMyCardNumber();
+  List<Map<String, dynamic>>? localMyCardInfoList = await LocalStorageRepository().fetchMyCardIdAndFavorites();
   print("ローカルのマイカード情報：${localMyCardInfoList.toString()}");
 
   // ローカルから取得できない場合、FireStoreから取得

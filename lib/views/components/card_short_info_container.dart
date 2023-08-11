@@ -1,16 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:harvester/repositories/card_repository.dart';
-import 'package:harvester/viewModels/auth_view_model.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
-import '../../models/card_model.dart';
-import '../../repositories/image_repository.dart';
-import '../../repositories/photo_repository.dart';
 import '../pages/cards/card_detail_page.dart';
 import '../widgets/cached_network_image.dart';
 
@@ -19,20 +13,20 @@ class CardShortInfoContainer extends ConsumerWidget {
 
   /// マスターカード
   final CardMasterModel cardMasterModel;
-  /// 画像
+  /// 画像URL
   final String? imgUrl;
-  /// お気に入り登録
+  /// お気に入り登録されているか
   final bool? favorite;
   /// マイカードに登録されているか
   final bool myContain;
 
   const CardShortInfoContainer({
-    Key? key,
+    super.key,
     required this.cardMasterModel,
     this.imgUrl,
     required this.favorite,
     required this.myContain,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,32 +35,6 @@ class CardShortInfoContainer extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () async {
-        final uid = ref.read(authViewModelProvider.notifier).getUid();
-        DateTime? collectDay;
-        List<String?>? imgUrlList;
-        // マイカードに登録していた場合
-        if (myContain) {
-          // 収集日を取得
-          collectDay = await CardRepository().getCollectDay("$uid${cardMasterModel.serialNumber}");
-          // 画像のURLリストを取得
-          CardModel? cardModel = await CardRepository().getFromFireStoreUsingDocName("$uid${cardMasterModel.serialNumber}");
-          // マイカードが取得できて、photoフィールドが空ではないとき
-          if (cardModel != null && cardModel.photos!.isNotEmpty) {
-            // 登録されている画像を取得
-            final photoDocRefList = cardModel.photos;
-            if (photoDocRefList != null) {
-              imgUrlList = [];
-              await Future.forEach(photoDocRefList, (photoDocRef) async {
-                final photoModel = await PhotoRepository().getFromFireStore(photoDocRef as DocumentReference<Map<String, dynamic>>);
-                if (photoModel != null) {
-                  // 画像URLを取得
-                  final imgUrl = await ImageRepository().downloadOneImageFromFireStore(cardMasterModel.serialNumber, photoModel.fileName!, ref);
-                  imgUrlList!.add(imgUrl);
-                }
-              });
-            }
-          }
-        }
         // showModalBottomSheetを使用して、カード詳細画面を表示
         if (context.mounted) {
           showModalBottomSheet<void>(
@@ -75,9 +43,6 @@ class CardShortInfoContainer extends ConsumerWidget {
             builder: (BuildContext context) {
               return CardDetailPage(
                 cardMasterModel: cardMasterModel,
-                imgUrlList: imgUrlList,
-                favorite: favorite,
-                collectDay: collectDay,
                 myContain: myContain,
               );
             }

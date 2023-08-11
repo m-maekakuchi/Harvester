@@ -9,12 +9,12 @@ class UserSelectItemContainer extends StatelessWidget {
 
   /// 選択欄に表示するテキスト
   final String text;
-  final GestureTapCallback onPressed;
+  final GestureTapCallback? onPressed;
 
   const UserSelectItemContainer({
     super.key,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
   });
 
   @override

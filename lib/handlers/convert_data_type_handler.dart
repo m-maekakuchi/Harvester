@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../models/image_model.dart';
 import '../models/photo_model.dart';
@@ -13,8 +14,7 @@ DateTime convertStringToDateTime(String dateString) {
 }
 
 String convertDateTimeToString(DateTime dateTime) {
-  final formattedDate = '${dateTime.year}/${dateTime.month}/${dateTime.day}';
-  return formattedDate;
+  return DateFormat('yyyy/MM/dd').format(dateTime);
 }
 
 List<PhotoModel> convertListData(List<ImageModel> imageModelList, WidgetRef ref) {

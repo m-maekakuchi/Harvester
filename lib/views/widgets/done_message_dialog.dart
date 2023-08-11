@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../../commons/app_color.dart';
-import '../../commons/message.dart';
 
-Future<void> doneMessageDialog(BuildContext context) {
+Future<void> doneMessageDialog(BuildContext context, String message) {
   return showDialog<void>(
     context: context,
+    barrierDismissible: false,  // ダイアログ表示時の背景をタップしたときにダイアログを閉じてよいかどうか
     builder: (BuildContext context) {
-      return const AlertDialog(
-        shape: RoundedRectangleBorder(
+      return AlertDialog(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20))
         ),
-        title: Icon(
+        title: const Icon(
           Icons.done_rounded,
           size: 80,
           color: textIconColor
         ),
-        content: Text(registerCompleteMessage, textAlign: TextAlign.center),
+        content: Text(message, textAlign: TextAlign.center),
       );
     },
   );

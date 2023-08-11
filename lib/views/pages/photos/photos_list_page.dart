@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../commons/app_bar_contents.dart';
+import '../../../commons/app_const.dart';
 import '../../../handlers/padding_handler.dart';
 
 class PhotosListPage extends StatelessWidget {
@@ -16,44 +18,50 @@ class PhotosListPage extends StatelessWidget {
       );
     }
 
-    return SingleChildScrollView(
-      child: SizedBox(
-        width: double.infinity,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-              ],
-            ),
-            Row(
-              children: [
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-              ],
-            ),
-            Row(
-              children: [
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-              ],
-            ),
-            Row(
-              children: [
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-              ],
-            ),
-            Row(
-              children: [
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-                photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
-              ],
-            ),
-          ],
-        ),
-      )
+    return Scaffold(
+      appBar: AppBar(
+        title: titleBox(pageTitleList[4], context),
+        actions: actionList(context),
+      ),
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                ],
+              ),
+              Row(
+                children: [
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                ],
+              ),
+              Row(
+                children: [
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                ],
+              ),
+              Row(
+                children: [
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                ],
+              ),
+              Row(
+                children: [
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                  photoContainer('https://i0.wp.com/kagohara.net/wp-content/uploads/2022/11/manholecard09.jpg?w=1500&ssl=1'),
+                ],
+              ),
+            ],
+          ),
+        )
+      ),
     );
   }
 }

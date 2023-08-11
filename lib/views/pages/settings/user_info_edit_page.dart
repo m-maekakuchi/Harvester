@@ -205,7 +205,7 @@ class UserInfoEditPage extends ConsumerWidget {
                     () => context.pop(),
                   );
                   // 登録完了のダイアログを表示
-                  if (context.mounted) await doneMessageDialog(context);
+                  if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
 
                   if (context.mounted) context.pop();
                 }

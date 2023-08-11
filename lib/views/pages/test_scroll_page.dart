@@ -171,7 +171,7 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardsListPerPrefec
                         // リストのアイテムを初期化
                         items = [];
                         // FireStoreから取得していたリストのlastDocumentを初期化
-                        ref.read(allCardsListLastDocumentProvider.notifier).state[1] = null;
+                        ref.read(allCardsPageLastDocumentProvider.notifier).state[1] = null;
                         // リストのインデックスを初期化
                         lastIndex = 0;
                         // 再ビルド

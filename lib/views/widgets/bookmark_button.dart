@@ -22,11 +22,11 @@ class BookMarkButton extends ConsumerWidget {
         final notifier = ref.read(provider.notifier);
         notifier.state = !bookmark;
       },
-      iconSize: getW(context, 10),
+      iconSize: getW(context, 12),
       icon: Icon(
         bookmark ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
       ),
-      color: textIconColor,
+      color: bookmark ? favoriteColor : textIconColor,
     );
   }
 }

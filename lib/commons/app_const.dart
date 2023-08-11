@@ -23,10 +23,10 @@ const allCardTabTitleList = [
 ];
 
 const myCardTabTitleList = [
-  '日付',
-  'お気に入り',
   '全国',
   '都道府県',
+  '日付',
+  'お気に入り',
 ];
 
 const cardDetailInfoTabTitleList = [
@@ -37,6 +37,8 @@ const cardDetailInfoTabTitleList = [
 
 // カード一覧画面のローディング数
 const loadingNum = 30;
+
+const loadingNumTest = 6;
 
 // マスターカードの枚数
 final cardMasterNum = getListNum();

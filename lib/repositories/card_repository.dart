@@ -22,7 +22,7 @@ class CardRepository {
     );
   }
 
-  // ドキュメント参照から取得
+  // ドキュメント参照からCardModelを取得
   Future<CardModel?> getFromFireStoreUsingDocRef(DocumentReference<Map<String, dynamic>> docRef) async {
     final docSnapshot = await docRef.get();
     final card = docSnapshot.data();
@@ -37,7 +37,7 @@ class CardRepository {
     return cardModel;
   }
 
-  // ドキュメント名から取得
+  // ドキュメント名からCardModelを取得
   Future<CardModel?> getFromFireStoreUsingDocName(String docName) async {
     final docSnapshot = await db.collection("cards").doc(docName).get();
     final card = docSnapshot.data();
@@ -50,6 +50,22 @@ class CardRepository {
       cardModel = null;
     }
     return cardModel;
+  }
+
+  // ドキュメント名からドキュメント内容を取得
+  Future<Map<String, dynamic>?> getDocument(String docName) async {
+    final docRef = db.collection("cards").doc(docName);
+    Map<String, dynamic>? data;
+    await docRef.get().then(
+      (DocumentSnapshot<Map<String, dynamic>> doc) {
+        data = doc.data();
+      },
+      onError: (e) {
+        print("Error getting document: $e");
+        data = null;
+      }
+    );
+    return data;
   }
 
   // ドキュメント名から収集日のみ取得
@@ -78,6 +94,13 @@ class CardRepository {
       .doc(docName);
     transaction.set(docRef, cardModel);
     return db.collection("cards").doc(docName);
+  }
+
+  // ドキュメント名からドキュメント削除
+  Future<void> deleteDocument(String docName, Transaction transaction) async {
+    final collectionRef = db.collection("cards");
+    final cardDocRef = collectionRef.doc(docName);
+    transaction.delete(cardDocRef);
   }
 
 }

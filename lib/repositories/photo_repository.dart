@@ -31,4 +31,9 @@ class PhotoRepository {
     }
     return docList;
   }
+
+  // ドキュメント参照で、ドキュメントを削除
+  Future<void> deleteDocument(DocumentReference<Map<String, dynamic>> docRef, Transaction transaction) async {
+    transaction.delete(docRef);
+  }
 }

@@ -3,12 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/viewModels/auth_view_model.dart';
 import 'package:harvester/views/pages/bottom_bar.dart';
-import 'package:harvester/views/pages/cards/card_detail_page.dart';
 import 'package:harvester/views/pages/register/tel_sms_code_page.dart';
 import 'package:harvester/views/pages/test_page.dart';
 import 'package:harvester/views/pages/welcome_page.dart';
 import 'package:harvester/views/pages/cards/all_cards_list_page.dart';
-import 'package:harvester/views/pages/collections/my_card_edit_page.dart';
 import 'package:harvester/views/pages/collections/my_cards_list_page.dart';
 import 'package:harvester/views/pages/collections/my_card_add_page.dart';
 import 'package:harvester/views/pages/home_page.dart';
@@ -25,7 +23,7 @@ Provider<GoRouter> router() {
   return Provider((ref) =>
     GoRouter(
       redirect: (context, state) async {
-        // return '/test_scroll_page';
+        // return '/test_page2';
 
         // authControllerProviderに変更があった場合に動くイメージ
         final auth = ref.watch(authViewModelProvider);
@@ -136,18 +134,6 @@ Provider<GoRouter> router() {
           path: '/cards/cards_list_page',
           builder: (BuildContext context, GoRouterState state) {
             return const AllCardsListPage();
-          },
-        ),
-        GoRoute(
-          path: '/cards/card_detail_page',
-          builder: (BuildContext context, GoRouterState state) {
-            return const CardDetailPage();
-          },
-        ),
-        GoRoute(
-          path: '/cards/my_card_edit_page',
-          builder: (BuildContext context, GoRouterState state) {
-            return const MyCardEditPage();
           },
         ),
         GoRoute(

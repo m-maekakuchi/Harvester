@@ -2,153 +2,205 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/commons/app_color.dart';
 
+import '../../../commons/app_bar_contents.dart';
+import '../../../commons/app_color.dart';
+import '../../../commons/app_const.dart';
+import '../../../commons/message.dart';
+import '../../../handlers/card_remove_handler.dart';
+import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../models/card_master_model.dart';
+import '../../../models/card_model.dart';
+import '../../../provider/providers.dart';
+import '../../../viewModels/image_view_model.dart';
 import '../../components/date_picker.dart';
+import '../../components/pick_and_crop_image_container.dart';
+import '../../components/shimmer_loading_with_app_bar.dart';
 import '../../widgets/bookmark_button.dart';
 import '../../components/title_container.dart';
 import '../../components/user_select_item_container.dart';
-import '../../widgets/item_cupertino_picker.dart';
-
-final cardProvider = StateProvider((ref) => 0);
-final dateProvider = StateProvider((ref) => DateTime.now());
-// trueならお気に入り登録する
-final bookmarkProvider = StateProvider((ref) => false);
-
-const List<String> cardAry = <String>[
-  '日本下水道事業団 00-101-A001',
-  'UR都市機構 00-102-A001',
-  '札幌市（A001） 01-100-A001',
-  '札幌市（B001） 01-100-B001',
-  '函館市 01-202-A001',
-  '小樽市 01-203-A002',
-];
+import '../../widgets/done_message_dialog.dart';
+import '../../widgets/modal_barrier.dart';
 
 class MyCardEditPage extends ConsumerWidget {
+  final CardMasterModel cardMasterModel;
+  final CardModel cardModel;
 
-  const MyCardEditPage({super.key});
+  const MyCardEditPage({
+    super.key,
+    required this.cardMasterModel,
+    required this.cardModel,
+  });
+
+  Future<void> getData(WidgetRef ref) async {}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final cardIndex = ref.watch(cardProvider);
-    final selectedDay = ref.watch(dateProvider);
+    final popContext = context; // 変更完了のダイアログを閉じるときにcontextだとエラーになるのでこれを追加
+    final cardRemoveState = ref.watch(cardRemoveStateProvider); // 削除処理の状況を監視
+    final loadingState = ref.watch(loadingStateProvider);
 
-    // ドラムロール(カード選択)
-    void showDialog(Widget child) {
-      showCupertinoModalPopup<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return Container(
-              height: MediaQuery.of(context).size.height / 3,
-              padding: const EdgeInsets.only(top: 6.0),
-              margin: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+    final imageModelList = ref.watch(imageListProvider);
+    final selectedCollectDay = ref.watch(cardEditPageCollectDayProvider);
+
+    final bodyWidget = FutureBuilder(
+      future: getData(ref),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          /// ///////////Shimmerのloading画面/////////////////
+          return const ShimmerLoadingWithAppBar();
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        } else {
+          return Column(
+            children: [
+              Expanded( //　ボタンを下部に固定するために、それ以外のWidgetをExpandedで囲む
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(height: getH(context, 3)),
+                      /// 写真選択欄
+                      for (var i = 0; i < imageNumPerCard / 2; i++) ... {
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (var j = 0; j < 2; j++) ... {
+                              PickAndCropImageContainer(index: i * 2 + j),
+                            },
+                          ]
+                        ),
+                      },
+                      const TitleContainer(titleStr: 'カード'),
+                      /// 取得カードの選択欄
+                      Container(
+                        width: getW(context, 90),
+                        margin: EdgeInsets.only(bottom: getH(context, 1)),
+                        decoration: BoxDecoration(
+                          color: scaffoldBackgroundColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: CupertinoButton( // TextIconでもいいけど日付選択欄のボタンにあわせてデザイン揃えている
+                          padding: EdgeInsets.symmetric(
+                              horizontal: getW(context, 5)),
+                          onPressed: () {},
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: FittedBox(
+                              alignment: Alignment.centerLeft,
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "${cardMasterModel.serialNumber}　${cardMasterModel.city}",
+                                style: const TextStyle(color: textIconColor),
+                                maxLines: 1,
+                              )
+                            ),
+                          ),
+                        ),
+                      ),
+                      const TitleContainer(titleStr: '収集日'),
+                      /// 収集日選択欄
+                      UserSelectItemContainer(
+                        text: convertDateTimeToString(selectedCollectDay),
+                        onPressed: () async {
+                          final selectedDayFromCalendar = await DatePicker(context: context).showDate(selectedCollectDay);
+                          // 日付が選択された場合
+                          if (selectedDayFromCalendar != null) {
+                            ref.read(cardEditPageCollectDayProvider.notifier).state = selectedDayFromCalendar;
+                          }
+                        },
+                      ),
+                      SizedBox(height: getH(context, 2)),
+                      /// お気に入り登録設定
+                      BookMarkButton(provider: cardEditPageFavoriteProvider),
+                      SizedBox(height: getH(context, 2)),
+                    ],
+                  ),
+                ),
               ),
-              color: CupertinoColors.systemBackground.resolveFrom(context),
-              child: SafeArea(
-                top: false,
-                child: child,
+              /// 編集完了ボタンと削除ボタン
+              Container(
+                width: double.infinity,
+                height: getH(context, 10),
+                color: textIconColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // doneボタン
+                    IconButton(
+                      //  画像を1つも選択していない、編集又は削除の処理中の場合はボタンを押せないようにする
+                      onPressed: imageModelList.isNotEmpty && !loadingState
+                        ? () {
+                          print(1);
+                        }
+                        : null,
+                      icon: const Icon(Icons.done_rounded),
+                      iconSize: 40,
+                      color: Colors.white,
+                    ),
+                    // 削除ボタン
+                    IconButton(
+                      //  編集又は削除の処理中の場合はボタンを押せないようにする
+                      onPressed: !loadingState
+                        ? () async {
+                          ref.read(loadingStateProvider.notifier).state = true;
+
+                          // カードの削除処理
+                          await ref.read(cardRemoveProvider).cardRemove(cardMasterModel);
+
+                          // 最後まで削除処理ができた場合（cardRemoveStateがloadingやerrorではないとき）
+                          if (ref.read(cardRemoveStateProvider).value == null) {  // watchだとnullになる
+                            Future.delayed(   // 1秒後にダイアログを閉じる
+                              const Duration(seconds: 1),
+                              () {
+                                popContext.pop();
+                                ref.read(loadingStateProvider.notifier).state = false;
+                                // 一覧画面まで戻る
+                                if (popContext.mounted) popContext.pop();
+                                if (popContext.mounted) popContext.pop();
+                                // ホーム画面に切り替える
+                                ref.read(bottomBarIndexProvider.notifier).state = 0;
+                              }
+                            );
+                            // 登録完了のダイアログを表示
+                            if (popContext.mounted) doneMessageDialog(popContext, deleteCompleteMessage);
+                          }
+                        }
+                      : null,
+                      icon: const Icon(Icons.delete_rounded),
+                      iconSize: 40,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
-            );
-          }
-      );
-    }
+            ],
+          );
+        }
+      }
+    );
 
     return Scaffold(
       appBar: AppBar(
-        title: SizedBox(
-          width: getW(context, 50),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-              children: [
-                Image.asset(
-                  width: getW(context, 10),
-                  height: getH(context, 10),
-                  'images/AppBar_logo.png'
-                ),
-                const Text("My Card 編集"),
-              ]
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.push('/settings/setting_page');
-            },
-            icon: const Icon(Icons.settings_rounded),
-          ),
-        ],
+        title: titleBox('My Card 編集', context),
+        actions: actionList(context),
       ),
-      body: Column(
-        children: [
-          // 下のDoneボタンをbottomに固定するために、それ以外のWidgetをExpandedで囲んでいる
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: getH(context, 3),),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: const [
-                  //     ImagePickAndCrop(),
-                  //     ImagePickAndCrop(),
-                  //   ],
-                  // ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: const [
-                  //     ImagePickAndCrop(),
-                  //     ImagePickAndCrop(),
-                  //   ],
-                  // ),
-                  const TitleContainer(titleStr: 'カード'),
-                  // 取得カードの選択欄
-                  UserSelectItemContainer(
-                    text: cardAry[cardIndex],
-                    onPressed: () => showDialog(
-                      ItemCupertinoPicker(
-                        provider: cardProvider,
-                        itemAry: cardAry
-                      ),
-                    ),
-                  ),
-                  const TitleContainer(titleStr: '収集日'),
-                  // 収集日の選択欄
-                  UserSelectItemContainer(
-                    text: '${selectedDay.year}/${selectedDay.month}/${selectedDay.day}',
-                    onPressed: () async {
-                      final selectedDate = await DatePicker(context: context).showDate(selectedDay);
-                      // 日付が選択された場合
-                      if (selectedDate != null) {
-                        final notifier = ref.read(dateProvider.notifier);
-                        notifier.state = selectedDate;
-                      }
-                    },
-                  ),
-                  SizedBox(height: getH(context, 2),),
-                  // お気に入り登録設定
-                  BookMarkButton(provider: bookmarkProvider),
-                  SizedBox(height: getH(context, 2),),
-                ],
-              ),
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            height: getH(context, 10),
-            color: textIconColor,
-            child: IconButton(
-              onPressed: () {
-                context.pop();
-              },
-              icon: const Icon(Icons.done_rounded),
-              iconSize: 40,
-              color: Colors.white,
-            ),
-          ),
-        ],
+      body: cardRemoveState.when(
+        data: (value) {
+          return bodyWidget;
+        },
+        error: (err, _) {
+          return Center(child: Text(err.toString()));
+        },
+        loading: () {
+          return Stack(
+            children: [
+              bodyWidget,
+              modalBarrier
+            ]
+          );
+        }
       ),
     );
   }

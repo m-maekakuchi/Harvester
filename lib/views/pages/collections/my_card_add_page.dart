@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
 import '../../../viewModels/card_view_model.dart';
@@ -79,7 +80,7 @@ class MyCardAddPage extends ConsumerWidget {
           SizedBox(height: getH(context, 2)),
           // お気に入り選択
           BookMarkButton(provider: bookmarkProvider),
-          SizedBox(height: getH(context, 2),),
+          SizedBox(height: getH(context, 2)),
           GreenButton(
             text: '登録',
             fontSize: 18,
@@ -103,7 +104,7 @@ class MyCardAddPage extends ConsumerWidget {
                     () => context.pop(),
                   );
                   // 登録完了のダイアログを表示
-                  if (context.mounted) await doneMessageDialog(context);
+                  if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
                 }
             },
           ),
@@ -111,21 +112,27 @@ class MyCardAddPage extends ConsumerWidget {
       ),
     );
 
-    return cardAddState.when(
-      data: (value) {
-        return bodyWidget;
-      },
-      error: (err, _) {
-        return Center(child: Text(err.toString()));
-      },
-      loading: () {
-        return Stack(
-          children: [
-            bodyWidget,
-            modalBarrier
-          ]
-        );
-      }
+    return Scaffold(
+      appBar: AppBar(
+        title: titleBox(pageTitleList[3], context),
+        actions: actionList(context),
+      ),
+      body: cardAddState.when(
+        data: (value) {
+          return bodyWidget;
+        },
+        error: (err, _) {
+          return Center(child: Text(err.toString()));
+        },
+        loading: () {
+          return Stack(
+            children: [
+              bodyWidget,
+              modalBarrier
+            ]
+          );
+        }
+      ),
     );
   }
 

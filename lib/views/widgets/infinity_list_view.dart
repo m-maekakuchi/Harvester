@@ -7,22 +7,22 @@ import '../components/card_short_info_container.dart';
 
 // スクロール可能なListView
 class InfinityListView extends ConsumerStatefulWidget {
-  final List<CardMasterModel> items;    // 一覧画面に表示するカードのリスト
-  final List<bool> myCardContainList;   // マイカードに登録しているか否かのリスト
-  final List<String?> imgUrlList;       // マイカードに登録した画像のURLリスト（マイカードに登録していなければnull）
-  final List<bool?> favoriteList;       // お気に入りカードリスト（マイカードに登録していなければnull）
-  final int itemsMaxIndex;              // リストの最大インデックス番号（全国タブ：全カード数、都道府県タブ：各都道府県のカード数）
-  final Future<void> Function() getListItems;   // リスト追加のメソッド
+  final List<CardMasterModel> cardMasterModelList;  // 一覧画面に表示するカードのリスト
+  final List<bool> myCardContainList;               // マイカードに登録しているか否かのリスト
+  final List<String?> imgUrlList;                   // マイカードに登録した画像URLのリスト（マイカードに登録していなければnull）
+  final List<bool?> favoriteList;                   // お気に入りカードのリスト（マイカードに登録していなければnull）
+  final int listAllItemLength;                      // リストの全アイテム数（全国タブ：全カード数、都道府県タブ：各都道府県のカード数）
+  final Future<void> Function() getListItems;       // リスト追加のメソッド
 
   const InfinityListView({
-    Key? key,
-    required this.items,
+    super.key,
+    required this.cardMasterModelList,
     required this.myCardContainList,
     required this.imgUrlList,
     required this.favoriteList,
-    required this.itemsMaxIndex,
+    required this.listAllItemLength,
     required this.getListItems,
-  }) : super(key: key);
+  });
 
   @override
   InfinityListViewState createState() => InfinityListViewState();
@@ -43,7 +43,7 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
       // 現在のスクロール位置が、最大スクロールの0.95の位置を超えた、かつ読み込み中でない時
       // 全データ（全国タブ：全カード、都道府県タブ：各都道府県の全カード）を取得したら実行しない
       if (
-        widget.favoriteList.length != widget.itemsMaxIndex
+        widget.favoriteList.length != widget.listAllItemLength
         && _scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent * 0.95
         && !_isLoading
@@ -76,12 +76,10 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
       shrinkWrap: true,
       controller: _scrollController,
       itemCount: widget.favoriteList.length + 1,  // データ長+1、一番最後にデータ取得が終わるfavoriteListの個数に設定
-      separatorBuilder: (BuildContext context, int index) => const SizedBox(
-        height: 2,
-      ),
+      separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 2),
       itemBuilder: (BuildContext context, int index) {
         // すべてアイテムを取得した場合は、終端はなにも表示しない
-        if (index < widget.itemsMaxIndex) {
+        if (index < widget.listAllItemLength) {
           // リストが終端に行った際に、現在読み込んでるデータ+1番目の要素として、インジケーターを表示
           // 一番最後にデータ取得が終わるfavoriteListの読み込みが終わるまで
           if (widget.favoriteList.length == index) {
@@ -97,7 +95,7 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
             children: [
               const SizedBox(height: 10),
               CardShortInfoContainer(
-                cardMasterModel: widget.items[index],
+                cardMasterModel: widget.cardMasterModelList[index],
                 imgUrl: widget.imgUrlList[index],
                 favorite: widget.favoriteList[index],
                 myContain: widget.myCardContainList[index],
