@@ -245,7 +245,6 @@ class CardDetailPage extends ConsumerWidget {
       future: fetchCardModelAndImgUrl(ref),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          /// ///////////Shimmerのloading画面/////////////////
           return const ShimmerLoadingWithAppBar();
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
@@ -264,7 +263,7 @@ class CardDetailPage extends ConsumerWidget {
                       children: [
                         SizedBox(height: getH(context, 1)),
                         /// 写真のスライダー
-                        CarouselSliderPhotos(imgUrlList: imgUrlList),
+                        CarouselSliderPhotos(imgUrlList: imgUrlList, cardMasterModel: cardMasterModel),
                         SizedBox(height: getW(context, 1)),
                         /// カード番号・都道府県・市町村・段数
                         cardMainInfo(context),
@@ -275,11 +274,11 @@ class CardDetailPage extends ConsumerWidget {
                         ///  収集日とお気に入りマーク
                         cardModel != null && cardModel!.collectDay != null
                           ? Text(
-                              "収集日　${convertDateTimeToString(cardModel!.collectDay!)}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                              )
+                            "収集日　${convertDateTimeToString(cardModel!.collectDay!)}",
+                            style: const TextStyle(
+                              fontSize: 16,
                             )
+                          )
                           : const SizedBox(),
                         ///  配布状況ボタン
                         WhiteButton(
@@ -312,6 +311,8 @@ class CardDetailPage extends ConsumerWidget {
                   if (cardModel!.collectDay != null) ref.read(cardEditPageCollectDayProvider.notifier).state = cardModel!.collectDay!;
                   if (cardModel!.favorite != null) ref.read(cardEditPageFavoriteProvider.notifier).state = cardModel!.favorite!;
 
+                  // カード追加の画面でimageListProviderが変更されている可能性があるので、
+                  // 初期化して選択中のカードに登録されている画像をセット
                   ref.read(imageListProvider.notifier).init();
                   await Future.forEach(imgModelList, (item) async {
                     await ref.read(imageListProvider.notifier).add(item);
@@ -326,6 +327,7 @@ class CardDetailPage extends ConsumerWidget {
                         return MyCardEditPage(
                           cardMasterModel: cardMasterModel,
                           cardModel: cardModel!,
+                          preImageModelList: imgModelList,
                         );
                       }
                     );

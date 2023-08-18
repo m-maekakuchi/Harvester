@@ -4,7 +4,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../commons/address_master_list.dart';
+import '../../../commons/address_master.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../widgets/text_message_dialog.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../commons/address_master_list.dart';
+import '../../commons/address_master.dart';
 import '../../commons/irregular_card_number.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';

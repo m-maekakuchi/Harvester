@@ -20,12 +20,12 @@ import 'image_view_model.dart';
 import 'user_view_model.dart';
 
 final cardViewModelProvider = StateNotifierProvider<CardViewModel, AsyncValue<bool>>((ref) {
-  return CardViewModel();
+  return CardViewModel(ref);
 });
 
 class CardViewModel extends StateNotifier<AsyncValue<bool>> {
-
-  CardViewModel() : super(const AsyncValue.data(false));  // カード追加処理が全て完了したらdataをtrueにする
+  final Ref ref;
+  CardViewModel(this.ref) : super(const AsyncValue.data(false));  // カード追加処理が全て完了したらdataをtrueにする
 
   Future<void> cardAdd(
     String selectedCard,
@@ -77,7 +77,7 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
       await ref.read(imageListProvider.notifier).uploadImageToFirebase();
 
       // photoモデルリストの作成
-      photoModelList = convertListData(ref.read(imageListProvider), ref);
+      photoModelList = convertListData(ref.read(imageListProvider), this.ref);
     } catch (err, stackTrace) {
       print("***********Error updating document $err***********");
       state = AsyncValue.error(err, stackTrace);

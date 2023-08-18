@@ -57,7 +57,7 @@ class MyCardListState extends ConsumerState<MyCardList> with AutomaticKeepAliveC
           return const ShimmerLoading();
         }
         if (snapshot.hasError) {
-          return Text('${snapshot.stackTrace}');
+          return Text('${snapshot.error}');
         }
         return InfinityListView(
           cardMasterModelList: cardMasterModelList,
