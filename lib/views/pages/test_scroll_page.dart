@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/commons/app_const.dart';
 import 'package:nil/nil.dart';
 
-import '../../commons/address_master_list.dart';
+import '../../commons/address_master.dart';
 import '../../commons/card_master_option_list.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';

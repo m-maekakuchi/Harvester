@@ -7,11 +7,12 @@ import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
-import '../../../handlers/card_remove_handler.dart';
+import '../../../handlers/card_edit_handler.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/card_master_model.dart';
 import '../../../models/card_model.dart';
+import '../../../models/image_model.dart';
 import '../../../provider/providers.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../components/date_picker.dart';
@@ -26,11 +27,13 @@ import '../../widgets/modal_barrier.dart';
 class MyCardEditPage extends ConsumerWidget {
   final CardMasterModel cardMasterModel;
   final CardModel cardModel;
+  final List<ImageModel> preImageModelList;
 
   const MyCardEditPage({
     super.key,
     required this.cardMasterModel,
     required this.cardModel,
+    required this.preImageModelList,
   });
 
   Future<void> getData(WidgetRef ref) async {}
@@ -39,8 +42,8 @@ class MyCardEditPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final popContext = context; // 変更完了のダイアログを閉じるときにcontextだとエラーになるのでこれを追加
-    final cardRemoveState = ref.watch(cardRemoveStateProvider); // 削除処理の状況を監視
-    final loadingState = ref.watch(loadingStateProvider);
+    final cardEditState = ref.watch(cardEditStateProvider); // 削除処理の状況を監視
+    final loadingState = ref.watch(loadingIndicatorProvider);
 
     final imageModelList = ref.watch(imageListProvider);
     final selectedCollectDay = ref.watch(cardEditPageCollectDayProvider);
@@ -131,8 +134,28 @@ class MyCardEditPage extends ConsumerWidget {
                     IconButton(
                       //  画像を1つも選択していない、編集又は削除の処理中の場合はボタンを押せないようにする
                       onPressed: imageModelList.isNotEmpty && !loadingState
-                        ? () {
-                          print(1);
+                        ? () async {
+                          ref.read(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
+
+                          await ref.read(cardEditProvider).update(cardMasterModel, cardModel, preImageModelList);
+
+                          // 最後まで削除処理ができた場合（cardRemoveStateがloadingやerrorではないとき）
+                          if (ref.read(cardEditStateProvider).value == null) {  // watchだと全部nullになる…
+                            Future.delayed(   // 1秒後にダイアログを閉じる
+                              const Duration(seconds: 1),
+                              () {
+                                popContext.pop();
+                                ref.read(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                                // 一覧画面まで戻る
+                                if (popContext.mounted) popContext.pop();
+                                if (popContext.mounted) popContext.pop();
+                                // ホーム画面に切り替える
+                                ref.read(bottomBarIndexProvider.notifier).state = 0;
+                              }
+                            );
+                            // 登録完了のダイアログを表示
+                            if (popContext.mounted) doneMessageDialog(popContext, registerCompleteMessage);
+                          }
                         }
                         : null,
                       icon: const Icon(Icons.done_rounded),
@@ -144,18 +167,18 @@ class MyCardEditPage extends ConsumerWidget {
                       //  編集又は削除の処理中の場合はボタンを押せないようにする
                       onPressed: !loadingState
                         ? () async {
-                          ref.read(loadingStateProvider.notifier).state = true;
+                          ref.read(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
 
                           // カードの削除処理
-                          await ref.read(cardRemoveProvider).cardRemove(cardMasterModel);
+                          await ref.read(cardEditProvider).remove(cardMasterModel);
 
                           // 最後まで削除処理ができた場合（cardRemoveStateがloadingやerrorではないとき）
-                          if (ref.read(cardRemoveStateProvider).value == null) {  // watchだとnullになる
+                          if (ref.read(cardEditStateProvider).value == null) {  // watchだと全部nullになる…
                             Future.delayed(   // 1秒後にダイアログを閉じる
                               const Duration(seconds: 1),
                               () {
                                 popContext.pop();
-                                ref.read(loadingStateProvider.notifier).state = false;
+                                ref.read(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
                                 // 一覧画面まで戻る
                                 if (popContext.mounted) popContext.pop();
                                 if (popContext.mounted) popContext.pop();
@@ -186,7 +209,7 @@ class MyCardEditPage extends ConsumerWidget {
         title: titleBox('My Card 編集', context),
         actions: actionList(context),
       ),
-      body: cardRemoveState.when(
+      body: cardEditState.when(
         data: (value) {
           return bodyWidget;
         },

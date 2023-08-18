@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/address_master.dart';
+import '../../commons/irregular_card_number.dart';
 import '../../handlers/padding_handler.dart';
+import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
 import 'cached_network_image.dart';
 
 class CarouselSliderPhotos extends ConsumerWidget {
 
   final List<String?>? imgUrlList;
+  final CardMasterModel cardMasterModel;
 
   CarouselSliderPhotos({
     super.key,
+    required this.cardMasterModel,
     required this.imgUrlList
   });
 
@@ -26,7 +31,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
         if (imgUrl != null) {
           final imgWidget = ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(20)),
-            child: cachedNetworkImage(imgUrl),
+            child: cachedNetworkImage(imgUrl, cardMasterModel),
           );
           imgSliders.add(imgWidget);
         }
@@ -36,7 +41,10 @@ class CarouselSliderPhotos extends ConsumerWidget {
     if (imgSliders.isEmpty) {
       final imgWidget = ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        child: Image.asset('images/GrayBackImg.png'),
+        // カード番号がirregularの番号の場合はベージュのカードの画像、それ以外はその地方の色のカード画像
+        child: irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
+          ? Image.asset('images/irregular.png')
+          : Image.asset('images/${regionMap[cardMasterModel.prefecture]}.png'),
       );
       imgSliders.add(imgWidget);
     }
@@ -58,9 +66,9 @@ class CarouselSliderPhotos extends ConsumerWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: (Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black)
-                .withOpacity(indicatorIndex == entry.key ? 0.9 : 0.4)
+              ? Colors.white
+              : Colors.black)
+              .withOpacity(indicatorIndex == entry.key ? 0.9 : 0.4)
           ),
         ),
       );

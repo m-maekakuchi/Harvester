@@ -17,7 +17,7 @@ String convertDateTimeToString(DateTime dateTime) {
   return DateFormat('yyyy/MM/dd').format(dateTime);
 }
 
-List<PhotoModel> convertListData(List<ImageModel> imageModelList, WidgetRef ref) {
+List<PhotoModel> convertListData(List<ImageModel> imageModelList, Ref ref) {
   final uid = ref.read(authViewModelProvider.notifier).getUid();
   final now = DateTime.now();
   List<PhotoModel> photoModelList = [];

@@ -39,7 +39,7 @@ class BottomBar extends ConsumerWidget {
         unselectedItemColor: textIconColor, // 選ばれていないアイテムの色
         currentIndex: index,
         onTap: (index) async {
-          // マイカードボタンか全カードボタンが押された場合
+          // マイカードボタンか全カードボタンが押されたとき
           if (index == 1 || index == 2) {
             List<Map<String, dynamic>>? myCardIdAndFavoriteList = await fetchMyCardIdAndFavoriteFromLocalOrDB(ref);
 
@@ -59,6 +59,7 @@ class BottomBar extends ConsumerWidget {
             if (index == 2) ref.read(allCardsPageLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);
           }
 
+          // 追加ボタンが押されたとき
           if (index == 3) {
             //  追加画面の画像が残っている場合があるのでViewModelを初期化
             ref.read(imageListProvider.notifier).init();

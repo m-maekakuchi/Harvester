@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../commons/address_master.dart';
 import '../../commons/app_color.dart';
+import '../../commons/irregular_card_number.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../pages/cards/card_detail_page.dart';
@@ -52,8 +53,7 @@ class CardShortInfoContainer extends ConsumerWidget {
       child: Container(
         height: getH(context, 16),
         width: getW(context, 95),
-        clipBehavior: Clip.antiAlias,
-        alignment: Alignment.centerLeft,  // Containerから画像がはみ出ないように設定
+        clipBehavior: Clip.antiAlias,     // Containerから画像がはみ出ないように設定
         decoration: BoxDecoration(
           border: Border.all(width: 1, color: textIconColor),
           borderRadius: BorderRadius.circular(20),
@@ -70,9 +70,19 @@ class CardShortInfoContainer extends ConsumerWidget {
         child: Row(
           children: [
             // 画像
-            imgUrl != null
-              ? cachedNetworkImage(imgUrl!)
-              : Image.asset('images/GrayBackImg.png'),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              // 登録画像があれば、その1枚目を表示
+              // 登録画像がない場合、カード番号がirregularであればベージュのカード画像、それ以外はその地方の色のカード画像を表示
+              child: imgUrl != null
+                ? cachedNetworkImage(imgUrl!, cardMasterModel)
+                : irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
+                  ? Image.asset('images/irregular.png')
+                  : Image.asset('images/${regionMap[cardMasterModel.prefecture]}.png')
+            ),
             // カード情報
             Expanded(
               child: Stack(

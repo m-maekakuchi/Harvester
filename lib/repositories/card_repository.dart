@@ -19,6 +19,7 @@ class CardRepository {
       collectDay: card['collect_day'].toDate(),
       favorite: card['favorite'],
       photos: docRefList.isEmpty ? null : docRefList,
+      createdAt: card['created_at'].toDate(),
     );
   }
 

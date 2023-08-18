@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../commons/address_master_list.dart';
+import '../commons/address_master.dart';
 import '../commons/app_const.dart';
 
 // ローカルに登録したマイカード情報を保持（例： [{"id": "00-101-A001", "favorite": true}]）
@@ -29,6 +29,6 @@ final carouselSliderIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 final cardEditPageImageModelListProvider = StateProvider((ref) => []);
 final cardEditPageCollectDayProvider = StateProvider((ref) => DateTime.now());
 final cardEditPageFavoriteProvider = StateProvider((ref) => false);
-final cardRemoveStateProvider = StateProvider((_) => const AsyncValue.data(null));
+final cardEditStateProvider = StateProvider((_) => const AsyncValue.data(null));
 
-final loadingStateProvider = StateProvider((ref) => false);
+final loadingIndicatorProvider = StateProvider((ref) => false);

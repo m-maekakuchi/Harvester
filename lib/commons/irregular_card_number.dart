@@ -1,4 +1,4 @@
-import 'package:harvester/commons/address_master_list.dart';
+import 'package:harvester/commons/address_master.dart';
 
 final irregularCardMasterNumbers = {
   addressList[10] : "00-101-A001", // 埼玉県
