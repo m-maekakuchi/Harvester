@@ -44,7 +44,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
         // カード番号がirregularの番号の場合はベージュのカードの画像、それ以外はその地方の色のカード画像
         child: irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
           ? Image.asset('images/irregular.png')
-          : Image.asset('images/${regionMap[cardMasterModel.prefecture]}.png'),
+          : Image.asset('images/${regionEngMap[cardMasterModel.prefecture]}.png'),
       );
       imgSliders.add(imgWidget);
     }

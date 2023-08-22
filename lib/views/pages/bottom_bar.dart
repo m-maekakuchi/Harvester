@@ -41,19 +41,6 @@ class BottomBar extends ConsumerWidget {
         onTap: (index) async {
           // マイカードボタンか全カードボタンが押されたとき
           if (index == 1 || index == 2) {
-            List<Map<String, dynamic>>? myCardIdAndFavoriteList = await fetchMyCardIdAndFavoriteFromLocalOrDB(ref);
-
-            // マイカード情報がローカルかFireStoreから取得できたら、マイカード情報をプロバイダで管理
-            if (myCardIdAndFavoriteList != null) {
-              ref.read(myCardIdAndFavoriteListProvider.notifier).state = myCardIdAndFavoriteList;
-            }
-            // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
-            if (myCardIdAndFavoriteList != null) {
-              final myCardNumberList = myCardIdAndFavoriteList.map((value) =>
-                value["id"] as String
-              ).toList();
-              ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
-            }
             // リストの最後のドキュメントを初期化（ページを再表示したとき、これがないとリスト表示がリセットされない）
             if (index == 1) ref.read(myCardsPageFirstIndexProvider.notifier).state = List.filled(myCardTabTitleList.length, 0);
             if (index == 2) ref.read(allCardsPageLastDocumentProvider.notifier).state = List.filled(allCardTabTitleList.length, null);

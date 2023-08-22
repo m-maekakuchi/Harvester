@@ -9,6 +9,7 @@ import '../handlers/fetch_my_card_handler.dart';
 import '../models/card_model.dart';
 import '../models/image_model.dart';
 import '../models/user_info_model.dart';
+import '../provider/providers.dart';
 import '../repositories/card_master_repository.dart';
 import '../repositories/card_repository.dart';
 import '../repositories/local_storage_repository.dart';
@@ -131,6 +132,11 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
           print("***********カード追加2回目以降です 次のリストをローカルに追加 localMyCardInfoList：$localMyCardInfoList***********");
           await LocalStorageRepository().putMyCardIdAndFavorites(localMyCardInfoList);
         }
+
+        // 登録したカードをプロバイダにも追加
+        ref.read(myCardIdAndFavoriteListProvider.notifier).state.add(localMyCardInfo);
+        ref.read(myCardNumberListProvider.notifier).state.add(selectedCardMasterNumber);
+
         state = const AsyncValue.data(true);
       },
       // トランザクションが失敗したとき

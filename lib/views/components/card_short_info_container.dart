@@ -81,7 +81,7 @@ class CardShortInfoContainer extends ConsumerWidget {
                 ? cachedNetworkImage(imgUrl!, cardMasterModel)
                 : irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
                   ? Image.asset('images/irregular.png')
-                  : Image.asset('images/${regionMap[cardMasterModel.prefecture]}.png')
+                  : Image.asset('images/${regionEngMap[cardMasterModel.prefecture]}.png')
             ),
             // カード情報
             Expanded(
