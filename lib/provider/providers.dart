@@ -12,6 +12,10 @@ final StateProvider<List<String>> myCardNumberListProvider = StateProvider((ref)
 /// bottom_bar
 final bottomBarIndexProvider = StateProvider((ref) => 0);
 
+/// ホーム画面
+// 全国、地方ごと、都道府県ごとの全カード数のリスト
+final allCardsLengthListProvider = StateProvider((ref) => []);
+
 /// 全カード一覧画面
 // リストの最後のドキュメント（全国タブと都道府県タブ用でリストで管理）
 final StateProvider<List<DocumentSnapshot?>> allCardsPageLastDocumentProvider = StateProvider((ref) => List.filled(allCardTabTitleList.length, null));

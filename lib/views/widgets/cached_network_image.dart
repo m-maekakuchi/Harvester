@@ -12,7 +12,7 @@ CachedNetworkImage cachedNetworkImage(String imgUrl, CardMasterModel cardMasterM
       /// Shimmerに後で変更する
       return irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
         ? Image.asset('images/irregular.png')
-        : Image.asset('images/${regionMap[cardMasterModel.prefecture]}.png');
+        : Image.asset('images/${regionEngMap[cardMasterModel.prefecture]}.png');
     },
     errorWidget: (context, url, error) => const Center(child: Icon(Icons.error_rounded)),
   );

@@ -48,7 +48,19 @@ const List<String> addressList = [
   '沖縄県',
 ];
 
-const regionMap = {
+const regionLengthMap = {
+  '北海道': 1,
+  '東北': 6,
+  '関東': 7,
+  '北陸': 4,
+  '中部': 5,
+  '近畿': 7,
+  '中国': 5,
+  '四国': 4,
+  '九州': 8,
+};
+
+const regionEngMap = {
   '北海道': 'hokkaido',
   '青森県': 'tohoku',
   '岩手県': 'tohoku',

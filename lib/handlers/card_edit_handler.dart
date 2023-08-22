@@ -51,7 +51,8 @@ class CardEdit {
 
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       // FireStoreに登録されていたphotosコレクションのドキュメントをすべて削除してから、新しいphotoModelを登録
-      await PhotoRepository().deleteDocument(cardModel.photos as List<DocumentReference<Map<String, dynamic>>>, transaction);
+      List<DocumentReference> photoDocRefs = cardModel.photos!;
+      await PhotoRepository().deleteDocument(photoDocRefs, transaction);
 
       final photoModelList = convertListData(ref.read(imageListProvider), ref);
       List<DocumentReference> photoDocRefList = await PhotoRepository().setToFireStore(photoModelList, transaction);
@@ -108,10 +109,11 @@ class CardEdit {
       // photoコレクションの該当ドキュメントを削除
       final card = await CardRepository().getDocument("$uid${cardMasterModel.serialNumber}");
       if (card != null) {
-        final photoField = card["photos"];
-        // await Future.forEach(photoField, (photoDocRef) async {
-          await PhotoRepository().deleteDocument(photoField, transaction);
-        // });
+        List<DocumentReference> photoDocList = [];
+        for (DocumentReference docRef in card["photos"]) {
+          photoDocList.add(docRef);
+        }
+        await PhotoRepository().deleteDocument(photoDocList, transaction);
       }
 
       // cardsコレクションの該当ドキュメントを削除

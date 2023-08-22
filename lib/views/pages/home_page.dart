@@ -1,304 +1,130 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/address_master.dart';
 import '../../commons/app_bar_contents.dart';
-import '../../commons/app_color.dart';
 import '../../commons/app_const.dart';
+import '../../handlers/fetch_my_card_handler.dart';
+import '../../handlers/indicator_data_list_handler.dart';
 import '../../handlers/padding_handler.dart';
-import '../components/ratio_indicator.dart';
+import '../../provider/providers.dart';
+import '../components/indicator_custom_paint.dart';
+import '../components/shimmer_loading.dart';
 
-const kElevation = 10.0;
-const indicatorPlace = [
+// インジケーターの項目
+final indicatorPlace = [
   '全国',
-  '北海道',
-  '東北',
-  '関東',
-  '中部',
-  '近畿',
-  '中国',
-  '四国',
-  '九州',
-  '北海道',
-  '青森県',
-  '岩手県',
-  '宮城県',
-  '秋田県',
-  '山形県',
-  '福島県',
-  '茨城県',
-  '栃木県',
-  '群馬県',
-  '埼玉県',
-  '千葉県',
-  '東京都',
-  '神奈川県',
-  '新潟県',
-  '富山県',
-  '石川県',
-  '福井県',
-  '山梨県',
-  '長野県',
-  '岐阜県',
-  '静岡県',
-  '愛知県',
-  '三重県',
-  '滋賀県',
-  '京都府',
-  '大阪府',
-  '兵庫県',
-  '奈良県',
-  '和歌山県',
-  '鳥取県',
-  '島根県',
-  '岡山県',
-  '広島県',
-  '山口県',
-  '徳島県',
-  '香川県',
-  '愛媛県',
-  '高知県',
-  '福岡県',
-  '佐賀県',
-  '長崎県',
-  '熊本県',
-  '大分県',
-  '宮崎県',
-  '鹿児島県',
-  '沖縄県',
-];
-const myCardsNum = [
-  40,
-  50,
-  2,
-  0,
-  8,
-  0,
-  0,
-  0,
-  0,
-  10,
-  1,
-  1,
-  0,
-  0,
-  0,
-  0,
-  2,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-];
-const allCardsNum = [
-  300,
-  50,
-  50,
-  100,
-  50,
-  50,
-  50,
-  50,
-  50,
-  50,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
-  10,
+  ...regionLengthMap.keys,
+  ...addressList
 ];
 
 // 地方区分の数
-const areaNum = 8;
+final areaNum = regionLengthMap.length;
 // 都道府県の数
-const prefecturesNum = 47;
+final prefectureLength = addressList.length;
 
-class HomePage extends StatelessWidget {
+// 全国、地方ごと、都道府県ごとのマイカード数のリスト
+var myCardsLengthList = [];
+
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
+  createListItems(WidgetRef ref) async {
+    List<Map<String, dynamic>>? myCardIdAndFavoriteList = await fetchMyCardIdAndFavoriteFromLocalOrDB(ref);
+
+    // マイカード情報がローカルかFireStoreから取得できたら、マイカード情報をプロバイダで管理
+    if (myCardIdAndFavoriteList != null) {
+      ref.read(myCardIdAndFavoriteListProvider.notifier).state = myCardIdAndFavoriteList;
+    }
+    // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
+    if (myCardIdAndFavoriteList != null) {
+      final myCardNumberList = myCardIdAndFavoriteList.map((value) =>
+      value["id"] as String
+      ).toList();
+      ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
+    }
+    print(ref.read(myCardNumberListProvider.notifier).state);
+
+    if (ref.read(allCardsLengthListProvider).isEmpty) { // 初めてホーム画面を開いたとき以外は全カード数取得をしない
+      ref.read(allCardsLengthListProvider.notifier).state = createAllCardLengthList();
+    }
+    myCardsLengthList = createMyCardLengthList(ref);
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: titleBox(pageTitleList[0], context),
-        actions: actionList(context),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: getH(context, 3),
-              ),
-              // 全国のインジケーター
-              _indicator(15, 20, getW(context, 40), indicatorPlace[0], myCardsNum[0] / allCardsNum[0], myCardsNum[0], allCardsNum[0], context),
-              // 地方のインジケーター
-              for (int i = 1; i < areaNum; i += 2) ... {
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int j = 0; j <= 1; j ++) ... {
-                      _indicator(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
-                    }
-                  ],
-                ),
-              },
-              // 都道府県のインジケーター
-              for (int i = 9; i < 55; i += 3) ... {
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                      for (int j = 0; j <= 2; j ++) ... {
-                        // 最後の行が1つ分空くので空白を設置
-                        if (i == 54 && j == 2) ... {
-                          SizedBox(
-                            width: getW(context, 30) + getW(context, 30) * 0.06,
-                          ),
-                        } else ... {
-                          _indicator(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsNum[i + j] / allCardsNum[i + j], myCardsNum[i + j], allCardsNum[i + j], context),
-                        }
-                      },
-                    // }
-                  ],
-                ),
-              },
-              SizedBox(
-                height: getH(context, 3),
-              ),
-            ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final allCardsLengthList = ref.watch(allCardsLengthListProvider);
+
+    return FutureBuilder(
+      future: createListItems(ref),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const ShimmerLoading();
+        }
+        if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return Scaffold(
+          appBar: AppBar(
+            title: titleBox(pageTitleList[0], context),
+            actions: actionList(context),
           ),
-        ),
-      ),
+          body: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: getH(context, 3),
+                  ),
+                  // 全国のインジケーター
+                  indicatorCustomPaint(15, 20, getW(context, 40), indicatorPlace[0], myCardsLengthList[0] / allCardsLengthList[0], myCardsLengthList[0], allCardsLengthList[0], context),
+                  // 地方のインジケーター
+                  for (int i = 1; i <= areaNum; i += 2) ... {
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (int j = 0; j <= 1; j ++) ... {
+                          if (i == 9 && j == 1) ... {
+                            SizedBox(
+                              width: getW(context, 30) + getW(context, 30) * 0.6,
+                            ),
+                          } else
+                            ... {indicatorCustomPaint(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context),
+                          }
+                        }
+                      ],
+                    ),
+                  },
+                  // 都道府県のインジケーター
+                  for (int i = areaNum + 1; i < prefectureLength + areaNum; i += 3) ... {
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (int j = 0; j <= 2; j ++) ... {
+                          // 最後の行が1つ分空くので空白を設置
+                          if (i == prefectureLength + areaNum - 1 && j == 2) ... {
+                            SizedBox(
+                              width: getW(context, 30) + getW(context, 30) * 0.06,
+                            ),
+                          } else ... {
+                            indicatorCustomPaint(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context),
+                          }
+                        },
+                        // }
+                      ],
+                    ),
+                  },
+                  SizedBox(
+                    height: getH(context, 3),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
-Widget _indicator(
-    spaceLen,  // 円とゲージ間の長さ
-    lineLen,  // ゲージの長さ
-    indicatorSize,  // ゲージの大きさ
-    place,
-    percentage, // バッテリーレベルの割合
-    myCardsNum,
-    allCardsNum,
-    context
-) {
-  return CustomPaint(
-    painter: RatioIndicatorWidget(
-      percentage: percentage, // バッテリーレベルの割合
-      textCircleRadius: indicatorSize * 0.5, //内側に表示される白丸の半径
-      spaceLen: spaceLen, // 円とゲージ間の長さ
-      lineLen: lineLen, // ゲージの長さ
-    ),
-    child: Container(
-      padding: EdgeInsets.symmetric(vertical: indicatorSize * 0.28, horizontal: indicatorSize * 0.3),
-      child: Material(
-        color: Colors.white,
-        elevation: kElevation,
-        borderRadius: BorderRadius.circular(indicatorSize * 0.5),
-        child: SizedBox(
-          width: indicatorSize,
-          height: indicatorSize,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                place,
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.15),
-              ),
-              SizedBox(
-                height: getH(context, 1),
-              ),
-              Text(
-                '${(percentage * 100).toStringAsFixed(1)}%',
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.2, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: getH(context, 1),
-              ),
-              Text(
-                '$myCardsNum / $allCardsNum',
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.15),
-              )
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}

@@ -15,16 +15,16 @@ Future<List<Map<String, dynamic>>?> getCardMasterNumberList(String uid, WidgetRe
   // cardsフィールドが存在し、配列が空ではないとき
   if (cardDocRefList != null && cardDocRefList.isNotEmpty) {
     cardNumberList = [];
-    for (DocumentReference<Map<String, dynamic>> docRef in cardDocRefList) {
+    await Future.forEach(cardDocRefList, (docRef) async {
       // カードのドキュメント参照からカードモデルを取得
-      final cardModel = await CardRepository().getFromFireStoreUsingDocRef(docRef);
+      final cardModel = await CardRepository().getFromFireStoreUsingDocRef(docRef as DocumentReference<Map<String, dynamic>>);
       // cardsコレクションに、ドキュメント参照のドキュメントがちゃんと存在する場合
       if (cardModel != null) {
         final cardMasterDocRef = cardModel.cardMaster as DocumentReference<Map<String, dynamic>>;
         final cardMasterModel = await CardMasterRepository().getCardMasterUsingDocRef(cardMasterDocRef);
         // card_masterコレクションに、ドキュメント参照のドキュメントがちゃんと存在する場合
         if (cardMasterModel != null) {
-          cardNumberList.add(
+          cardNumberList!.add(
             {
               "id": cardMasterModel.serialNumber,
               "favorite": cardModel.favorite
@@ -32,7 +32,7 @@ Future<List<Map<String, dynamic>>?> getCardMasterNumberList(String uid, WidgetRe
           );
         }
       }
-    }
+    });
   }
   return cardNumberList;
 }
