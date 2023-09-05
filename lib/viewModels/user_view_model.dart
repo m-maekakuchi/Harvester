@@ -30,6 +30,10 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
     await repository.setToFireStore(state);
   }
 
+  Future<void> deleteFromFireStore(String userUid, Transaction transaction) async {
+    await repository.deleteFromFireStore(userUid, transaction);
+  }
+
   Future<void> updateProfileFireStore() async {
     await repository.updateProfileFireStore(state);
   }

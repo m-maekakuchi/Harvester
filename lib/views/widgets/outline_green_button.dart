@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
 
-class GreenButton extends StatelessWidget {
-  const GreenButton({
+class OutlineGreenButton extends StatelessWidget {
+  const OutlineGreenButton({
     super.key,
     required this.text,
     required this.fontSize,
@@ -22,8 +22,13 @@ class GreenButton extends StatelessWidget {
       height: getH(context, 7),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: themeColor,
+          backgroundColor: scaffoldBackgroundColor,
           foregroundColor: textIconColor,
+          side: BorderSide(
+            color: themeColor,
+            width: 3
+          ),
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(45)
           )

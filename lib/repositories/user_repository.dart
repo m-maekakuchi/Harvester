@@ -71,6 +71,17 @@ class UserRepository {
     );
   }
 
+  Future<void> deleteFromFireStore(String userUid,  Transaction transaction) async {
+    final docRef = db
+      .collection("users")
+      .withConverter(
+        fromFirestore: UserInfoModel.fromFirestore,
+        toFirestore: (UserInfoModel userInfoModel, options) => userInfoModel.toFirestore(),
+      )
+      .doc(userUid);
+    transaction.delete(docRef);
+  }
+
   // 値が変わらないフィールドは更新されない
   Future<void> updateProfileFireStore(UserInfoModel userInfoModel) async {
     final washingtonRef = db

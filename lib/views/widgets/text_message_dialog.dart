@@ -1,31 +1,22 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../commons/message.dart';
+
 Future<void> textMessageDialog(BuildContext context, String text) {
-  return showDialog<void>(
+  return showCupertinoModalPopup<void>(
     context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20))
+    builder: (BuildContext context) => CupertinoAlertDialog(
+      content: Text(text, style: const TextStyle(fontSize: 16)),
+      actions: <CupertinoDialogAction>[
+        CupertinoDialogAction(
+          isDefaultAction: true,
+          onPressed: () {
+            context.pop();
+          },
+          child: Text(dialogConfirmText),
         ),
-        content: Text(text, textAlign: TextAlign.center),
-        actions: <Widget>[
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: const Text(
-              'OK',
-              style: TextStyle(fontSize: 16),
-            ),
-            onPressed: () {
-              context.pop();
-            },
-          ),
-        ],
-        actionsAlignment: MainAxisAlignment.center
-      );
-    },
+      ],
+    ),
   );
 }

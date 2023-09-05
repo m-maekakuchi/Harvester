@@ -14,8 +14,6 @@ import '../viewModels/auth_view_model.dart';
 import '../viewModels/image_view_model.dart';
 import 'convert_data_type_handler.dart';
 
-final cardEditProvider = Provider((ref) => CardEdit(ref));  // refを使うためにProviderでラップ
-
 class CardEdit {
   final Ref ref;
   CardEdit(this.ref);

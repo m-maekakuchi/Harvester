@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../commons/address_master.dart';
+import '../commons/app_const.dart';
 import '../commons/card_master_option_list.dart';
 import '../commons/irregular_card_number.dart';
 import '../provider/providers.dart';
@@ -11,7 +12,6 @@ final prefectureLength = addressList.length;
 List<int> createAllCardLengthList() {
   List<int> result = [];
 
-  int allCardsLength = 0;         // 全カード数
   int regionCardsLength = 0;      // 地方毎のカード数
   int regionPrefectureCount = 0;  // 地方の切り替わりを判定するためのカウント
   int index = 0;
@@ -19,8 +19,6 @@ List<int> createAllCardLengthList() {
   List<int> prefectureCardLengthList =[]; // 都道府県ごとのカード数を格納するリスト
 
   for (int i = 0; i < prefectureLength; i++) {
-    allCardsLength += cardMasterOptionStrList[i].length;
-
     regionPrefectureCount++;
     regionCardsLength += cardMasterOptionStrList[i].length;
     if(regionLengthMap.values.elementAt(index) == regionPrefectureCount) {
@@ -32,7 +30,7 @@ List<int> createAllCardLengthList() {
 
     prefectureCardLengthList.add(cardMasterOptionStrList[i].length);
   }
-  result.add(allCardsLength);
+  result.add(cardMasterNum);
   result.addAll(regionCardLengthList);
   result.addAll(prefectureCardLengthList);
   return result;
@@ -45,8 +43,6 @@ List<int> createMyCardLengthList(WidgetRef ref) {
   final sortedMyCardNumberList = [];
   sortedMyCardNumberList.addAll(ref.read(myCardNumberListProvider));
   sortedMyCardNumberList.sort();
-  // final myCardNumberList = ref.read(myCardNumberListProvider.notifier).state;
-  // myCardNumberList.sort();
 
   List<int> myCardLengthListPerPrefecture = List.generate(prefectureLength, (i)=> 0);
   List<int> myCardLengthListPerRegion = List.generate(regionLengthMap.length, (i)=> 0);

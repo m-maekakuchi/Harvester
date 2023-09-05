@@ -8,7 +8,7 @@ import '../../repositories/card_repository.dart';
 import '../../viewModels/auth_view_model.dart';
 import '../../viewModels/user_view_model.dart';
 import '../widgets/infinity_list_view.dart';
-import 'shimmer_loading.dart';
+import 'shimmer_loading_card_list.dart';
 
 class MyCardListPerCollectDay extends ConsumerStatefulWidget {
   const MyCardListPerCollectDay({super.key});
@@ -85,7 +85,7 @@ class MyCardListPerCollectDayState extends ConsumerState<MyCardListPerCollectDay
       future: getListItems(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ShimmerLoading();
+          return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
           return Text('${snapshot.stackTrace}');

@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/repositories/local_storage_repository.dart';
 
 import '../../../commons/app_color.dart';
+import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/user_view_model.dart';
+import '../../widgets/message_dialog_two_actions.dart';
 import '../../widgets/setting_accordion.dart';
 
 final colorProvider = StateProvider((ref) => 5);
@@ -148,7 +150,7 @@ class SettingPage extends ConsumerWidget {
             title: 'アカウント',
             listItemAry: [
               [
-                'プロフィール編集',
+                '編集',
                 () async {
                   // ローカルに保存されたユーザー情報を取得
                   var userInfoModel = await LocalStorageRepository().fetchUserInfo();
@@ -166,14 +168,19 @@ class SettingPage extends ConsumerWidget {
               [
                 'ログアウト',
                 () {
-                  // サインアウトするときのコード
-                  ref.watch(authViewModelProvider.notifier).signOut();
+                  messageDialogTwoActions(
+                    context,
+                    logOutMessage,
+                    null,
+                    dialogPopText,
+                    dialogLogOutPushText,
+                    () async {
+                      // サインアウト
+                      await ref.watch(authViewModelProvider.notifier).signOut();
+                    }
+                  );
                 },
               ],
-              [
-                '退会する',
-                () {},
-              ]
             ],
           ),
           itemTextItem(

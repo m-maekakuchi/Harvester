@@ -7,7 +7,6 @@ import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
-import '../../../handlers/card_edit_handler.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/card_master_model.dart';
@@ -17,7 +16,7 @@ import '../../../provider/providers.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../components/date_picker.dart';
 import '../../components/pick_and_crop_image_container.dart';
-import '../../components/shimmer_loading_with_app_bar.dart';
+import '../../components/shimmer_loading_card_detail.dart';
 import '../../widgets/bookmark_button.dart';
 import '../../components/title_container.dart';
 import '../../components/user_select_item_container.dart';
@@ -52,8 +51,7 @@ class MyCardEditPage extends ConsumerWidget {
       future: getData(ref),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          /// ///////////Shimmerのloading画面/////////////////
-          return const ShimmerLoadingWithAppBar();
+          return const ShimmerLoadingCardDetail();
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         } else {

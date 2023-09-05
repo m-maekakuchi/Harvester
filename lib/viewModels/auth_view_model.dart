@@ -59,6 +59,10 @@ class AuthViewModel extends StateNotifier<AsyncValue<User?>> {
     await _ref.read(authRepositoryProvider).signOut();
   }
 
+  Future<void> delete() async {
+    await _ref.read(authRepositoryProvider).delete();
+  }
+
   Future<void> signInWithTel(String verificationId, String smsCode) async{
     // await _ref.read(authRepositoryProvider).signInWithTel(state, verificationId, smsCode);
   }

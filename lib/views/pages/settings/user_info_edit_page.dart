@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:harvester/provider/providers.dart';
 
 import '../../../commons/address_master.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
+import '../../widgets/message_dialog_two_actions.dart';
+import '../../widgets/modal_barrier.dart';
+import '../../widgets/outline_green_button.dart';
 import '../../widgets/text_message_dialog.dart';
 import '../../widgets/done_message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
@@ -41,6 +45,8 @@ class UserInfoEditPage extends ConsumerWidget {
     final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
+    final allUserDeleteState = ref.watch(allUserDeleteStateProvider);
+
     // 居住地のドラムロール
     void showDialog(Widget child) {
       showCupertinoModalPopup<void>(
@@ -61,6 +67,152 @@ class UserInfoEditPage extends ConsumerWidget {
         }
       );
     }
+
+    Widget bodyWidget = SingleChildScrollView(
+      child: Column(
+        children: [
+          const TitleContainer(titleStr: 'ニックネーム'),
+          //  ニックネーム欄
+          SizedBox(
+            width: getW(context, 90),
+            height: getH(context, 6),
+            child: TextFormField(
+              controller: textController,
+              // 入力されたテキストの色
+              style: const TextStyle(
+                  color: textIconColor
+              ),
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                ),
+                // 枠線の色
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: textIconColor,
+                    width: 1,
+                  ),
+                ),
+                // 入力中の枠線の色
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: textIconColor,
+                    width: 1,
+                  ),
+                ),
+                hintText: '10文字以内',
+                hintStyle: const TextStyle(
+                  fontSize: 16,
+                  color: textIconColor,
+                ),
+              ),
+            ),
+          ),
+          const TitleContainer(titleStr: '居住地'),
+          // 居住地選択欄
+          UserSelectItemContainer(
+            text: addressList[selectedAddressIndex!],
+            onPressed: () => showDialog(
+              ItemCupertinoPicker(
+                itemAry: addressList,
+                provider: addressIndexProvider,
+              ),
+            ),
+          ),
+          const TitleContainer(titleStr: '生年月日'),
+          // 生年月日選択欄
+          UserSelectItemContainer(
+              text: selectedBirthday,
+              onPressed: () {
+                DatePicker.showDatePicker(context,
+                    showTitleActions: false,
+                    minTime: DateTime(1950, 1, 1),
+                    maxTime: DateTime(2020, 12, 31),
+                    onChanged: (date) {
+                      final notifier = ref.read(birthdayProvider.notifier);
+                      notifier.state = '${date.year}/${date.month}/${date.day}';
+                    },
+                    currentTime: DateTime.now(),
+                    locale: LocaleType.jp
+                );
+              }
+          ),
+          SizedBox(height: getH(context, 3)),
+          GreenButton(
+              text: '登録',
+              fontSize: 18,
+              // ニックネームが入力されていない場合、ボタンを押せなくする
+              onPressed: textController.text == ""
+                  ? null
+                  : () async {
+                // ニックネームが10文字より長い場合、ダイアログで警告
+                if (textController.text.length > 10) {
+                  await textMessageDialog(context, textOverErrorMessage);
+                  return;
+                }
+                final userUid = ref.watch(authViewModelProvider.notifier).getUid();
+                final birthday = convertStringToDateTime(selectedBirthday);
+                final userInfoModel = UserInfoModel(
+                  firebaseAuthUid: userUid,
+                  name: textController.text,
+                  addressIndex: selectedAddressIndex,
+                  birthday: birthday,
+                  updatedAt: DateTime.now(),
+                );
+
+                // 2つの機能を並列処理
+                await Future.wait([
+                  // userViewModelProviderの状態を変更してFireStoreを更新する
+                  ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
+                    await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
+                  }),
+                  // Hiveでローカルにユーザー情報を保存
+                  LocalStorageRepository().putUserInfo(userInfoModel),
+                ]);
+
+                Future.delayed(   // 1秒後にダイアログを閉じる
+                  const Duration(seconds: 1),
+                      () => context.pop(),
+                );
+                // 登録完了のダイアログを表示
+                if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
+
+                if (context.mounted) context.pop();
+              }
+          ),
+          SizedBox(height: getH(context, 3)),
+          OutlineGreenButton(
+            text: '退会',
+            fontSize: 18,
+            // ニックネームが入力されていない場合、ボタンを押せなくする
+            onPressed: () {
+              messageDialogTwoActions(
+                  context,
+                  deleteAuthMessage,
+                  const Text(deleteAuthAlertMessage),
+                  dialogPopText,
+                  dialogDeleteAuthPushText,
+                      () async {
+                    ref.watch(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
+
+                    // ユーザー全データの削除処理
+                    await ref.watch(allUserDeleteProvider).delete();
+
+                    await ref.watch(authViewModelProvider.notifier).delete();
+
+                    ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                    await ref.watch(authViewModelProvider.notifier).signOut();
+                  }
+              );
+            },
+          )
+        ],
+      ),
+    );
 
     return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
       onTap: () {
@@ -89,129 +241,26 @@ class UserInfoEditPage extends ConsumerWidget {
                   height: getH(context, 10),
                   'images/AppBar_logo.png'
                 ),
-                const Text("プロフィール編集", style: TextStyle(fontSize: 18)),
+                const Text("アカウント編集", style: TextStyle(fontSize: 18)),
               ]
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const TitleContainer(titleStr: 'ニックネーム'),
-              //  ニックネーム欄
-              SizedBox(
-                width: getW(context, 90),
-                height: getH(context, 6),
-                child: TextFormField(
-                  controller: textController,
-                  // 入力されたテキストの色
-                  style: const TextStyle(
-                    color: textIconColor
-                  ),
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    // 枠線の色
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: textIconColor,
-                        width: 1,
-                      ),
-                    ),
-                    // 入力中の枠線の色
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: textIconColor,
-                        width: 1,
-                      ),
-                    ),
-                    hintText: '10文字以内',
-                    hintStyle: const TextStyle(
-                      fontSize: 16,
-                      color: textIconColor,
-                    ),
-                  ),
-                ),
-              ),
-              const TitleContainer(titleStr: '居住地'),
-              // 居住地選択欄
-              UserSelectItemContainer(
-                text: addressList[selectedAddressIndex!],
-                onPressed: () => showDialog(
-                  ItemCupertinoPicker(
-                    itemAry: addressList,
-                    provider: addressIndexProvider,
-                  ),
-                ),
-              ),
-              const TitleContainer(titleStr: '生年月日'),
-              // 生年月日選択欄
-              UserSelectItemContainer(
-                text: selectedBirthday,
-                onPressed: () {
-                  DatePicker.showDatePicker(context,
-                    showTitleActions: false,
-                    minTime: DateTime(1950, 1, 1),
-                    maxTime: DateTime(2020, 12, 31),
-                    onChanged: (date) {
-                      final notifier = ref.read(birthdayProvider.notifier);
-                      notifier.state = '${date.year}/${date.month}/${date.day}';
-                    },
-                    currentTime: DateTime.now(),
-                    locale: LocaleType.jp
-                  );
-                }
-              ),
-              SizedBox(height: getH(context, 3)),
-              GreenButton(
-                text: '登録',
-                fontSize: 18,
-                // ニックネームが入力されていない場合、ボタンを押せなくする
-                onPressed: textController.text == ""
-                  ? null
-                  : () async {
-                  // ニックネームが10文字より長い場合、ダイアログで警告
-                  if (textController.text.length > 10) {
-                    await textMessageDialog(context, textOverErrorMessage);
-                    return;
-                  }
-                  final userUid = ref.watch(authViewModelProvider.notifier).getUid();
-                  final birthday = convertStringToDateTime(selectedBirthday);
-                  final userInfoModel = UserInfoModel(
-                    firebaseAuthUid: userUid,
-                    name: textController.text,
-                    addressIndex: selectedAddressIndex,
-                    birthday: birthday,
-                    updatedAt: DateTime.now(),
-                  );
-
-                  // 2つの機能を並列処理
-                  await Future.wait([
-                    // userViewModelProviderの状態を変更してFireStoreを更新する
-                    ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
-                      await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
-                    }),
-                    // Hiveでローカルにユーザー情報を保存
-                    LocalStorageRepository().putUserInfo(userInfoModel),
-                  ]);
-
-                  Future.delayed(   // 1秒後にダイアログを閉じる
-                    const Duration(seconds: 1),
-                    () => context.pop(),
-                  );
-                  // 登録完了のダイアログを表示
-                  if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
-
-                  if (context.mounted) context.pop();
-                }
-              ),
-            ],
-          ),
+        body: allUserDeleteState.when(
+          data: (value) {
+            return bodyWidget;
+          },
+          error: (err, _) {
+            return Center(child: Text(err.toString()));
+          },
+          loading: () {
+            return Stack(
+              children: [
+                bodyWidget,
+                modalBarrier
+              ]
+            );
+          }
         ),
       ),
     );

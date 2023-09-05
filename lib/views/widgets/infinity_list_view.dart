@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart';
 
+import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../components/card_short_info_container.dart';
+import 'shimmer.dart';
 
 // スクロール可能なListView
 class InfinityListView extends ConsumerStatefulWidget {
@@ -83,12 +85,17 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
           // リストが終端に行った際に、現在読み込んでるデータ+1番目の要素として、インジケーターを表示
           // 一番最後にデータ取得が終わるfavoriteListの読み込みが終わるまで
           if (widget.favoriteList.length == index) {
-            return const SizedBox(
-              height: 50,
-              width: 50,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+            return Column(
+              children: [
+                const SizedBox(height: 10),
+                Center(
+                  child: ShimmerWidget.roundedRectangular(
+                    width: getW(context, 95),
+                    height: getH(context, 16),
+                    borderRadius: 20,
+                  ),
+                ),
+              ],
             );
           }
           return Column(

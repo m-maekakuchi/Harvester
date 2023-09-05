@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../commons/address_master.dart';
 import '../commons/app_const.dart';
+import '../handlers/all_user_data_delete_handler.dart';
+import '../handlers/card_edit_handler.dart';
 
 // ローカルに登録したマイカード情報を保持（例： [{"id": "00-101-A001", "favorite": true}]）
 final myCardIdAndFavoriteListProvider = StateProvider((ref) => []);
@@ -30,9 +32,14 @@ final myCardsPagePrefectureProvider = StateProvider((ref) => addressList[12]);
 final carouselSliderIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 /// カード編集画面
+final cardEditProvider = Provider((ref) => CardEdit(ref));  // refを使うためにProviderでラップ
 final cardEditPageImageModelListProvider = StateProvider((ref) => []);
 final cardEditPageCollectDayProvider = StateProvider((ref) => DateTime.now());
 final cardEditPageFavoriteProvider = StateProvider((ref) => false);
 final cardEditStateProvider = StateProvider((_) => const AsyncValue.data(null));
+
+/// 設定画面
+final allUserDeleteProvider = Provider((ref) => AllUserDataDelete(ref));
+final allUserDeleteStateProvider = StateProvider((_) => const AsyncValue.data(null));
 
 final loadingIndicatorProvider = StateProvider((ref) => false);

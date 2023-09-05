@@ -17,7 +17,7 @@ import '../../../repositories/image_repository.dart';
 import '../../../repositories/photo_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
-import '../../components/shimmer_loading_with_app_bar.dart';
+import '../../components/shimmer_loading_card_detail.dart';
 import '../../widgets/carousel_slider_photos.dart';
 import '../../widgets/text_message_dialog.dart';
 import '../../widgets/white_button.dart';
@@ -245,7 +245,7 @@ class CardDetailPage extends ConsumerWidget {
       future: fetchCardModelAndImgUrl(ref),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ShimmerLoadingWithAppBar();
+          return const ShimmerLoadingCardDetail();
         } else if (snapshot.hasError) {
           return Text('${snapshot.error}');
         } else {

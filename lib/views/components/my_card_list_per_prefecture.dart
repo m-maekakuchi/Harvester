@@ -9,7 +9,7 @@ import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
 import '../widgets/white_button.dart';
 import 'accordion_prefectures.dart';
-import 'shimmer_loading.dart';
+import 'shimmer_loading_card_list.dart';
 import 'white_show_modal_bottom_sheet.dart';
 
 class MyCardListPerPrefecture extends ConsumerStatefulWidget {
@@ -86,7 +86,7 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
       future: getListItems(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ShimmerLoading();
+          return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
           return Text('${snapshot.stackTrace}');

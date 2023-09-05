@@ -5,7 +5,7 @@ import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
-import 'shimmer_loading.dart';
+import 'shimmer_loading_card_list.dart';
 
 class MyFavoriteCardList extends ConsumerStatefulWidget {
   const MyFavoriteCardList({super.key});
@@ -68,7 +68,7 @@ class MyFavoriteCardListState extends ConsumerState<MyFavoriteCardList> with Aut
       future: getListItems(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ShimmerLoading();
+          return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
           return Text('${snapshot.stackTrace}');

@@ -42,6 +42,16 @@ class LocalStorageRepository {
     }
   }
 
+  Future<void> deleteUserInfo() async {
+    try {
+      var box = await Hive.openBox('userBox');
+      box.delete("userInfo");
+    } catch (e, stackTrace) {
+      print("エラー発生：$e");
+      print(stackTrace);
+    }
+  }
+
   Future<List<Map<String, dynamic>>?> fetchMyCardIdAndFavorites() async {
     try {
       var box = await Hive.openBox('cardBox');
@@ -71,6 +81,16 @@ class LocalStorageRepository {
     try {
       var box = await Hive.openBox('cardBox');
       await box.put('myCardNumber', cardNumberList);
+    } catch (e, stackTrace) {
+      print("エラー発生：$e");
+      print(stackTrace);
+    }
+  }
+
+  Future<void> deleteMyCardIdAndFavorites() async {
+    try {
+      var box = await Hive.openBox('cardBox');
+      box.delete("myCardNumber");
     } catch (e, stackTrace) {
       print("エラー発生：$e");
       print(stackTrace);

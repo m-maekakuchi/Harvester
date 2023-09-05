@@ -9,7 +9,7 @@ import '../../handlers/indicator_data_list_handler.dart';
 import '../../handlers/padding_handler.dart';
 import '../../provider/providers.dart';
 import '../components/indicator_custom_paint.dart';
-import '../components/shimmer_loading.dart';
+import '../components/shimmer_loading_card_list.dart';
 
 // インジケーターの項目
 final indicatorPlace = [
@@ -39,11 +39,11 @@ class HomePage extends ConsumerWidget {
     // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
     if (myCardIdAndFavoriteList != null) {
       final myCardNumberList = myCardIdAndFavoriteList.map((value) =>
-      value["id"] as String
+        value["id"] as String
       ).toList();
       ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
     }
-    print(ref.read(myCardNumberListProvider.notifier).state);
+    // print(ref.read(myCardNumberListProvider.notifier).state);
 
     if (ref.read(allCardsLengthListProvider).isEmpty) { // 初めてホーム画面を開いたとき以外は全カード数取得をしない
       ref.read(allCardsLengthListProvider.notifier).state = createAllCardLengthList();
@@ -59,7 +59,7 @@ class HomePage extends ConsumerWidget {
       future: createListItems(ref),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ShimmerLoading();
+          return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
           return Text('${snapshot.error}');

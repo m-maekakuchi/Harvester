@@ -5,7 +5,7 @@ import '../../commons/app_const.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../widgets/infinity_list_view.dart';
-import 'shimmer_loading.dart';
+import 'shimmer_loading_card_list.dart';
 
 class AllCardList extends ConsumerStatefulWidget {
   const AllCardList({super.key});
@@ -39,7 +39,7 @@ class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAli
       future: getListItems(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ShimmerLoading();
+          return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
           return Text('${snapshot.stackTrace}');

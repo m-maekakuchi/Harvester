@@ -25,6 +25,8 @@ abstract class BaseAuthRepository {
   Future<void> revalidation(PhoneAuthCredential credential);
 
   Future<void> signOut();
+
+  Future<void> delete();
 }
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
@@ -115,6 +117,15 @@ class AuthRepository implements BaseAuthRepository {
   Future<void> signOut() async {
     try {
       await _ref.read(firebaseAuthProvider).signOut();
+    } on FirebaseAuthException catch (e) {
+      // throw CustomException(message: e.message);
+    } catch (_) {}
+  }
+
+  @override
+  Future<void> delete() async {
+    try {
+      await _ref.read(firebaseAuthProvider).currentUser?.delete();
     } on FirebaseAuthException catch (e) {
       // throw CustomException(message: e.message);
     } catch (_) {}
