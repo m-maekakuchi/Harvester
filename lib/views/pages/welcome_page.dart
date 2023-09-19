@@ -17,7 +17,7 @@ class WelcomePage extends ConsumerWidget {
             Image.asset(
               width: getW(context, 80),
               height: getH(context, 30),
-              'images/Harvester_logo.png'
+              'images/logo.png'
             ),
             Image.asset(
               width: getW(context, 70),
