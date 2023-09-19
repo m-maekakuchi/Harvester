@@ -24,14 +24,14 @@ class WelcomePage extends ConsumerWidget {
               height: getH(context, 25),
               'images/manhole.png'
             ),
-            GreenButton(
-              text: 'Google',
-              fontSize: 20,
-              onPressed: () {
-                // ref.read(authViewModelProvider.notifier).signInWithGoogle();
-                context.go('/cards_list_page');
-              },
-            ),
+            // GreenButton(
+            //   text: 'Google',
+            //   fontSize: 20,
+            //   onPressed: () {
+            //     // ref.read(authViewModelProvider.notifier).signInWithGoogle();
+            //     context.go('/cards_list_page');
+            //   },
+            // ),
             GreenButton(
               text: '電話番号',
               fontSize: 20,

@@ -7,17 +7,17 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/address_master.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
-import '../../widgets/text_message_dialog.dart';
+import '../../../provider/providers.dart';
+import '../../../models/user_info_model.dart';
+import '../../../viewModels/auth_view_model.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
-import '../../../models/user_info_model.dart';
-import '../../../repositories/local_storage_repository.dart';
-import '../../../viewModels/auth_view_model.dart';
-import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
-import '../../widgets/green_button.dart';
 import '../../components/user_select_item_container.dart';
+import '../../widgets/green_button.dart';
+import '../../widgets/modal_barrier.dart';
 import '../../widgets/item_cupertino_picker.dart';
+import '../../widgets/text_message_dialog.dart';
 
 final textControllerProvider = StateProvider((ref) => TextEditingController());
 final addressProvider = StateProvider((ref) => 12);
@@ -32,6 +32,9 @@ class UserInfoRegisterPage extends ConsumerWidget {
     final textController = ref.watch(textControllerProvider);
     final selectedAddressIndex = ref.watch(addressProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
+
+    final userUpdateState = ref.watch(userEditStateProvider);
+    final loadingState = ref.read(loadingIndicatorProvider);
 
     // 居住地のドラムロール
     void showDialog(Widget child) {
@@ -54,6 +57,122 @@ class UserInfoRegisterPage extends ConsumerWidget {
       );
     }
 
+    Widget bodyWidget = SingleChildScrollView(
+      child: Column(
+        children: [
+          const TitleContainer(titleStr: 'ニックネーム'),
+          //  ニックネーム欄
+          SizedBox(
+            width: getW(context, 90),
+            height: getH(context, 6),
+            child: TextFormField(
+              /// validator: ,
+              controller: textController,
+              // 入力されたテキストの色
+              style: const TextStyle(
+                  color: textIconColor
+              ),
+              decoration: InputDecoration(
+                fillColor: Colors.white,
+                filled: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                ),
+                // 枠線の色
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: textIconColor,
+                    width: 1,
+                  ),
+                ),
+                // 入力中の枠線の色
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: textIconColor,
+                    width: 1,
+                  ),
+                ),
+                hintText: '10文字以内',
+                hintStyle: const TextStyle(
+                  fontSize: 16,
+                  color: textIconColor,
+                ),
+              ),
+            ),
+          ),
+          const TitleContainer(titleStr: '居住地'),
+          // 居住地選択欄
+          UserSelectItemContainer(
+            text: addressList[selectedAddressIndex],
+            onPressed: () => showDialog(
+              ItemCupertinoPicker(
+                itemAry: addressList,
+                provider: addressProvider,
+              ),
+            ),
+          ),
+          const TitleContainer(titleStr: '生年月日'),
+          // 生年月日選択欄
+          UserSelectItemContainer(
+            text: selectedBirthday,
+            onPressed: () {
+              DatePicker.showDatePicker(context,
+                  showTitleActions: false,
+                  minTime: DateTime(1950, 1, 1),
+                  maxTime: DateTime(2020, 12, 31),
+                  onChanged: (date) {
+                    final notifier = ref.read(birthdayProvider.notifier);
+                    notifier.state = '${date.year}/${date.month}/${date.day}';
+                  },
+                  currentTime: selectedBirthday == noSelectOptionMessage
+                    ? DateTime(2000, 6, 15)
+                    : convertStringToDateTime(selectedBirthday),
+                  locale: LocaleType.jp
+              );
+            }
+          ),
+          SizedBox(height: getH(context, 3)),
+          GreenButton(
+            text: '登録',
+            fontSize: 18,
+            // ニックネームと生年月日が入力されていない場合、ボタンを押せなくする
+            onPressed: loadingState || textController.text == "" || selectedBirthday == noSelectOptionMessage
+              ? null
+              : () async {
+                ref.watch(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
+                // ニックネームが10文字より長い場合、ダイアログで警告
+                if (textController.text.length > 10) {
+                  ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                  await textMessageDialog(context, textOverErrorMessage);
+                  return;
+                }
+                final userUid = ref.watch(authViewModelProvider.notifier).getUid();
+                final birthday = convertStringToDateTime(selectedBirthday);
+                final now = DateTime.now();
+                final userInfoModel = UserInfoModel(
+                  firebaseAuthUid: userUid,
+                  name: textController.text,
+                  addressIndex: selectedAddressIndex,
+                  birthday: birthday,
+                  createdAt: now,
+                  updatedAt: now,
+                );
+
+                // ユーザーの登録処理
+                await ref.watch(userEditProvider).register(userInfoModel);
+                // 最後まで登録処理ができた場合（loadingやerrorではないとき）
+                if (ref.read(userEditStateProvider).value == null) {
+                  ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                  if (context.mounted) context.go('/bottom_bar');
+                }
+              }
+          ),
+        ],
+      ),
+    );
+
     return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -75,120 +194,21 @@ class UserInfoRegisterPage extends ConsumerWidget {
             ),
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const TitleContainer(titleStr: 'ニックネーム'),
-              //  ニックネーム欄
-              SizedBox(
-                width: getW(context, 90),
-                height: getH(context, 6),
-                child: TextFormField(
-                  /// validator: ,
-                  controller: textController,
-                  // 入力されたテキストの色
-                  style: const TextStyle(
-                    color: textIconColor
-                  ),
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
-                    // 枠線の色
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: textIconColor,
-                        width: 1,
-                      ),
-                    ),
-                    // 入力中の枠線の色
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: textIconColor,
-                        width: 1,
-                      ),
-                    ),
-                    hintText: '10文字以内',
-                    hintStyle: const TextStyle(
-                      fontSize: 16,
-                      color: textIconColor,
-                    ),
-                  ),
-                ),
-              ),
-              const TitleContainer(titleStr: '居住地'),
-              // 居住地選択欄
-              UserSelectItemContainer(
-                text: addressList[selectedAddressIndex],
-                onPressed: () => showDialog(
-                  ItemCupertinoPicker(
-                    itemAry: addressList,
-                    provider: addressProvider,
-                  ),
-                ),
-              ),
-              const TitleContainer(titleStr: '生年月日'),
-              // 生年月日選択欄
-              UserSelectItemContainer(
-                text: selectedBirthday,
-                onPressed: () {
-                  DatePicker.showDatePicker(context,
-                    showTitleActions: false,
-                    minTime: DateTime(1950, 1, 1),
-                    maxTime: DateTime(2020, 12, 31),
-                    onChanged: (date) {
-                      final notifier = ref.read(birthdayProvider.notifier);
-                      notifier.state = '${date.year}/${date.month}/${date.day}';
-                    },
-                    currentTime: DateTime.now(),
-                    locale: LocaleType.jp
-                  );
-                }
-              ),
-              SizedBox(height: getH(context, 3)),
-              GreenButton(
-                text: '登録',
-                fontSize: 18,
-                // ニックネームと生年月日が入力されていない場合、ボタンを押せなくする
-                onPressed: textController.text == "" || selectedBirthday == noSelectOptionMessage
-                  ? null
-                  : () async {
-                    // ニックネームが10文字より長い場合、ダイアログで警告
-                    if (textController.text.length > 10) {
-                      await textMessageDialog(context, textOverErrorMessage);
-                      return;
-                    }
-                    final userUid = ref.watch(authViewModelProvider.notifier).getUid();
-                    final birthday = convertStringToDateTime(selectedBirthday);
-                    final now = DateTime.now();
-                    final userInfoModel = UserInfoModel(
-                      firebaseAuthUid: userUid,
-                      name: textController.text,
-                      addressIndex: selectedAddressIndex,
-                      birthday: birthday,
-                      createdAt: now,
-                      updatedAt: now,
-                    );
-
-                    // userViewModelProviderの状態を変更してFireStoreに登録する
-                    ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
-                    ref.watch(userViewModelProvider.notifier).setToFireStore();
-
-                    // Hiveでローカルにユーザー情報を保存
-                    await LocalStorageRepository().putUserInfo(userInfoModel);
-
-                    // ユーザ情報の登録が完了したことをCustom Claimに登録
-                    await ref.read(authViewModelProvider.notifier).registerCustomStatus();
-
-                    if (context.mounted) context.go('/bottom_bar');
-                  }
-              ),
-            ],
-          ),
+        body: userUpdateState.when(
+          data: (value) {
+            return bodyWidget;
+          },
+          error: (err, _) {
+            return Center(child: Text(err.toString()));
+          },
+          loading: () {
+            return Stack(
+              children: [
+                bodyWidget,
+                modalBarrier
+              ]
+            );
+          }
         ),
       ),
     );

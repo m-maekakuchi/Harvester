@@ -10,13 +10,11 @@ import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../widgets/message_dialog_two_actions.dart';
 import '../../widgets/modal_barrier.dart';
-import '../../widgets/outline_green_button.dart';
 import '../../widgets/text_message_dialog.dart';
 import '../../widgets/done_message_dialog.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../models/user_info_model.dart';
-import '../../../repositories/local_storage_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/user_view_model.dart';
 import '../../components/title_container.dart';
@@ -45,7 +43,8 @@ class UserInfoEditPage extends ConsumerWidget {
     final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
-    final allUserDeleteState = ref.watch(allUserDeleteStateProvider);
+    final userUpdateState = ref.watch(userEditStateProvider);
+    final loadingState = ref.read(loadingIndicatorProvider);
 
     // 居住地のドラムロール
     void showDialog(Widget child) {
@@ -143,17 +142,20 @@ class UserInfoEditPage extends ConsumerWidget {
           ),
           SizedBox(height: getH(context, 3)),
           GreenButton(
-              text: '登録',
-              fontSize: 18,
-              // ニックネームが入力されていない場合、ボタンを押せなくする
-              onPressed: textController.text == ""
-                  ? null
-                  : () async {
+            text: '更新',
+            fontSize: 18,
+            // ニックネームが入力されていない場合、ボタンを押せなくする
+            onPressed: textController.text == "" || loadingState
+              ? null
+              : () async {
                 // ニックネームが10文字より長い場合、ダイアログで警告
                 if (textController.text.length > 10) {
                   await textMessageDialog(context, textOverErrorMessage);
                   return;
                 }
+
+                ref.watch(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
+
                 final userUid = ref.watch(authViewModelProvider.notifier).getUid();
                 final birthday = convertStringToDateTime(selectedBirthday);
                 final userInfoModel = UserInfoModel(
@@ -164,51 +166,59 @@ class UserInfoEditPage extends ConsumerWidget {
                   updatedAt: DateTime.now(),
                 );
 
-                // 2つの機能を並列処理
-                await Future.wait([
-                  // userViewModelProviderの状態を変更してFireStoreを更新する
-                  ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
-                    await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
-                  }),
-                  // Hiveでローカルにユーザー情報を保存
-                  LocalStorageRepository().putUserInfo(userInfoModel),
-                ]);
+                // ユーザー情報の更新処理（DBとローカル）
+                await ref.read(userEditProvider).update(userInfoModel);
 
-                Future.delayed(   // 1秒後にダイアログを閉じる
-                  const Duration(seconds: 1),
-                      () => context.pop(),
-                );
-                // 登録完了のダイアログを表示
-                if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
+                // 最後まで更新処理ができた場合（loadingやerrorではないとき）
+                if (ref.read(userEditStateProvider).value == null) {
+                  Future.delayed(   // 1秒後にダイアログを閉じる
+                    const Duration(seconds: 1),
+                    () {
+                      ref.read(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                      context.pop();
+                    },
+                  );
+                  // 登録完了のダイアログを表示
+                  if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
 
-                if (context.mounted) context.pop();
+                  if (context.mounted) context.pop();
+                }
               }
           ),
           SizedBox(height: getH(context, 3)),
-          OutlineGreenButton(
-            text: '退会',
-            fontSize: 18,
+          TextButton(
             // ニックネームが入力されていない場合、ボタンを押せなくする
-            onPressed: () {
-              messageDialogTwoActions(
+            onPressed: loadingState
+              ? null
+              : () {
+                messageDialogTwoActions(
                   context,
                   deleteAuthMessage,
                   const Text(deleteAuthAlertMessage),
                   dialogPopText,
                   dialogDeleteAuthPushText,
-                      () async {
+                  () async {
                     ref.watch(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
-
+                    context.pop();
                     // ユーザー全データの削除処理
-                    await ref.watch(allUserDeleteProvider).delete();
+                    await ref.watch(userEditProvider).delete();
 
-                    await ref.watch(authViewModelProvider.notifier).delete();
-
-                    ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
-                    await ref.watch(authViewModelProvider.notifier).signOut();
+                    // 最後まで削除処理ができた場合（loadingやerrorではないとき）
+                    if (ref.read(userEditStateProvider).value == null) {
+                      await ref.watch(authViewModelProvider.notifier).delete();
+                      ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                      await ref.watch(authViewModelProvider.notifier).signOut();
+                    }
                   }
-              );
-            },
+                );
+              },
+            child: const Text(
+              '退会',
+              style: TextStyle(
+                fontSize: 18,
+                color: textIconColor,
+              )
+            ),
           )
         ],
       ),
@@ -246,7 +256,7 @@ class UserInfoEditPage extends ConsumerWidget {
             ),
           ),
         ),
-        body: allUserDeleteState.when(
+        body: userUpdateState.when(
           data: (value) {
             return bodyWidget;
           },

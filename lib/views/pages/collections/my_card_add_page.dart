@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
+import '../../../provider/providers.dart';
 import '../../../viewModels/card_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../../handlers/padding_handler.dart';
@@ -87,9 +88,9 @@ class MyCardAddPage extends ConsumerWidget {
             onPressed: selectedImageList.isEmpty || selectedCard == noSelectOptionMessage
               ? null
               : () async {
-                // var box = await Hive.openBox('cardBox');
-                // box.delete("myCardNumber");
+                // LocalStorageRepository().deleteMyCardIdAndFavorites();
                 // return;
+                ref.read(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
 
                 await ref.watch(cardViewModelProvider.notifier).cardAdd(selectedCard, selectedImageList, selectedDay, bookmark, ref, context);
                 if (ref.read(cardViewModelProvider).value != false) {  // 最後まで登録処理ができた場合
@@ -101,7 +102,10 @@ class MyCardAddPage extends ConsumerWidget {
 
                   Future.delayed(   // 1秒後にダイアログを閉じる
                     const Duration(seconds: 1),
-                    () => context.pop(),
+                    () {
+                      ref.read(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                      context.pop();
+                    },
                   );
                   // 登録完了のダイアログを表示
                   if (context.mounted) await doneMessageDialog(context, registerCompleteMessage);
