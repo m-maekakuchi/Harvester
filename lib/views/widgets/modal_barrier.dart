@@ -7,7 +7,7 @@ final modalBarrier = ColoredBox(
   child: Center(
     child: CircularProgressIndicator(
       valueColor: AlwaysStoppedAnimation(themeColor), //  インジケーターの色
-      strokeWidth: 6.0                                //  インジケーターの太さ
+      strokeWidth: 4.0                                //  インジケーターの太さ
     ),
   )
 );

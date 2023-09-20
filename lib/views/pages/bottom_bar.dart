@@ -34,9 +34,9 @@ class BottomBar extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,  // すべてのアイテムが表示されるように設定
         items: bottomNavigationItems,
-        backgroundColor: Colors.white, // バーの色
-        selectedItemColor: themeColor, // 選ばれたアイテムの色
-        unselectedItemColor: textIconColor, // 選ばれていないアイテムの色
+        backgroundColor: Colors.white,      // バーの色
+        selectedItemColor: themeColor,        // 選ばれたアイテムの色
+        unselectedItemColor: textIconColor,   // 選ばれていないアイテムの色
         currentIndex: index,
         onTap: loadingState // ローディング中は全ボタン押せないようにする
           ? null
