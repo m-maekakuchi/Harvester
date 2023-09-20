@@ -40,7 +40,9 @@ class CardShortInfoContainer extends ConsumerWidget {
         if (context.mounted) {
           showModalBottomSheet<void>(
             context: context,
-            isScrollControlled: true,
+            isScrollControlled: true, // 高さを半分以上にできる
+            useSafeArea: true,        // SafeAreaを挿入
+            barrierColor: Colors.transparent, // 後ろの画面の色
             builder: (BuildContext context) {
               return CardDetailPage(
                 cardMasterModel: cardMasterModel,

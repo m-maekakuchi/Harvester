@@ -124,7 +124,7 @@ class MyCardEditPage extends ConsumerWidget {
               Container(
                 width: double.infinity,
                 height: getH(context, 10),
-                color: textIconColor,
+                color: Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -158,7 +158,7 @@ class MyCardEditPage extends ConsumerWidget {
                         : null,
                       icon: const Icon(Icons.done_rounded),
                       iconSize: 40,
-                      color: Colors.white,
+                      color: textIconColor,
                     ),
                     // 削除ボタン
                     IconButton(
@@ -191,7 +191,7 @@ class MyCardEditPage extends ConsumerWidget {
                       : null,
                       icon: const Icon(Icons.delete_rounded),
                       iconSize: 40,
-                      color: Colors.white,
+                      color: textIconColor,
                     ),
                   ],
                 ),

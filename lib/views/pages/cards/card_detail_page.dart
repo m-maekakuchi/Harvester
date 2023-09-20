@@ -323,6 +323,8 @@ class CardDetailPage extends ConsumerWidget {
                     showModalBottomSheet<void>(
                       context: context,
                       isScrollControlled: true,
+                      useSafeArea: true,                  // SafeAreaを挿入
+                      barrierColor: Colors.transparent, // 後ろの画面の色
                       builder: (BuildContext context) {
                         return MyCardEditPage(
                           cardMasterModel: cardMasterModel,
