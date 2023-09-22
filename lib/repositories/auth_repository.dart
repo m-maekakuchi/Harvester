@@ -134,8 +134,21 @@ class AuthRepository implements BaseAuthRepository {
   Future<void> registerCustomStatus() async {
     try {
       final result = await FirebaseFunctions.instance
-          .httpsCallable('registerCustomState')
-          .call({"registerStatus": 1});
+        .httpsCallable('registerCustomState')
+        .call({"registerStatus": 1});
+      print(result.data['state']);
+    } on FirebaseFunctionsException catch (error) {
+      print(error.code);
+      print(error.details);
+      print(error.message);
+    }
+  }
+
+  Future<void> registerColorIndex(int index) async {
+    try {
+      final result = await FirebaseFunctions.instance
+        .httpsCallable('registerColorIndex')
+        .call({"colorIndex": index});
       print(result.data['state']);
     } on FirebaseFunctionsException catch (error) {
       print(error.code);

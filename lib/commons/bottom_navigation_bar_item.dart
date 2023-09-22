@@ -18,8 +18,8 @@ const bottomNavigationItems = [
     icon: Icon(Icons.add_circle_rounded),
     label: '追加',
   ),
-  BottomNavigationBarItem(
-    icon: Icon(Icons.photo_camera_back_rounded),
-    label: '写真',
-  ),
+  // BottomNavigationBarItem(
+  //   icon: Icon(Icons.photo_camera_back_rounded),
+  //   label: '写真',
+  // ),
 ];

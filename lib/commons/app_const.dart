@@ -25,7 +25,7 @@ const allCardTabTitleList = [
 const myCardTabTitleList = [
   '全国',
   '都道府県',
-  '日付',
+  // '日付',
   'お気に入り',
 ];
 

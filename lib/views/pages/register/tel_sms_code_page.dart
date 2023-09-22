@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../provider/providers.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../widgets/green_button.dart';
@@ -13,7 +14,10 @@ class TelSmsCodePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
     String smsCode = '';
+    final appBarColorIndex = ref.watch(colorProvider);
+
     return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -34,6 +38,7 @@ class TelSmsCodePage extends ConsumerWidget {
               ]
             ),
           ),
+          backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: Center(
           child: Column(

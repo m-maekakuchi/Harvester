@@ -3,12 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../provider/providers.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../widgets/green_button.dart';
-
-void main() async{
-  runApp(const TelIdentificationPage());
-}
 
 class TelIdentificationPage extends ConsumerStatefulWidget {
   const TelIdentificationPage({super.key});
@@ -23,6 +20,9 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
   
   @override
   Widget build(BuildContext context) {
+
+    final appBarColorIndex = ref.watch(colorProvider);
+
     return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -54,6 +54,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
               ),
             ),
           ],
+          backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: Center(
           child: Column(

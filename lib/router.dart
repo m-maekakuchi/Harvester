@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:harvester/provider/providers.dart';
 import 'package:harvester/viewModels/auth_view_model.dart';
 import 'package:harvester/views/pages/bottom_bar.dart';
 import 'package:harvester/views/pages/register/tel_sms_code_page.dart';
@@ -45,14 +46,20 @@ Provider<GoRouter> router() {
           if (requestPagePath == '/' || goingToSignIn) {
             print('----入ってはいけないページにアクセスしようとしている。----');
             final result = await user!.getIdTokenResult(true);
-            print("*****************************************************");
-            print(result);
-            print("*****************************************************");
+            // print("*****************************************************");
+            // print(result);
+            // print("*****************************************************");
             await ref.watch(authViewModelProvider.notifier).reload();
             final registerCustomState = result.claims!['registerStatus'];
             print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
             print("ユーザー情報の登録が完了済か: $registerCustomState");
             print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            final themeColorIndex = result.claims!['colorIndex'];
+            print("選択中のテーマカラー$themeColorIndex");
+            print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            if (themeColorIndex != null) {
+              ref.read(colorProvider.notifier).state = themeColorIndex;
+            }
             if (registerCustomState == 1) {
               return '/bottom_bar';
             } else {
@@ -62,6 +69,8 @@ Provider<GoRouter> router() {
             return null;
           }
         } else {
+          //サインアウト、退会したとき、テーマカラーをデフォルトに戻す
+          ref.read(colorProvider.notifier).state = 5;
           return null;
         }
       },
@@ -105,10 +114,8 @@ Provider<GoRouter> router() {
           },
         ),
         GoRoute(
-          // path: '/BasePage',
           path: '/bottom_bar',
           builder: (BuildContext context, GoRouterState state) {
-            // return const BasePage();
             return const BottomBar();
           },
         ),

@@ -43,3 +43,6 @@ final cardEditStateProvider = StateProvider((_) => const AsyncValue.data(null));
 /// アカウント登録・編集画面
 final userEditProvider = Provider((ref) => UserHandler(ref));
 final userEditStateProvider = StateProvider((_) => const AsyncValue.data(null));
+
+/// 設定画面
+final colorProvider = StateProvider((ref) => 5);

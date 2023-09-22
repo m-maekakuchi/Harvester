@@ -4,9 +4,11 @@ import '../../commons/app_color.dart';
 
 class DatePicker {
   final BuildContext context;
+  final int colorIndex;
 
   const DatePicker({
-    required this.context
+    required this.context,
+    required this.colorIndex,
   });
 
   // 日付のPickerを表示
@@ -20,7 +22,7 @@ class DatePicker {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: themeColor,      // ヘッダー背景色
+              primary: themeColorChoice[colorIndex],      // ヘッダー背景色
               onPrimary: textIconColor, // ヘッダーテキストカラー
               onSurface: textIconColor, // カレンダーのテキストカラー
             ),

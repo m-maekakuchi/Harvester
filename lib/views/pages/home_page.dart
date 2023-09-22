@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/address_master.dart';
 import '../../commons/app_bar_contents.dart';
+import '../../commons/app_color.dart';
 import '../../commons/app_const.dart';
 import '../../handlers/fetch_my_card_handler.dart';
 import '../../handlers/indicator_data_list_handler.dart';
@@ -54,6 +55,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allCardsLengthList = ref.watch(allCardsLengthListProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     return FutureBuilder(
       future: createListItems(ref),
@@ -68,6 +70,7 @@ class HomePage extends ConsumerWidget {
           appBar: AppBar(
             title: titleBox(pageTitleList[0], context),
             actions: actionList(context),
+            backgroundColor: themeColorChoice[appBarColorIndex],
           ),
           body: SingleChildScrollView(
             child: Center(
@@ -78,7 +81,7 @@ class HomePage extends ConsumerWidget {
                     height: getH(context, 3),
                   ),
                   // 全国のインジケーター
-                  indicatorCustomPaint(15, 20, getW(context, 40), indicatorPlace[0], myCardsLengthList[0] / allCardsLengthList[0], myCardsLengthList[0], allCardsLengthList[0], context),
+                  indicatorCustomPaint(15, 20, getW(context, 40), indicatorPlace[0], myCardsLengthList[0] / allCardsLengthList[0], myCardsLengthList[0], allCardsLengthList[0], context, appBarColorIndex),
                   // 地方のインジケーター
                   for (int i = 1; i <= areaNum; i += 2) ... {
                     Row(
@@ -90,7 +93,7 @@ class HomePage extends ConsumerWidget {
                               width: getW(context, 30) + getW(context, 30) * 0.6,
                             ),
                           } else
-                            ... {indicatorCustomPaint(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context),
+                            ... {indicatorCustomPaint(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context, appBarColorIndex),
                           }
                         }
                       ],
@@ -108,7 +111,7 @@ class HomePage extends ConsumerWidget {
                               width: getW(context, 30) + getW(context, 30) * 0.06,
                             ),
                           } else ... {
-                            indicatorCustomPaint(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context),
+                            indicatorCustomPaint(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context, appBarColorIndex),
                           }
                         },
                         // }

@@ -15,7 +15,8 @@ Widget indicatorCustomPaint(
   percentage,     // バッテリーレベルの割合
   myCardsNum,
   allCardsNum,
-  context
+  context,
+  colorIndex
 ) {
   return CustomPaint(
     painter: RatioIndicatorWidget(
@@ -23,6 +24,7 @@ Widget indicatorCustomPaint(
       textCircleRadius: indicatorSize * 0.5,  // 内側に表示される白丸の半径
       spaceLen: spaceLen,                     // 円とゲージ間の長さ
       lineLen: lineLen,                       // ゲージの長さ
+      colorIndex: colorIndex,
     ),
     child: Container(
       padding: EdgeInsets.symmetric(vertical: indicatorSize * 0.28, horizontal: indicatorSize * 0.3),

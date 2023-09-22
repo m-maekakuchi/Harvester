@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/app_color.dart';
 import '../../handlers/padding_handler.dart';
+import '../../provider/providers.dart';
 
-class GreenButton extends StatelessWidget {
+class GreenButton extends ConsumerWidget {
   const GreenButton({
     super.key,
     required this.text,
@@ -16,13 +18,16 @@ class GreenButton extends StatelessWidget {
   final GestureTapCallback? onPressed;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final appBarColorIndex = ref.watch(colorProvider);
+
     return SizedBox(
       width: getW(context, 90),
       height: getH(context, 7),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: themeColor,
+          backgroundColor: themeColorChoice[appBarColorIndex],
           foregroundColor: textIconColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(45)

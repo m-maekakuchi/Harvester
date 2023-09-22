@@ -18,7 +18,7 @@ const pages = [
   MyCardsListPage(),
   AllCardsListPage(),
   MyCardAddPage(),
-  PhotosListPage(),
+  // PhotosListPage(),
 ];
 
 class BottomBar extends ConsumerWidget {
@@ -28,17 +28,18 @@ class BottomBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(bottomBarIndexProvider);
     final loadingState = ref.watch(loadingIndicatorProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     return Scaffold(
       body: pages[index],
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,  // すべてのアイテムが表示されるように設定
+        type: BottomNavigationBarType.fixed,                    // すべてのアイテムが表示されるように設定
         items: bottomNavigationItems,
-        backgroundColor: Colors.white,      // バーの色
-        selectedItemColor: themeColor,        // 選ばれたアイテムの色
-        unselectedItemColor: textIconColor,   // 選ばれていないアイテムの色
+        backgroundColor: Colors.white,                          // バーの背景色
+        selectedItemColor: themeColorChoice[appBarColorIndex],  // 選ばれたアイテムの色
+        unselectedItemColor: textIconColor,                     // 選ばれていないアイテムの色
         currentIndex: index,
-        onTap: loadingState // ローディング中は全ボタン押せないようにする
+        onTap: loadingState                                     // ローディング中は全ボタン押せないようにする
           ? null
           : (index) async {
             // マイカードボタンか全カードボタンが押されたとき
