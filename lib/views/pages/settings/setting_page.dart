@@ -6,12 +6,11 @@ import 'package:harvester/repositories/local_storage_repository.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../../provider/providers.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/user_view_model.dart';
 import '../../widgets/message_dialog_two_actions.dart';
 import '../../widgets/setting_accordion.dart';
-
-final colorProvider = StateProvider((ref) => 5);
 
 class SettingPage extends ConsumerWidget {
   const SettingPage({super.key});
@@ -19,6 +18,7 @@ class SettingPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectColorIndex = ref.watch(colorProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     // Accordion以外の項目はTextButton
     Widget itemTextItem(String text, GestureTapCallback onPressed) {
@@ -30,8 +30,8 @@ class SettingPage extends ConsumerWidget {
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.only(left: getW(context, 3), right: getW(context, 4)),
             side: const BorderSide(
-                color: textIconColor,
-                width: 0.2
+              color: textIconColor,
+              width: 0.2
             ),
             backgroundColor: Colors.white,
             foregroundColor: textIconColor,
@@ -61,9 +61,12 @@ class SettingPage extends ConsumerWidget {
             )
           ),
           // 色が選択された場合
-          onPressed: () {
+          onPressed: () async {
             final notifier = ref.read(colorProvider.notifier);
             notifier.state = index;
+
+            // 選択された色をCustom Claimに登録
+            await ref.read(authViewModelProvider.notifier).registerColorIndex(index);
           },
           child: const SizedBox.shrink(),
         ),
@@ -95,7 +98,7 @@ class SettingPage extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            for (int j = i * 4; j < i * 4 + 4; j++) ... {
+                            for (int j = i * 3; j < i * 3 + 3; j++) ... {
                               Stack(
                                 alignment: AlignmentDirectional.center,
                                 children: [
@@ -142,6 +145,7 @@ class SettingPage extends ConsumerWidget {
             ]
           ),
         ),
+        backgroundColor: themeColorChoice[appBarColorIndex],
       ),
       body: Column(
         children: [

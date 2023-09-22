@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/provider/providers.dart';
 
 import '../../../commons/app_bar_contents.dart';
+import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../components/colored_tab_bar.dart';
 import '../../components/my_card_list.dart';
-import '../../components/my_card_list_per_collect_day.dart';
 import '../../components/my_card_list_per_prefecture.dart';
 import '../../components/my_favorite_card_list.dart';
 import '../../widgets/tab_bar_of_app_bar.dart';
@@ -29,6 +29,7 @@ class MyCardsListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final myCardNumber = ref.read(myCardNumberListProvider).length;
+    final appBarColorIndex = ref.watch(colorProvider);
 
     // マイカードが登録されていない場合は、メッセージのText Widgetをタブ分生成
     List<Widget> noMyCardTextList = [];
@@ -45,13 +46,14 @@ class MyCardsListPage extends ConsumerWidget {
           bottom: ColoredTabBar(
             tabBar: tabBar(tabList(context)),
           ),
+          backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: myCardNumber != 0
           ? const TabBarView(
             children: [
               MyCardList(),
               MyCardListPerPrefecture(),
-              MyCardListPerCollectDay(),
+              // MyCardListPerCollectDay(),
               MyFavoriteCardList(),
             ]
           )

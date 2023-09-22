@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/commons/app_color.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
+import '../../provider/providers.dart';
+
 class Accordion extends ConsumerWidget {
   const Accordion({
     super.key,
@@ -22,6 +24,7 @@ class Accordion extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final length = tileTextList.length;
     final GlobalKey expansionTileKey = GlobalKey(); // key property to get the current context of the ExpansionTile
+    final appBarColorIndex = ref.watch(colorProvider);
 
     // リストタイル
     Widget listTileContainer (String title, StateProvider provider) {
@@ -52,12 +55,12 @@ class Accordion extends ConsumerWidget {
     }
 
     return ExpansionTile(
-      collapsedTextColor: textIconColor,    // 閉じたときの文字色
-      textColor: textIconColor,             // 開いたときの文字色
-      collapsedIconColor: textIconColor,    // 閉じたときのアイコンの色
-      iconColor: textIconColor,             // 開いたときのアイコンの色
-      collapsedBackgroundColor: themeColor, // 閉じたときの背景色
-      backgroundColor: themeColor,          // 開いたときの背景色
+      collapsedTextColor: textIconColor,                              // 閉じたときの文字色
+      textColor: textIconColor,                                       // 開いたときの文字色
+      collapsedIconColor: textIconColor,                              // 閉じたときのアイコンの色
+      iconColor: textIconColor,                                       // 開いたときのアイコンの色
+      collapsedBackgroundColor: accordionColorList[appBarColorIndex], // 閉じたときの背景色
+      backgroundColor: accordionColorList[appBarColorIndex],          // 開いたときの背景色
       collapsedShape: const RoundedRectangleBorder(
         side: BorderSide(color: textIconColor, width: 0.1),   // 閉じたときの枠線
       ),

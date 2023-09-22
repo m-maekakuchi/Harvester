@@ -125,12 +125,12 @@ class CardDetailPage extends ConsumerWidget {
   }
 
   // カード情報のTabBar
-  TabBar cardInfoTabBar() {
+  TabBar cardInfoTabBar(int index) {
     return TabBar(
       labelColor: textIconColor,            // 選択時の文字色
       unselectedLabelColor: textIconColor,  // 未選択時の文字色
       indicator: BoxDecoration(
-        color: themeColor,
+        color: themeColorChoice[index],
         borderRadius: BorderRadius.circular(20),
       ),
       tabs: cardDetailInfoTabList(),
@@ -187,7 +187,7 @@ class CardDetailPage extends ConsumerWidget {
   }
 
   // タブとカード詳細情報（配置場所、配布時間、発行日）を合わせた、実線で囲んでいる部分
-  Widget tabAndCardInfoContainer(BuildContext context) {
+  Widget tabAndCardInfoContainer(BuildContext context, int index) {
     return DefaultTabController(
       length: cardDetailInfoTabTitleList.length, // タブの個数
       initialIndex: 0,
@@ -206,7 +206,7 @@ class CardDetailPage extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: cadInfoTabBarNoSelectColor,
               ),
-              child: cardInfoTabBar(),
+              child: cardInfoTabBar(index),
             ),
             /// カードの詳細情報の部分
             SizedBox(
@@ -241,6 +241,8 @@ class CardDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
+    final appBarColorIndex = ref.watch(colorProvider);
+
     return FutureBuilder(
       future: fetchCardModelAndImgUrl(ref),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -253,6 +255,7 @@ class CardDetailPage extends ConsumerWidget {
             appBar: AppBar(
               title: titleBox('Manhole Card', context),
               actions: actionList(context),
+              backgroundColor: themeColorChoice[appBarColorIndex],
             ),
             body: Column(
               children: [
@@ -269,7 +272,7 @@ class CardDetailPage extends ConsumerWidget {
                         cardMainInfo(context),
                         SizedBox(height: getW(context, 3)),
                         ///  配布場所・配布時間・発行日
-                        tabAndCardInfoContainer(context),
+                        tabAndCardInfoContainer(context, appBarColorIndex),
                         SizedBox(height: getW(context, 3)),
                         ///  収集日とお気に入りマーク
                         cardModel != null && cardModel!.collectDay != null
@@ -335,7 +338,7 @@ class CardDetailPage extends ConsumerWidget {
                     );
                   }
                 },
-                backgroundColor: themeColor,
+                backgroundColor: themeColorChoice[appBarColorIndex],
                 child: const Icon(Icons.edit_rounded, color: textIconColor),
               )
               : const SizedBox()

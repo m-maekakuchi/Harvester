@@ -43,6 +43,7 @@ class MyCardEditPage extends ConsumerWidget {
     final popContext = context; // 変更完了のダイアログを閉じるときにcontextだとエラーになるのでこれを追加
     final cardEditState = ref.watch(cardEditStateProvider); // 削除処理の状況を監視
     final loadingState = ref.watch(loadingIndicatorProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     final imageModelList = ref.watch(imageListProvider);
     final selectedCollectDay = ref.watch(cardEditPageCollectDayProvider);
@@ -105,7 +106,7 @@ class MyCardEditPage extends ConsumerWidget {
                       UserSelectItemContainer(
                         text: convertDateTimeToString(selectedCollectDay),
                         onPressed: () async {
-                          final selectedDayFromCalendar = await DatePicker(context: context).showDate(selectedCollectDay);
+                          final selectedDayFromCalendar = await DatePicker(context: context, colorIndex: appBarColorIndex).showDate(selectedCollectDay);
                           // 日付が選択された場合
                           if (selectedDayFromCalendar != null) {
                             ref.read(cardEditPageCollectDayProvider.notifier).state = selectedDayFromCalendar;
@@ -206,6 +207,7 @@ class MyCardEditPage extends ConsumerWidget {
       appBar: AppBar(
         title: titleBox('My Card 編集', context),
         actions: actionList(context),
+        backgroundColor: themeColorChoice[appBarColorIndex],
       ),
       body: cardEditState.when(
         data: (value) {

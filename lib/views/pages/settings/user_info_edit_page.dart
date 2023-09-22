@@ -45,6 +45,7 @@ class UserInfoEditPage extends ConsumerWidget {
 
     final userUpdateState = ref.watch(userEditStateProvider);
     final loadingState = ref.read(loadingIndicatorProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     // 居住地のドラムロール
     void showDialog(Widget child) {
@@ -255,6 +256,7 @@ class UserInfoEditPage extends ConsumerWidget {
               ]
             ),
           ),
+          backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: userUpdateState.when(
           data: (value) {

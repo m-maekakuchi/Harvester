@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../commons/app_bar_contents.dart';
+import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
 import '../../../provider/providers.dart';
@@ -34,6 +35,7 @@ class MyCardAddPage extends ConsumerWidget {
     final selectedDay = ref.watch(dateProvider);
     final selectedImageList = ref.watch(imageListProvider);
     final bookmark = ref.watch(bookmarkProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     AsyncValue<bool> cardAddState = ref.watch(cardViewModelProvider);
 
@@ -70,7 +72,7 @@ class MyCardAddPage extends ConsumerWidget {
           UserSelectItemContainer(
             text: '${selectedDay.year}/${selectedDay.month}/${selectedDay.day}',
             onPressed: () async {
-              final selectedDayFromCalendar = await DatePicker(context: context).showDate(selectedDay);
+              final selectedDayFromCalendar = await DatePicker(context: context, colorIndex: appBarColorIndex).showDate(selectedDay);
               // 日付が選択された場合
               if (selectedDayFromCalendar != null) {
                 final notifier = ref.read(dateProvider.notifier);
@@ -120,6 +122,7 @@ class MyCardAddPage extends ConsumerWidget {
       appBar: AppBar(
         title: titleBox(pageTitleList[3], context),
         actions: actionList(context),
+        backgroundColor: themeColorChoice[appBarColorIndex],
       ),
       body: cardAddState.when(
         data: (value) {

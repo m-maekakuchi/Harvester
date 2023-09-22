@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/auth_repository.dart';
 
 final authViewModelProvider = StateNotifierProvider<AuthViewModel, AsyncValue<User?>>(
-      (ref) => AuthViewModel(ref)..appStarted(),
+    (ref) => AuthViewModel(ref)..appStarted(),
 );
 
 class AuthViewModel extends StateNotifier<AsyncValue<User?>> {
@@ -73,6 +73,10 @@ class AuthViewModel extends StateNotifier<AsyncValue<User?>> {
 
   Future<void> registerCustomStatus() async {
     await _ref.read(authRepositoryProvider).registerCustomStatus();
+  }
+
+  Future<void> registerColorIndex(int index) async {
+    await _ref.read(authRepositoryProvider).registerColorIndex(index);
   }
 
   // Future<void> removeCustomStatus() async {

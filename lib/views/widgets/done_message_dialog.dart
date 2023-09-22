@@ -13,7 +13,7 @@ Future<void> doneMessageDialog(BuildContext context, String message) {
         ),
         title: const Icon(
           Icons.done_rounded,
-          size: 80,
+          size: 60,
           color: textIconColor
         ),
         content: Text(message, textAlign: TextAlign.center),

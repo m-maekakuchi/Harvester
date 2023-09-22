@@ -9,12 +9,14 @@ class RatioIndicatorWidget extends CustomPainter {
   final double textCircleRadius; // 内側に表示される白丸の半径
   final int spaceLen;  // 円とゲージ間の長さ
   final int lineLen; // ゲージの長さ
+  final int colorIndex;
 
   RatioIndicatorWidget({
     required this.percentage,
     required this.textCircleRadius,
     required this.spaceLen,
     required this.lineLen,
+    required this.colorIndex
   });
 
   @override
@@ -23,8 +25,8 @@ class RatioIndicatorWidget extends CustomPainter {
       final per = i / 360.0;
       // 割合（0~1.0）からグラデーション色に変換
       final color = ColorTween(
-        begin: indicatorBeginColor,
-        end: indicatorEndColor,
+        begin: themeColorChoice[colorIndex],
+        end: indicatorLastColorList[colorIndex],
       ).lerp(per)!;
       final paint = Paint()
         ..color = color

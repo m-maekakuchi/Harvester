@@ -59,13 +59,12 @@ class MyApp extends ConsumerWidget {
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         textTheme: const TextTheme(bodyMedium: TextStyle(color: textIconColor)),
         // primaryColorDark: Colors.black,
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           centerTitle: true,
-          iconTheme: const IconThemeData(
+          iconTheme: IconThemeData(
             color: textIconColor,
             size: 30,
           ),
-          color: themeColor,
           foregroundColor: textIconColor,
         ),
         cupertinoOverrideTheme: const CupertinoThemeData(
