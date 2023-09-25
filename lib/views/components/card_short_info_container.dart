@@ -1,9 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../commons/address_master.dart';
 import '../../commons/app_color.dart';
-import '../../commons/irregular_card_number.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../pages/cards/card_detail_page.dart';
@@ -54,7 +54,7 @@ class CardShortInfoContainer extends ConsumerWidget {
       },
       child: Container(
         height: getH(context, 16),
-        width: getW(context, 95),
+        width: getW(context, 96),
         clipBehavior: Clip.antiAlias,     // Containerから画像がはみ出ないように設定
         decoration: BoxDecoration(
           border: Border.all(width: 1, color: textIconColor),
@@ -78,12 +78,24 @@ class CardShortInfoContainer extends ConsumerWidget {
                 bottomLeft: Radius.circular(20),
               ),
               // 登録画像があれば、その1枚目を表示
-              // 登録画像がない場合、カード番号がirregularであればベージュのカード画像、それ以外はその地方の色のカード画像を表示
-              child: imgUrl != null
-                ? cachedNetworkImage(imgUrl!, cardMasterModel)
-                : irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
-                  ? Image.asset('images/irregular.png')
-                  : Image.asset('images/${regionEngMap[cardMasterModel.prefecture]}.png')
+              child: Container(
+                width: getW(context, 48),
+                color: modalBarrierColor,
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 1, minHeight: 1),
+                    child: imgUrl != null
+                      ? cachedNetworkImage(imgUrl!)
+                      : ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                        child: cachedNetworkImage(
+                          'https://github.com/m-maekakuchi/Harvester-images/blob/main/${cardMasterModel.serialNumber}.jpg?raw=true'
+                        ),
+                      ),
+                  ),
+                ),
+              )
             ),
             // カード情報
             Expanded(

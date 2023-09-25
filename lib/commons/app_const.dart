@@ -37,8 +37,8 @@ const cardDetailInfoTabTitleList = [
 
 // カード一覧画面のローディング数
 const loadingNum = 30;
-
-const loadingNumTest = 6;
+// マイカード一覧画面のローディング数
+const loadingMyCardsNum = 10;
 
 // マスターカードの枚数
 final cardMasterNum = getListNum();

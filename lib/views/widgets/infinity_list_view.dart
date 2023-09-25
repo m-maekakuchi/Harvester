@@ -90,7 +90,7 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
                 const SizedBox(height: 10),
                 Center(
                   child: ShimmerWidget.roundedRectangular(
-                    width: getW(context, 95),
+                    width: getW(context, 96),
                     height: getH(context, 16),
                     borderRadius: 20,
                   ),

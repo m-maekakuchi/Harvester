@@ -101,8 +101,8 @@ Future<void> getMyCardsPageScrollItemListAndSetIndex (
   final firstIndex = ref.read(myCardsPageFirstIndexProvider)[tabIndex];
   final restNum = sortedMyCardNumberList.length - firstIndex; // 残りの個数
   // 残りのアイテムがloadingNumより小さければ、残りの個数をローディング数にする
-  if (restNum > loadingNumTest) {
-    myCardLoadingNum = loadingNumTest;
+  if (restNum > loadingMyCardsNum) {
+    myCardLoadingNum = loadingMyCardsNum;
   } else {
     myCardLoadingNum = restNum;
   }

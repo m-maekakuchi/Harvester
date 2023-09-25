@@ -1,9 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../commons/address_master.dart';
-import '../../commons/irregular_card_number.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
@@ -29,9 +29,12 @@ class CarouselSliderPhotos extends ConsumerWidget {
     if (imgUrlList != null) {
       for (String? imgUrl in imgUrlList!) {
         if (imgUrl != null) {
-          final imgWidget = ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-            child: cachedNetworkImage(imgUrl, cardMasterModel),
+          final imgWidget = Container(
+            margin: const EdgeInsets.all(5),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              child: Image.network(imgUrl, fit: BoxFit.cover, width: 1000),
+            ),
           );
           imgSliders.add(imgWidget);
         }
@@ -40,11 +43,13 @@ class CarouselSliderPhotos extends ConsumerWidget {
     // imgSlidersが空の場合（マイカード登録がない or マイカード登録しているが画像が取得できなかった）
     if (imgSliders.isEmpty) {
       final imgWidget = ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-        // カード番号がirregularの番号の場合はベージュのカードの画像、それ以外はその地方の色のカード画像
-        child: irregularCardMasterNumbers.containsValue(cardMasterModel.serialNumber)
-          ? Image.asset('images/irregular.png')
-          : Image.asset('images/${regionEngMap[cardMasterModel.prefecture]}.png'),
+        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        child: ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+          child: cachedNetworkImage(
+            'https://github.com/m-maekakuchi/Harvester-images/blob/main/${cardMasterModel.serialNumber}.jpg?raw=true'
+          ),
+        ),
       );
       imgSliders.add(imgWidget);
     }
