@@ -17,7 +17,7 @@ class ShimmerLoadingCardList extends StatelessWidget {
               for (int i = 0; i < 5; i++) ... {
                 const SizedBox(height: 10),
                 ShimmerWidget.roundedRectangular(
-                  width: getW(context, 95),
+                  width: getW(context, 96),
                   height: getH(context, 16),
                   borderRadius: 20,
                 ),

@@ -128,16 +128,17 @@ class UserInfoEditPage extends ConsumerWidget {
           UserSelectItemContainer(
               text: selectedBirthday,
               onPressed: () {
+                final DateTime birthday = ref.read(userViewModelProvider).birthday!;
                 DatePicker.showDatePicker(context,
-                    showTitleActions: false,
-                    minTime: DateTime(1950, 1, 1),
-                    maxTime: DateTime(2020, 12, 31),
-                    onChanged: (date) {
-                      final notifier = ref.read(birthdayProvider.notifier);
-                      notifier.state = '${date.year}/${date.month}/${date.day}';
-                    },
-                    currentTime: DateTime.now(),
-                    locale: LocaleType.jp
+                  showTitleActions: false,
+                  minTime: DateTime(1950, 1, 1),
+                  maxTime: DateTime(2020, 12, 31),
+                  onChanged: (date) {
+                    final notifier = ref.read(birthdayProvider.notifier);
+                    notifier.state = '${date.year}/${date.month}/${date.day}';
+                  },
+                  currentTime: birthday,
+                  locale: LocaleType.jp
                 );
               }
           ),
