@@ -119,16 +119,6 @@ flutter:
     - images/icon_ios.png
     - images/icon_android.png
     - images/manhole.png
-    - images/irregular.png
-    - images/hokkaido.png
-    - images/tohoku.png
-    - images/kanto.png
-    - images/hokuriku.png
-    - images/chubu.png
-    - images/kinki.png
-    - images/chugoku.png
-    - images/shikoku.png
-    - images/kyusyu.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

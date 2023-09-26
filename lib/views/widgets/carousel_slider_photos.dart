@@ -43,7 +43,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
     // imgSlidersが空の場合（マイカード登録がない or マイカード登録しているが画像が取得できなかった）
     if (imgSliders.isEmpty) {
       final imgWidget = ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
         child: ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
           child: cachedNetworkImage(
