@@ -94,7 +94,7 @@ flutter_native_splash:
   ios: true
   android_12:
     # Splash screen background color.
-    color: "#FBFDFB"
+    color: "#F7F7F6"
 #    App icon background color.
 #    icon_background_color: "#111111"
 #    The branding property allows you to specify an image used as branding in the splash screen.
@@ -118,7 +118,7 @@ flutter:
     - images/splash_dark.png
     - images/icon_ios.png
     - images/icon_android.png
-    - images/manhole.png
+    - images/welcome_image.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

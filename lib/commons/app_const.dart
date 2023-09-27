@@ -14,7 +14,7 @@ const pageTitleList = [
   "My Manhole Cards",
   "All Manhole Cards",
   "My Card 追加",
-  "Photo"
+  // "Photo"
 ];
 
 const allCardTabTitleList = [
@@ -36,7 +36,7 @@ const cardDetailInfoTabTitleList = [
 ];
 
 // カード一覧画面のローディング数
-const loadingNum = 30;
+const loadingNum = 20;
 // マイカード一覧画面のローディング数
 const loadingMyCardsNum = 10;
 
@@ -50,3 +50,6 @@ int getListNum () {
   }
   return num;
 }
+
+// Storageの画像か、githubに登録したカード画像下の判定時に用いる文字列
+const containGitHubImageStr = 'github.com/m-maekakuchi';

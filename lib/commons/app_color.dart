@@ -44,7 +44,5 @@ const indicatorLastColorList = [
   Color.fromRGBO(57, 57, 106, 1),
   Color.fromRGBO(122, 46, 106, 1),
 ];
-//  デフォルトのテーマカラー
-final themeColor = themeColorChoice[5];
 //  scaffoldの背景色
 const scaffoldBackgroundColor = Color.fromRGBO(247, 247, 246, 1);
