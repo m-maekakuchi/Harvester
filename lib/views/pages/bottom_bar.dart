@@ -26,22 +26,24 @@ class BottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final index = ref.watch(bottomBarIndexProvider);
+    final currentIndex = ref.watch(bottomBarIndexProvider);
     final loadingState = ref.watch(loadingIndicatorProvider);
     final appBarColorIndex = ref.watch(colorProvider);
 
     return Scaffold(
-      body: pages[index],
+      body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,                    // すべてのアイテムが表示されるように設定
         items: bottomNavigationItems,
         backgroundColor: Colors.white,                          // バーの背景色
         selectedItemColor: themeColorChoice[appBarColorIndex],  // 選ばれたアイテムの色
         unselectedItemColor: textIconColor,                     // 選ばれていないアイテムの色
-        currentIndex: index,
+        currentIndex: currentIndex,
         onTap: loadingState                                     // ローディング中は全ボタン押せないようにする
           ? null
           : (index) async {
+            // 現在のインデックスと同じボタンを選択したらなにもしない
+            if (currentIndex == index) return;
             // マイカードボタンか全カードボタンが押されたとき
             if (index == 1 || index == 2) {
               // リストの最後のドキュメントを初期化（ページを再表示したとき、これがないとリスト表示がリセットされない）

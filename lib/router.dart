@@ -70,7 +70,7 @@ Provider<GoRouter> router() {
           }
         } else {
           //サインアウト、退会したとき、テーマカラーをデフォルトに戻す
-          ref.read(colorProvider.notifier).state = 5;
+          ref.read(colorProvider.notifier).state = 4;
           return null;
         }
       },

@@ -66,7 +66,8 @@ Future<void> getAllCardsPageScrollItemList(
         imgUrlList.add(null);
       }
     } else {
-      imgUrlList.add(null);
+      // マイカードに登録されていない場合はGitHubにアップした画像URLを追加
+      imgUrlList.add('https://github.com/m-maekakuchi/Harvester-images/blob/main/${newCardMasterModelList[i].serialNumber}.jpg?raw=true');
     }
     i++;
   });

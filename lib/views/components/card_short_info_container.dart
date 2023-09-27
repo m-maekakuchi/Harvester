@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/app_color.dart';
+import '../../commons/app_const.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../pages/cards/card_detail_page.dart';
@@ -24,7 +25,7 @@ class CardShortInfoContainer extends ConsumerWidget {
   const CardShortInfoContainer({
     super.key,
     required this.cardMasterModel,
-    this.imgUrl,
+    required this.imgUrl,
     required this.favorite,
     required this.myContain,
   });
@@ -80,22 +81,17 @@ class CardShortInfoContainer extends ConsumerWidget {
               // 登録画像があれば、その1枚目を表示
               child: Container(
                 width: getW(context, 48),
+                height: getH(context, 100),
                 color: modalBarrierColor,
-                child: FittedBox(
-                  fit: BoxFit.fitWidth,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 1, minHeight: 1),
-                    child: imgUrl != null
-                      ? cachedNetworkImage(imgUrl!)
-                      : ImageFiltered(
-                        imageFilter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                        child: cachedNetworkImage(
-                          'https://github.com/m-maekakuchi/Harvester-images/blob/main/${cardMasterModel.serialNumber}.jpg?raw=true'
-                        ),
-                      ),
-                  ),
-                ),
-              )
+                child: imgUrl != null                           // nullの場合はアイコンを表示
+                  ? imgUrl!.contains(containGitHubImageStr)     // GitHubのURLの場合、モザイクをかける
+                    ? ImageFiltered(
+                      imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                      child: cachedNetworkImage(imgUrl!),
+                    )
+                    : cachedNetworkImage(imgUrl!)
+                  : const Center(child: Icon(Icons.error_rounded))
+              ),
             ),
             // カード情報
             Expanded(
