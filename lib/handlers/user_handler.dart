@@ -109,7 +109,7 @@ class UserHandler {
       // usersコレクションから該当ドキュメントを削除
       await ref.watch(userViewModelProvider.notifier).deleteFromFireStore(uid, transaction);
 
-      // ローカルのマイカード情報を削除
+      // ローカルの情報を削除
       await LocalStorageRepository().deleteUserInfo();
       await LocalStorageRepository().deleteMyCardIdAndFavorites();
 

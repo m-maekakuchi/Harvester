@@ -14,6 +14,8 @@ class SelectedItemAndIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -26,16 +28,16 @@ class SelectedItemAndIcon extends StatelessWidget {
               fit: BoxFit.scaleDown,  // 親の中に収まるまで縮小する。すでに収まっている場合、拡大はしない。
               child: Text(
                 text,
-                style: const TextStyle(color: textIconColor),
+                style: TextStyle(color: isDarkMode ? Colors.white : textIconColor),
                 maxLines: 1,
               )
             ),
           ),
         ),
-        const Icon(
+        Icon(
           Icons.arrow_drop_down_rounded,
           size: 40,
-          color: textIconColor,
+          color: isDarkMode ? Colors.white : textIconColor,
         ),
       ],
     );

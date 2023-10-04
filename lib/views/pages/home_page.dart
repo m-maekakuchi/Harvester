@@ -36,6 +36,8 @@ class HomePage extends ConsumerWidget {
     // マイカード情報がローカルかFireStoreから取得できたら、マイカード情報をプロバイダで管理
     if (myCardIdAndFavoriteList != null) {
       ref.read(myCardIdAndFavoriteListProvider.notifier).state = myCardIdAndFavoriteList;
+    } else {
+      ref.read(myCardIdAndFavoriteListProvider.notifier).state = [];
     }
     // マイカード情報がローカルかFireStoreから取得できたら、マイカード番号をプロバイダで管理
     if (myCardIdAndFavoriteList != null) {
@@ -43,6 +45,8 @@ class HomePage extends ConsumerWidget {
         value["id"] as String
       ).toList();
       ref.read(myCardNumberListProvider.notifier).state = myCardNumberList;
+    }  else {
+      ref.read(myCardNumberListProvider.notifier).state = [];
     }
     // print(ref.read(myCardNumberListProvider.notifier).state);
 
@@ -81,7 +85,7 @@ class HomePage extends ConsumerWidget {
                     height: getH(context, 3),
                   ),
                   // 全国のインジケーター
-                  indicatorCustomPaint(15, 20, getW(context, 40), indicatorPlace[0], myCardsLengthList[0] / allCardsLengthList[0], myCardsLengthList[0], allCardsLengthList[0], context, appBarColorIndex),
+                  indicatorCustomPaint(15, 20, getW(context, 35), indicatorPlace[0], myCardsLengthList[0] / allCardsLengthList[0], myCardsLengthList[0], allCardsLengthList[0], context, appBarColorIndex),
                   // 地方のインジケーター
                   for (int i = 1; i <= areaNum; i += 2) ... {
                     Row(

@@ -16,10 +16,19 @@ class AllCardsListPage extends ConsumerWidget {
 
   // Tab Widgetのリスト
   List<SizedBox> tabList(BuildContext context) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return List.generate(allCardTabTitleList.length, (index) =>
       SizedBox(
         width: getW(context, allCardAppBarTabWidth.toDouble()),
-        child: Tab(text: allCardTabTitleList[index]),
+        child: Tab(
+          child: Text(
+            allCardTabTitleList[index],
+            style: TextStyle(
+              color: isDarkMode ? Colors.white : textIconColor
+            )
+          )
+        ),
       )
     );
   }

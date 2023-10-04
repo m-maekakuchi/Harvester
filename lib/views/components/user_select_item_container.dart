@@ -19,12 +19,14 @@ class UserSelectItemContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Container(
       width: getW(context, 90),
       margin: EdgeInsets.only(bottom: getH(context, 1)),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: textIconColor, width: 1),
+        color: isDarkMode ? Colors.black : Colors.white,
+        border: Border.all(color: isDarkMode ? Colors.black : textIconColor, width: 1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: CupertinoButton( // TextIconでもいいけど日付選択欄のボタンにあわせてデザイン揃えている

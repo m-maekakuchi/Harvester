@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/provider/providers.dart';
 
 import '../../../commons/address_master.dart';
+import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../widgets/message_dialog_two_actions.dart';
@@ -24,13 +25,13 @@ import '../../widgets/item_cupertino_picker.dart';
 
 // TextEditingControllerのtextでTextFormFieldの初期値を設定
 final textControllerProvider = StateProvider((ref) =>
-  TextEditingController(text: ref.read(userViewModelProvider).name)
+  TextEditingController(text: ref.watch(userViewModelProvider).name)
 );
 final addressIndexProvider = StateProvider((ref) =>
-  ref.read(userViewModelProvider).addressIndex
+  ref.watch(userViewModelProvider).addressIndex
 );
 final birthdayProvider = StateProvider((ref) =>
-  convertDateTimeToString(ref.read(userViewModelProvider).birthday!)
+  convertDateTimeToString(ref.watch(userViewModelProvider).birthday!)
 );
 
 class UserInfoEditPage extends ConsumerWidget {
@@ -38,6 +39,7 @@ class UserInfoEditPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final textController = ref.watch(textControllerProvider);
     final selectedAddressIndex = ref.watch(addressIndexProvider);
@@ -73,17 +75,17 @@ class UserInfoEditPage extends ConsumerWidget {
         children: [
           const TitleContainer(titleStr: 'ニックネーム'),
           //  ニックネーム欄
-          SizedBox(
+          Container(
             width: getW(context, 90),
-            height: getH(context, 6),
+            margin: EdgeInsets.only(bottom: getH(context, 1)),
             child: TextFormField(
               controller: textController,
               // 入力されたテキストの色
-              style: const TextStyle(
-                  color: textIconColor
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : textIconColor
               ),
               decoration: InputDecoration(
-                fillColor: Colors.white,
+                fillColor: isDarkMode ? Colors.black : Colors.white,
                 filled: true,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -91,23 +93,23 @@ class UserInfoEditPage extends ConsumerWidget {
                 // 枠線の色
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: textIconColor,
+                  borderSide: BorderSide(
+                    color: isDarkMode ? Colors.black : textIconColor,
                     width: 1,
                   ),
                 ),
                 // 入力中の枠線の色
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: textIconColor,
+                  borderSide: BorderSide(
+                    color: isDarkMode ? Colors.black : textIconColor,
                     width: 1,
                   ),
                 ),
                 hintText: '10文字以内',
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontSize: 16,
-                  color: textIconColor,
+                  color: isDarkMode ? Colors.white : textIconColor,
                 ),
               ),
             ),
@@ -126,21 +128,26 @@ class UserInfoEditPage extends ConsumerWidget {
           const TitleContainer(titleStr: '生年月日'),
           // 生年月日選択欄
           UserSelectItemContainer(
-              text: selectedBirthday,
-              onPressed: () {
-                final DateTime birthday = ref.read(userViewModelProvider).birthday!;
-                DatePicker.showDatePicker(context,
-                  showTitleActions: false,
-                  minTime: DateTime(1950, 1, 1),
-                  maxTime: DateTime(2020, 12, 31),
-                  onChanged: (date) {
-                    final notifier = ref.read(birthdayProvider.notifier);
-                    notifier.state = '${date.year}/${date.month}/${date.day}';
-                  },
-                  currentTime: birthday,
-                  locale: LocaleType.jp
-                );
-              }
+            text: selectedBirthday,
+            onPressed: () {
+              final DateTime birthday = ref.read(userViewModelProvider).birthday!;
+              DatePicker.showDatePicker(context,
+                theme: isDarkMode ? DatePickerTheme(
+                  backgroundColor: Colors.black,
+                  itemStyle: const TextStyle(color: Colors.white, fontSize: 18),
+                  containerHeight: MediaQuery.of(context).size.height / 4,
+                ) : null,
+                showTitleActions: false,
+                minTime: DateTime(1950, 1, 1),
+                maxTime: DateTime(2020, 12, 31),
+                onChanged: (date) {
+                  final notifier = ref.read(birthdayProvider.notifier);
+                  notifier.state = '${date.year}/${date.month}/${date.day}';
+                },
+                currentTime: birthday,
+                locale: LocaleType.jp,
+              );
+            }
           ),
           SizedBox(height: getH(context, 3)),
           GreenButton(
@@ -208,17 +215,19 @@ class UserInfoEditPage extends ConsumerWidget {
                     // 最後まで削除処理ができた場合（loadingやerrorではないとき）
                     if (ref.read(userEditStateProvider).value == null) {
                       await ref.watch(authViewModelProvider.notifier).delete();
-                      ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
+                      ref.watch(loadingIndicatorProvider.notifier).state = false; // ローディング終了の状態にする
+                      ref.read(colorProvider.notifier).state = 4;                 // テーマカラーの初期化
+                      ref.read(bottomBarIndexProvider.notifier).state = 0;        // bottomBarのインデックスの初期化
                       await ref.watch(authViewModelProvider.notifier).signOut();
                     }
                   }
                 );
               },
-            child: const Text(
+            child: Text(
               '退会',
               style: TextStyle(
                 fontSize: 18,
-                color: textIconColor,
+                color: isDarkMode ? Colors.white : textIconColor,
               )
             ),
           )
@@ -243,20 +252,7 @@ class UserInfoEditPage extends ConsumerWidget {
               context.pop();
             },
           ),
-          title: SizedBox(  // 幅を設定しないとcenterにならない
-            width: getW(context, 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-              children: [
-                Image.asset(
-                  width: getW(context, 10),
-                  height: getH(context, 10),
-                  'images/AppBar_logo.png'
-                ),
-                const Text("アカウント編集", style: TextStyle(fontSize: 18)),
-              ]
-            ),
-          ),
+          title: titleBox("アカウント編集", context),
           backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: userUpdateState.when(

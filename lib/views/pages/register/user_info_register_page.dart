@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../commons/address_master.dart';
+import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../../provider/providers.dart';
@@ -28,6 +29,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final textController = ref.watch(textControllerProvider);
     final selectedAddressIndex = ref.watch(addressProvider);
@@ -63,18 +65,17 @@ class UserInfoRegisterPage extends ConsumerWidget {
         children: [
           const TitleContainer(titleStr: 'ニックネーム'),
           //  ニックネーム欄
-          SizedBox(
+          Container(
             width: getW(context, 90),
-            height: getH(context, 6),
+            margin: EdgeInsets.only(bottom: getH(context, 1)),
             child: TextFormField(
-              /// validator: ,
               controller: textController,
               // 入力されたテキストの色
-              style: const TextStyle(
-                  color: textIconColor
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : textIconColor
               ),
               decoration: InputDecoration(
-                fillColor: Colors.white,
+                fillColor: isDarkMode ? Colors.black : Colors.white,
                 filled: true,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -82,23 +83,23 @@ class UserInfoRegisterPage extends ConsumerWidget {
                 // 枠線の色
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: textIconColor,
+                  borderSide: BorderSide(
+                    color: isDarkMode ? Colors.black : textIconColor,
                     width: 1,
                   ),
                 ),
                 // 入力中の枠線の色
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: textIconColor,
+                  borderSide: BorderSide(
+                    color: isDarkMode ? Colors.black : textIconColor,
                     width: 1,
                   ),
                 ),
                 hintText: '10文字以内',
-                hintStyle: const TextStyle(
+                hintStyle: TextStyle(
                   fontSize: 16,
-                  color: textIconColor,
+                  color: isDarkMode ? Colors.white : textIconColor,
                 ),
               ),
             ),
@@ -120,17 +121,22 @@ class UserInfoRegisterPage extends ConsumerWidget {
             text: selectedBirthday,
             onPressed: () {
               DatePicker.showDatePicker(context,
-                  showTitleActions: false,
-                  minTime: DateTime(1950, 1, 1),
-                  maxTime: DateTime(2020, 12, 31),
-                  onChanged: (date) {
-                    final notifier = ref.read(birthdayProvider.notifier);
-                    notifier.state = '${date.year}/${date.month}/${date.day}';
-                  },
-                  currentTime: selectedBirthday == noSelectOptionMessage
-                    ? DateTime(2000, 6, 15)
-                    : convertStringToDateTime(selectedBirthday),
-                  locale: LocaleType.jp
+                theme: isDarkMode ? DatePickerTheme(
+                  backgroundColor: Colors.black,
+                  itemStyle: const TextStyle(color: Colors.white, fontSize: 18),
+                  containerHeight: MediaQuery.of(context).size.height / 4,
+                ) : null,
+                showTitleActions: false,
+                minTime: DateTime(1950, 1, 1),
+                maxTime: DateTime(2020, 12, 31),
+                onChanged: (date) {
+                  final notifier = ref.read(birthdayProvider.notifier);
+                  notifier.state = '${date.year}/${date.month}/${date.day}';
+                },
+                currentTime: selectedBirthday == noSelectOptionMessage
+                  ? DateTime(2000, 6, 15)
+                  : convertStringToDateTime(selectedBirthday),
+                locale: LocaleType.jp
               );
             }
           ),
@@ -180,20 +186,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: SizedBox(  // 幅を設定しないとcenterにならない
-            width: getW(context, 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,  // アイコンと文字列セットでセンターに配置
-              children: [
-                Image.asset(
-                  width: getW(context, 10),
-                  height: getH(context, 10),
-                  'images/AppBar_logo.png'
-                ),
-                const Text("ユーザー登録", style: TextStyle(fontSize: 18)),
-              ]
-            ),
-          ),
+          title: titleBox("ユーザー登録", context),
           backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: userUpdateState.when(

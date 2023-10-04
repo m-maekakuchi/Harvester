@@ -114,6 +114,7 @@ flutter:
   assets:
     - images/AppBar_logo.png
     - images/logo.png
+    - images/logo_dark.png
     - images/splash.png
     - images/splash_dark.png
     - images/icon_ios.png

@@ -39,6 +39,7 @@ class MyCardEditPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final popContext = context; // 変更完了のダイアログを閉じるときにcontextだとエラーになるのでこれを追加
     final cardEditState = ref.watch(cardEditStateProvider); // 削除処理の状況を監視
@@ -80,12 +81,12 @@ class MyCardEditPage extends ConsumerWidget {
                         width: getW(context, 90),
                         margin: EdgeInsets.only(bottom: getH(context, 1)),
                         decoration: BoxDecoration(
-                          color: scaffoldBackgroundColor,
+                          color: isDarkMode ? darkModeBackgroundColor : scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: CupertinoButton( // TextIconでもいいけど日付選択欄のボタンにあわせてデザイン揃えている
                           padding: EdgeInsets.symmetric(
-                              horizontal: getW(context, 5)),
+                            horizontal: getW(context, 5)),
                           onPressed: () {},
                           child: SizedBox(
                             width: double.infinity,
@@ -94,7 +95,7 @@ class MyCardEditPage extends ConsumerWidget {
                               fit: BoxFit.scaleDown,
                               child: Text(
                                 "${cardMasterModel.serialNumber}　${cardMasterModel.city}",
-                                style: const TextStyle(color: textIconColor),
+                                style: TextStyle(color: isDarkMode ? Colors.white : textIconColor),
                                 maxLines: 1,
                               )
                             ),
@@ -125,7 +126,7 @@ class MyCardEditPage extends ConsumerWidget {
               Container(
                 width: double.infinity,
                 height: getH(context, 10),
-                color: Colors.white,
+                color: isDarkMode ? Colors.black : Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -159,7 +160,7 @@ class MyCardEditPage extends ConsumerWidget {
                         : null,
                       icon: const Icon(Icons.done_rounded),
                       iconSize: 40,
-                      color: textIconColor,
+                      color: isDarkMode ? Colors.white : textIconColor,
                     ),
                     // 削除ボタン
                     IconButton(
@@ -192,7 +193,7 @@ class MyCardEditPage extends ConsumerWidget {
                       : null,
                       icon: const Icon(Icons.delete_rounded),
                       iconSize: 40,
-                      color: textIconColor,
+                      color: isDarkMode ? Colors.white : textIconColor,
                     ),
                   ],
                 ),

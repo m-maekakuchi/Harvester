@@ -13,6 +13,8 @@ class DatePicker {
 
   // 日付のPickerを表示
   Future<DateTime?> showDate(date) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return showDatePicker(
       context: context,
       initialDate: date,
@@ -22,13 +24,15 @@ class DatePicker {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: themeColorChoice[colorIndex],      // ヘッダー背景色
-              onPrimary: textIconColor, // ヘッダーテキストカラー
-              onSurface: textIconColor, // カレンダーのテキストカラー
+              primary: themeColorChoice[colorIndex],                  // ヘッダー背景色
+              onPrimary: textIconColor,                               // ヘッダーテキストカラー
+              onSurface: isDarkMode ? Colors.white : textIconColor, // カレンダーのテキストカラー
             ),
-            textButtonTheme: const TextButtonThemeData(
+            textButtonTheme: TextButtonThemeData(
               style: ButtonStyle(
-                foregroundColor: MaterialStatePropertyAll(textIconColor), // ボタンの色
+                foregroundColor: MaterialStatePropertyAll(
+                  isDarkMode ? Colors.white : textIconColor         // ボタンの色
+                ),
               ),
             ),
           ),

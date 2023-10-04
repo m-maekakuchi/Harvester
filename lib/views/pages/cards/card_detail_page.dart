@@ -77,7 +77,7 @@ class CardDetailPage extends ConsumerWidget {
   Future<void> _launchInBrowser(Uri url) async {
     if (!await launchUrl(
       url,
-      mode: LaunchMode.externalApplication,
+      mode: LaunchMode.inAppWebView,
     )) {
       throw Exception('Could not launch $url');
     }
@@ -125,10 +125,12 @@ class CardDetailPage extends ConsumerWidget {
   }
 
   // カード情報のTabBar
-  TabBar cardInfoTabBar(int index) {
+  TabBar cardInfoTabBar(int index, BuildContext context) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return TabBar(
-      labelColor: textIconColor,            // 選択時の文字色
-      unselectedLabelColor: textIconColor,  // 未選択時の文字色
+      labelColor: textIconColor,                                        // 選択時の文字色
+      unselectedLabelColor: isDarkMode ? Colors.white : textIconColor,  // 未選択時の文字色
       indicator: BoxDecoration(
         color: themeColorChoice[index],
         borderRadius: BorderRadius.circular(20),
@@ -188,6 +190,8 @@ class CardDetailPage extends ConsumerWidget {
 
   // タブとカード詳細情報（配置場所、配布時間、発行日）を合わせた、実線で囲んでいる部分
   Widget tabAndCardInfoContainer(BuildContext context, int index) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return DefaultTabController(
       length: cardDetailInfoTabTitleList.length, // タブの個数
       initialIndex: 0,
@@ -195,7 +199,7 @@ class CardDetailPage extends ConsumerWidget {
         width: getW(context, 95),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: textIconColor, width: 0.6)
+          border: Border.all(color: isDarkMode ? Colors.white : textIconColor, width: 0.6)
         ),
         child: Column(
           children: [
@@ -204,9 +208,9 @@ class CardDetailPage extends ConsumerWidget {
               margin: EdgeInsets.all(getW(context, 2)),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                color: cadInfoTabBarNoSelectColor,
+                color: isDarkMode ? Colors.black : Colors.white,
               ),
-              child: cardInfoTabBar(index),
+              child: cardInfoTabBar(index, context),
             ),
             /// カードの詳細情報の部分
             SizedBox(

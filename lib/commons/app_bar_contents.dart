@@ -5,14 +5,16 @@ import '../handlers/padding_handler.dart';
 
 // AppBarのアイコンとタイトルを組み合わせたWidget
 SizedBox titleBox(String title, BuildContext context) {
+  final height = AppBar().preferredSize.height;
+
   return SizedBox(
     width: getW(context, 60),
+    height: height,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center, // アイコンと文字列セットでセンターに配置
       children: [
         Image.asset(
-          width: getW(context, 10),
-          height: getH(context, 10),
+          height: height * 0.6,
           'images/AppBar_logo.png'
         ),
         Flexible(
@@ -20,7 +22,7 @@ SizedBox titleBox(String title, BuildContext context) {
             fit: BoxFit.fitWidth,
             child: Text(
               title,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 20),
             ),
           ),
         )

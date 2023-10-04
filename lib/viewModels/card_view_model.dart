@@ -126,7 +126,8 @@ class CardViewModel extends StateNotifier<AsyncValue<bool>> {
         };
         if (localMyCardInfoList == null) {
           print("***********はじめてのカード追加です 次のデータをローカルに追加 localMyCardInfoList：$localMyCardInfo***********");
-          await LocalStorageRepository().putMyCardIdAndFavorites([localMyCardInfo]);
+          List<Map<String, dynamic>> list = [localMyCardInfo];
+          await LocalStorageRepository().putMyCardIdAndFavorites(list);
         } else {
           localMyCardInfoList.add(localMyCardInfo);
           print("***********カード追加2回目以降です 次のリストをローカルに追加 localMyCardInfoList：$localMyCardInfoList***********");

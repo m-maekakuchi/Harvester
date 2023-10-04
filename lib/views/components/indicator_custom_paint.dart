@@ -40,21 +40,21 @@ Widget indicatorCustomPaint(
             children: [
               Text(
                 place,
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.15),
+                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.13),
               ),
               SizedBox(
                 height: getH(context, 1),
               ),
               Text(
                 '${(percentage * 100).toStringAsFixed(1)}%',
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.2, fontWeight: FontWeight.bold),
+                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.17, fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: getH(context, 1),
               ),
               Text(
                 '$myCardsNum / $allCardsNum',
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.15),
+                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.13),
               )
             ],
           ),

@@ -8,6 +8,7 @@ import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
 import 'cached_network_image.dart';
+import 'modal_barrier.dart';
 
 class CarouselSliderPhotos extends ConsumerWidget {
 
@@ -33,7 +34,15 @@ class CarouselSliderPhotos extends ConsumerWidget {
             margin: const EdgeInsets.all(5),
             child: ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(20)),
-              child: Image.network(imgUrl, fit: BoxFit.cover, width: 1000),
+              child: Image.network(
+                imgUrl,
+                fit: BoxFit.cover,
+                width: 1000,
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if(loadingProgress == null) return child;
+                  return const Center(child: modalBarrier);
+                }
+              ),
             ),
           );
           imgSliders.add(imgWidget);
@@ -58,6 +67,8 @@ class CarouselSliderPhotos extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     final indicatorIndex = ref.watch(carouselSliderIndexProvider);
 
     // 写真下部にある黒丸
@@ -70,9 +81,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: (Theme.of(context).brightness == Brightness.dark
-              ? Colors.white
-              : Colors.black)
+            color: (isDarkMode ? Colors.white : Colors.black)
               .withOpacity(indicatorIndex == entry.key ? 0.9 : 0.4)
           ),
         ),

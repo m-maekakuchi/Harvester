@@ -26,6 +26,8 @@ class BottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     final currentIndex = ref.watch(bottomBarIndexProvider);
     final loadingState = ref.watch(loadingIndicatorProvider);
     final appBarColorIndex = ref.watch(colorProvider);
@@ -35,9 +37,13 @@ class BottomBar extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,                    // すべてのアイテムが表示されるように設定
         items: bottomNavigationItems,
-        backgroundColor: Colors.white,                          // バーの背景色
+        backgroundColor: isDarkMode
+          ? Colors.black
+          : Colors.white,                                       // バーの背景色
         selectedItemColor: themeColorChoice[appBarColorIndex],  // 選ばれたアイテムの色
-        unselectedItemColor: textIconColor,                     // 選ばれていないアイテムの色
+        unselectedItemColor: isDarkMode
+          ? Colors.white
+          : textIconColor,                                      // 選ばれていないアイテムの色
         currentIndex: currentIndex,
         onTap: loadingState                                     // ローディング中は全ボタン押せないようにする
           ? null

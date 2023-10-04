@@ -7,7 +7,7 @@ import '../handlers/card_edit_handler.dart';
 import '../handlers/user_handler.dart';
 
 // ローカルに登録したマイカード情報を保持（例： [{"id": "00-101-A001", "favorite": true}]）
-final myCardIdAndFavoriteListProvider = StateProvider((ref) => []);
+final StateProvider<List<Map<String, dynamic>>> myCardIdAndFavoriteListProvider = StateProvider((ref) => []);
 // ローカルに登録したマイカード番号を保持
 final StateProvider<List<String>> myCardNumberListProvider = StateProvider((ref) => []);
 // ローディング状態を保持

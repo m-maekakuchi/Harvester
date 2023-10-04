@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/address_master.dart';
 import '../../commons/irregular_card_number.dart';
+import '../../commons/message.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
@@ -26,6 +27,8 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
   List<bool?> favoriteList = [];
 
   List<String> extractedSortedMyCardNumberList = [];  // 選択された都道府県で抽出したカード番号リスト
+
+  int buttonPushCount = 0;                            // 都道府県選択のボタンを押した数
 
   //  初めに都道府県タブを押したときに、リストのアイテムを生成
   @override
@@ -119,11 +122,13 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
                       ref.read(myCardsPageFirstIndexProvider.notifier).state[tabIndex] = 0;
                       // 選択した都道府県のマイカード番号のリストを再生成
                       getExtractedSortedMyCardNumberList();
+                      buttonPushCount++;
                       // 再ビルド
                       setState(() {});
                     },
                   ),
-                  Expanded(
+                  cardMasterModelList.isNotEmpty
+                  ? Expanded(
                     child: InfinityListView(
                       cardMasterModelList: cardMasterModelList,
                       myCardContainList: myCardContainList,
@@ -132,7 +137,15 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
                       listAllItemLength: extractedSortedMyCardNumberList.length,
                       getListItems: getListItems,
                     ),
-                  ),
+                  )
+                  : buttonPushCount == 0
+                    ? const Center(child: Text(selectPrefectureMessage))
+                    : Center(
+                      child: Text(
+                        textAlign: TextAlign.center,
+                        "${ref.read(myCardsPagePrefectureProvider)}で\n$noMyCardMessage",
+                      )
+                    )
                 ],
               ),
             ),

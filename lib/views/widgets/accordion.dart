@@ -28,21 +28,22 @@ class Accordion extends ConsumerWidget {
 
     // リストタイル
     Widget listTileContainer (String title, StateProvider provider) {
+      bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
       return Container(
         width: double.infinity,
-        height: getH(context, 6),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           border: Border.all(color: textIconColor, width: 0.1),
-          color: Colors.white,  // リストタイルの背景色
+          color: isDarkMode ? darkModeBackgroundColor : Colors.white,  // リストタイルの背景色
         ),
         child: ListTile(
-          visualDensity: const VisualDensity(horizontal: 0, vertical: -4),  // リストタイルの上下のpaddingを削除
+          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: getW(context, 3)),
           title: SingleChildScrollView(
             scrollDirection: Axis.horizontal, // 文字数がオーバーしたときに横にスクロール可能
             child: Text(
               title,
-              style: const TextStyle(color: textIconColor),
+              style: TextStyle(color: isDarkMode ? Colors.white : textIconColor),
             ),
           ),
           onTap: () {
@@ -62,7 +63,7 @@ class Accordion extends ConsumerWidget {
       collapsedBackgroundColor: accordionColorList[appBarColorIndex], // 閉じたときの背景色
       backgroundColor: accordionColorList[appBarColorIndex],          // 開いたときの背景色
       collapsedShape: const RoundedRectangleBorder(
-        side: BorderSide(color: textIconColor, width: 0.1),   // 閉じたときの枠線
+        side: BorderSide(color: textIconColor, width: 0.1),           // 閉じたときの枠線
       ),
       tilePadding: EdgeInsets.symmetric(vertical: 0, horizontal: getW(context, 3)),
       title: Text(
@@ -88,7 +89,7 @@ class Accordion extends ConsumerWidget {
     if (keyContext != null) {
       Future.delayed(const Duration(milliseconds: 200)).then((value) {
         Scrollable.ensureVisible(keyContext,
-            duration: const Duration(milliseconds: 200));
+          duration: const Duration(milliseconds: 200));
       });
     }
   }

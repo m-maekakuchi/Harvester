@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 const double _kItemExtent = 32.0;
@@ -16,6 +17,8 @@ class ItemCupertinoPicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     final initIndex =  ref.watch(provider);
 
     return CupertinoPicker(
@@ -23,6 +26,7 @@ class ItemCupertinoPicker extends ConsumerWidget {
       squeeze: 1.2,
       useMagnifier: true,
       itemExtent: _kItemExtent,
+      backgroundColor: isDarkMode ? Colors.black : null,
       scrollController: FixedExtentScrollController(
         initialItem: initIndex,
       ),
