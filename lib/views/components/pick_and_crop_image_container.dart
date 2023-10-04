@@ -16,6 +16,8 @@ class PickAndCropImageContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     final imageList = ref.watch(imageListProvider);
 
     /// 削除ボタン
@@ -38,12 +40,15 @@ class PickAndCropImageContainer extends ConsumerWidget {
     Widget image() {
       return SizedBox(
         width: getW(context, 40),
-        height: getH(context, 30),
+        height: getW(context, 30),
         child: Stack(
           alignment: AlignmentDirectional.topEnd,
           children: [
             Image.memory(imageList[index].imageFile!),
-            deleteButton(),
+            Positioned(
+              top: getW(context, 1),
+              child: deleteButton()
+            ),
           ],
         ),
       );
@@ -53,14 +58,14 @@ class PickAndCropImageContainer extends ConsumerWidget {
       width: getW(context, 40),
       height: getW(context, 30),
       decoration: BoxDecoration(
-        border: Border.all(width: 0.5, color: textIconColor),
-        color: Colors.white,
+        border: Border.all(width: 0.5, color: isDarkMode ? darkModeBackgroundColor : textIconColor),
+        color: isDarkMode ? Colors.black : Colors.white,
       ),
       clipBehavior: Clip.antiAlias,
       child: imageList.length >= index + 1
         ? image()
         : IconButton(
-          color: textIconColor,
+          color: isDarkMode ? Colors.white : textIconColor,
           onPressed: () {
             pickAndCropImage(ref);
           },
@@ -71,10 +76,5 @@ class PickAndCropImageContainer extends ConsumerWidget {
       )
     );
   }
-
-
-
-
-
 
 }

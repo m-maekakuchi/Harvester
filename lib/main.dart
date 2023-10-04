@@ -1,9 +1,12 @@
 import 'dart:ui';
 
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/router.dart';
@@ -33,7 +36,14 @@ Future<void> main() async{
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
-  runApp(ProviderScope(child: MyApp()),);
+  runApp(ProviderScope(
+    // device_previewのセットアップ
+    // child: DevicePreview(
+    //   enabled: !kReleaseMode,
+    //   builder: (context) => MyApp(),
+    // )),
+    child: MyApp())
+  );
 }
 
 class MyApp extends ConsumerWidget {
@@ -43,6 +53,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);  // 縦向きのみ許可
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,  // 画面右上の「DEBUG」表示を消す
@@ -51,14 +62,16 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      useInheritedMediaQuery: true,           // device_previewを使用するのに必要
+      locale: DevicePreview.locale(context),  // device_previewを使用するのに必要
+      builder: DevicePreview.appBuilder,      // device_previewを使用するのに必要
       supportedLocales: const [
         Locale('ja'),
       ],
-      // title: 'BATTLE CHECK',
       theme: ThemeData(
+        brightness: Brightness.light,
         scaffoldBackgroundColor: scaffoldBackgroundColor,
         textTheme: const TextTheme(bodyMedium: TextStyle(color: textIconColor)),
-        // primaryColorDark: Colors.black,
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           iconTheme: IconThemeData(
@@ -73,6 +86,17 @@ class MyApp extends ConsumerWidget {
             pickerTextStyle: TextStyle(color: Colors.black, fontSize: 16),
           )
         )
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          iconTheme: IconThemeData(
+            color: textIconColor,
+            size: 30,
+          ),
+          foregroundColor: textIconColor,
+        ),
       ),
       // themeMode: ThemeMode.dark,
 

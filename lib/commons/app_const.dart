@@ -4,7 +4,7 @@ import 'card_master_option_list.dart';
 const imageNumPerCard = 4;
 
 // マイカード一覧画面　AppBarのbottomのTabの横幅
-const myCardAppBarTabWidth = 25;
+const myCardAppBarTabWidth = 34;
 
 // 全てのカード一覧画面　AppBarのbottomのTabの横幅
 const allCardAppBarTabWidth = 50;

@@ -6,8 +6,6 @@ const textIconColor = Color.fromRGBO(95, 99, 104, 1);
 const modalBarrierColor = Colors.black54;
 //  お気に入りアイコンの色
 final favoriteColor = Colors.yellow[600];
-//  カード詳細情報のタブバーの選択されていないときの色
-final cadInfoTabBarNoSelectColor = Colors.grey[200];
 // テーマカラー
 const themeColorChoice = [
   Color.fromRGBO(250, 180, 195, 1),
@@ -46,3 +44,5 @@ const indicatorLastColorList = [
 ];
 //  scaffoldの背景色
 const scaffoldBackgroundColor = Color.fromRGBO(247, 247, 246, 1);
+//  DarkModeの背景色(手動で設定しなければいけない箇所)
+const darkModeBackgroundColor = Color.fromRGBO(48, 48, 48, 1);

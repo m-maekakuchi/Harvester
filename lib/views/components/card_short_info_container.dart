@@ -32,6 +32,7 @@ class CardShortInfoContainer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final sizedBoxFixedHeight = SizedBox(height: getH(context, 0.2));
 
@@ -58,17 +59,11 @@ class CardShortInfoContainer extends ConsumerWidget {
         width: getW(context, 96),
         clipBehavior: Clip.antiAlias,     // Containerから画像がはみ出ないように設定
         decoration: BoxDecoration(
-          border: Border.all(width: 1, color: textIconColor),
+          border: Border.all(width: 1, color: isDarkMode ? Colors.black : textIconColor),
           borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: const Offset(5, 5),
-            )
-          ],
+          color: !isDarkMode
+            ? Colors.white
+            : Colors.black,
         ),
         child: Row(
           children: [
@@ -82,7 +77,7 @@ class CardShortInfoContainer extends ConsumerWidget {
               child: Container(
                 width: getW(context, 48),
                 height: getH(context, 100),
-                color: modalBarrierColor,
+                color: isDarkMode ? darkModeBackgroundColor : modalBarrierColor,
                 child: imgUrl != null                           // nullの場合はアイコンを表示
                   ? imgUrl!.contains(containGitHubImageStr)     // GitHubのURLの場合、モザイクをかける
                     ? ImageFiltered(

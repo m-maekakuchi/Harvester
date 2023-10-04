@@ -31,6 +31,14 @@ class CardEdit {
     final selectedCollectDay = ref.read(cardEditPageCollectDayProvider);
     final selectedFavorite = ref.read(cardEditPageFavoriteProvider);
 
+    final localMyCardNumberList = ref.read(myCardNumberListProvider);
+    int updateCardsIndex = 0;
+    localMyCardNumberList.asMap().forEach((index, value) {
+      if (cardMasterModel.serialNumber == value) {
+        updateCardsIndex = index;
+      }
+    });
+
     try {
       // Storageに登録されていた画像をすべて削除してから新しい画像を登録
       await ImageRepository().deleteDirectoryFromFireStore("$uid/${cardMasterModel.serialNumber}");
@@ -64,6 +72,12 @@ class CardEdit {
         updatedAt: DateTime.now(),
       );
       final cardDocRef = await CardRepository().setToFireStore(updateCardModel, "$uid${cardMasterModel.serialNumber}", transaction);
+
+      // ローカルのマイカード情報を変更
+      final List<Map<String, dynamic>> myCardIdAndFavoriteList = [];
+      myCardIdAndFavoriteList.addAll(ref.read(myCardIdAndFavoriteListProvider));
+      myCardIdAndFavoriteList[updateCardsIndex]["favorite"] = selectedFavorite;
+      await LocalStorageRepository().putMyCardIdAndFavorites(myCardIdAndFavoriteList);
       // throw Exception("エラー発生");
     }).then(
         (value) async {
@@ -124,7 +138,7 @@ class CardEdit {
 
       // ローカルのマイカード情報を変更
       final List<Map<String, dynamic>> myCardIdAndFavoriteList = [];
-      myCardIdAndFavoriteList.addAll(ref.read(myCardIdAndFavoriteListProvider) as List<Map<String, dynamic>>);
+      myCardIdAndFavoriteList.addAll(ref.read(myCardIdAndFavoriteListProvider));
       myCardIdAndFavoriteList.removeAt(deleteCardsIndex);
       // throw Exception("エラー発生");
       await LocalStorageRepository().putMyCardIdAndFavorites(myCardIdAndFavoriteList);

@@ -69,8 +69,6 @@ Provider<GoRouter> router() {
             return null;
           }
         } else {
-          //サインアウト、退会したとき、テーマカラーをデフォルトに戻す
-          ref.read(colorProvider.notifier).state = 4;
           return null;
         }
       },

@@ -10,8 +10,12 @@ class ColoredTabBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Ink(
-      color: scaffoldBackgroundColor,
+      color: !isDarkMode
+        ? scaffoldBackgroundColor
+        : Colors.black,
       child: tabBar,
     );
   }
