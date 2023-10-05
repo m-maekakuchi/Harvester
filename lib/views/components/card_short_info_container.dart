@@ -33,6 +33,7 @@ class CardShortInfoContainer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    bool isTabletSize = MediaQuery.of(context).size.width > tabletWidth;
 
     final sizedBoxFixedHeight = SizedBox(height: getH(context, 0.2));
 
@@ -81,7 +82,7 @@ class CardShortInfoContainer extends ConsumerWidget {
                 child: imgUrl != null                           // nullの場合はアイコンを表示
                   ? imgUrl!.contains(containGitHubImageStr)     // GitHubのURLの場合、モザイクをかける
                     ? ImageFiltered(
-                      imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                      imageFilter: ImageFilter.blur(sigmaX: isTabletSize ? 6 : 3, sigmaY: isTabletSize ? 6 : 3),
                       child: cachedNetworkImage(imgUrl!),
                     )
                     : cachedNetworkImage(imgUrl!)

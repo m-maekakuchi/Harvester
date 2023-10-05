@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/app_const.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
@@ -25,7 +26,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
   final CarouselController _controller = CarouselController();
 
   // スライドする画像のリスト
-  List<Widget> imageSliderList(BuildContext context) {
+  List<Widget> imageSliderList(BuildContext context, bool isTabletSize) {
     List<Widget> imgSliders = [];
     if (imgUrlList != null) {
       for (String? imgUrl in imgUrlList!) {
@@ -54,7 +55,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
       final imgWidget = ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(4)),
         child: ImageFiltered(
-          imageFilter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+          imageFilter: ImageFilter.blur(sigmaX: isTabletSize ? 6 : 3, sigmaY: isTabletSize ? 6 : 3),
           child: cachedNetworkImage(
             'https://github.com/m-maekakuchi/Harvester-images/blob/main/${cardMasterModel.serialNumber}.jpg?raw=true'
           ),
@@ -68,6 +69,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    bool isTabletSize = MediaQuery.of(context).size.width > tabletWidth;
 
     final indicatorIndex = ref.watch(carouselSliderIndexProvider);
 
@@ -94,7 +96,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
           height: getH(context, 2),
         ),
         CarouselSlider(
-          items: imageSliderList(context),
+          items: imageSliderList(context, isTabletSize),
           carouselController: _controller,
           options: CarouselOptions(
             viewportFraction: 0.7,        // 左右のカードがどのくらい見えるかのバランスを決める
@@ -110,7 +112,7 @@ class CarouselSliderPhotos extends ConsumerWidget {
         // 写真下部にある黒丸
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: imageSliderList(context).asMap().entries.map((entry) =>
+          children: imageSliderList(context, isTabletSize).asMap().entries.map((entry) =>
             blackCircle(entry)
           ).toList(),
         ),

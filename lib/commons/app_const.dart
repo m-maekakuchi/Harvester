@@ -53,3 +53,6 @@ int getListNum () {
 
 // Storageの画像か、githubに登録したカード画像下の判定時に用いる文字列
 const containGitHubImageStr = 'github.com/m-maekakuchi';
+
+// タブレットのwidth
+const tabletWidth = 768;
