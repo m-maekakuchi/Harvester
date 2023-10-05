@@ -61,6 +61,10 @@ class HomePage extends ConsumerWidget {
     final allCardsLengthList = ref.watch(allCardsLengthListProvider);
     final appBarColorIndex = ref.watch(colorProvider);
 
+    final indicatorSizeAllPrefecture = getH(context, 16);
+    final indicatorSizeRegion        = getH(context, 13);
+    final indicatorSizePrePrefecture = getH(context, 10);
+
     return FutureBuilder(
       future: createListItems(ref),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -85,19 +89,38 @@ class HomePage extends ConsumerWidget {
                     height: getH(context, 3),
                   ),
                   // 全国のインジケーター
-                  indicatorCustomPaint(15, 20, getW(context, 35), indicatorPlace[0], myCardsLengthList[0] / allCardsLengthList[0], myCardsLengthList[0], allCardsLengthList[0], context, appBarColorIndex),
+                  indicatorCustomPaint(
+                    indicatorSizeAllPrefecture,
+                    indicatorPlace[0],
+                    myCardsLengthList[0],
+                    allCardsLengthList[0],
+                    context,
+                    appBarColorIndex
+                  ),
                   // 地方のインジケーター
                   for (int i = 1; i <= areaNum; i += 2) ... {
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         for (int j = 0; j <= 1; j ++) ... {
+                          // 最後の行が1つ分空くので空白を設置
                           if (i == 9 && j == 1) ... {
-                            SizedBox(
-                              width: getW(context, 30) + getW(context, 30) * 0.6,
+                            Container(
+                              padding: EdgeInsets.all(indicatorSizeRegion * 0.2),
+                              child: SizedBox(
+                                width: indicatorSizeRegion,
+                                height: indicatorSizeRegion,
+                              ),
                             ),
-                          } else
-                            ... {indicatorCustomPaint(10, 13, getW(context, 30), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context, appBarColorIndex),
+                          } else ... {
+                            indicatorCustomPaint(
+                              indicatorSizeRegion,
+                              indicatorPlace[i + j],
+                              myCardsLengthList[i + j],
+                              allCardsLengthList[i + j],
+                              context,
+                              appBarColorIndex
+                            ),
                           }
                         }
                       ],
@@ -106,21 +129,38 @@ class HomePage extends ConsumerWidget {
                   // 都道府県のインジケーター
                   for (int i = areaNum + 1; i < prefectureLength + areaNum; i += 3) ... {
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         for (int j = 0; j <= 2; j ++) ... {
                           // 最後の行が1つ分空くので空白を設置
                           if (i == prefectureLength + areaNum - 1 && j == 2) ... {
-                            SizedBox(
-                              width: getW(context, 30) + getW(context, 30) * 0.06,
-                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Container(
+                                padding: EdgeInsets.all(indicatorSizePrePrefecture * 0.2),
+                                child: SizedBox(
+                                  width: indicatorSizePrePrefecture,
+                                  height: indicatorSizePrePrefecture,
+                                ),
+                              ),
+                            )
                           } else ... {
-                            indicatorCustomPaint(5, 7, getW(context, 20), indicatorPlace[i + j], myCardsLengthList[i + j] / allCardsLengthList[i + j], myCardsLengthList[i + j], allCardsLengthList[i + j], context, appBarColorIndex),
+                            Flexible( // デバイスによってはRowの幅をはみ出すため、はみ出したらRowの中のWidgetを収まる範囲内で分割
+                              flex: 1,
+                              child: indicatorCustomPaint(
+                                indicatorSizePrePrefecture,
+                                indicatorPlace[i + j],
+                                myCardsLengthList[i + j],
+                                allCardsLengthList[i + j],
+                                context,
+                                appBarColorIndex
+                              ),
+                            )
                           }
                         },
                         // }
                       ],
-                    ),
+                    )
                   },
                   SizedBox(
                     height: getH(context, 3),

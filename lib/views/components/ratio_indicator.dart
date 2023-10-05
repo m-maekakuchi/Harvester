@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import '../../commons/app_color.dart';
 
 class RatioIndicatorWidget extends CustomPainter {
-  final double percentage; // バッテリーレベルの割合
-  final double textCircleRadius; // 内側に表示される白丸の半径
-  final int spaceLen;  // 円とゲージ間の長さ
-  final int lineLen; // ゲージの長さ
+  final double percentage;        // バッテリーレベルの割合
+  final double textCircleRadius;  // 内側に表示される白丸の半径
+  final double spaceLen;          // 円とゲージ間の長さ
+  final double lineLen;           // ゲージの長さ
   final int colorIndex;
 
   RatioIndicatorWidget({
