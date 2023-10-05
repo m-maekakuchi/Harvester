@@ -8,26 +8,25 @@ const kElevation = 10.0;
 
 // インジケーター
 Widget indicatorCustomPaint(
-  spaceLen,       // 円とゲージ間の長さ
-  lineLen,        // ゲージの長さ
   indicatorSize,  // ゲージの大きさ
   place,
-  percentage,     // バッテリーレベルの割合
   myCardsNum,
   allCardsNum,
   context,
   colorIndex
 ) {
+  final percentage = myCardsNum / allCardsNum;
+
   return CustomPaint(
     painter: RatioIndicatorWidget(
       percentage: percentage,                 // バッテリーレベルの割合
       textCircleRadius: indicatorSize * 0.5,  // 内側に表示される白丸の半径
-      spaceLen: spaceLen,                     // 円とゲージ間の長さ
-      lineLen: lineLen,                       // ゲージの長さ
+      spaceLen: indicatorSize * 0.05,         // 円とゲージ間の長さ
+      lineLen: indicatorSize * 0.12,          // ゲージの長さ
       colorIndex: colorIndex,
     ),
     child: Container(
-      padding: EdgeInsets.symmetric(vertical: indicatorSize * 0.28, horizontal: indicatorSize * 0.3),
+      padding: EdgeInsets.all(indicatorSize * 0.22),
       child: Material(
         color: Colors.white,
         elevation: kElevation,
@@ -40,21 +39,21 @@ Widget indicatorCustomPaint(
             children: [
               Text(
                 place,
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.13),
+                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.15),
               ),
               SizedBox(
                 height: getH(context, 1),
               ),
               Text(
                 '${(percentage * 100).toStringAsFixed(1)}%',
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.17, fontWeight: FontWeight.bold),
+                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.18, fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: getH(context, 1),
               ),
               Text(
                 '$myCardsNum / $allCardsNum',
-                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.13),
+                style: TextStyle(color: textIconColor, fontSize: indicatorSize * 0.15),
               )
             ],
           ),
