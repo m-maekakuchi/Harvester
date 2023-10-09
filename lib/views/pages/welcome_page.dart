@@ -19,7 +19,7 @@ class WelcomePage extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children:[
             Container(
-              margin: EdgeInsets.only(top: getH(context, 2)),
+              margin: EdgeInsets.only(top: getH(context, 5)),
               width: double.infinity,
               height: getH(context, 20),
               child: FittedBox(
@@ -58,7 +58,7 @@ class WelcomePage extends ConsumerWidget {
                   style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: getH(context, 2)),
+                SizedBox(height: getH(context, 5)),
               ],
             ),
           ]

@@ -64,7 +64,13 @@ class MyApp extends ConsumerWidget {
       ],
       useInheritedMediaQuery: true,           // device_previewを使用するのに必要
       locale: DevicePreview.locale(context),  // device_previewを使用するのに必要
-      builder: DevicePreview.appBuilder,      // device_previewを使用するのに必要
+      // builder: DevicePreview.appBuilder,      // device_previewを使用するのに必要
+      builder: (BuildContext context, Widget? child) {  // 端末の文字サイズ設定を無視
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1),
+          child: child!,
+        );
+      },
       supportedLocales: const [
         Locale('ja'),
       ],
