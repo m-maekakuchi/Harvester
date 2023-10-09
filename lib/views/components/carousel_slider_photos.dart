@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/app_color.dart';
 import '../../commons/app_const.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
-import 'cached_network_image.dart';
-import 'modal_barrier.dart';
+import '../widgets/cached_network_image.dart';
+import '../widgets/modal_barrier.dart';
 
 class CarouselSliderPhotos extends ConsumerWidget {
 
@@ -27,6 +28,8 @@ class CarouselSliderPhotos extends ConsumerWidget {
 
   // スライドする画像のリスト
   List<Widget> imageSliderList(BuildContext context, bool isTabletSize) {
+    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     List<Widget> imgSliders = [];
     if (imgUrlList != null) {
       for (String? imgUrl in imgUrlList!) {
@@ -42,7 +45,13 @@ class CarouselSliderPhotos extends ConsumerWidget {
                 loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                   if(loadingProgress == null) return child;
                   return const Center(child: modalBarrier);
-                }
+                },
+                errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                  return Center(child: Icon(
+                    Icons.error_rounded,
+                    color: isDarkMode ? Colors.white : textIconColor,
+                  ));
+                },
               ),
             ),
           );

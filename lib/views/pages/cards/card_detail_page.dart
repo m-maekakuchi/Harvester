@@ -18,7 +18,7 @@ import '../../../repositories/photo_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../components/shimmer_loading_card_detail.dart';
-import '../../widgets/carousel_slider_photos.dart';
+import '../../components/carousel_slider_photos.dart';
 import '../../widgets/text_message_dialog.dart';
 import '../../widgets/white_button.dart';
 import '../collections/my_card_edit_page.dart';

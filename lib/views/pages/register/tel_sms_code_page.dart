@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,29 +5,30 @@ import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../provider/providers.dart';
-import '../../../repositories/auth_repository.dart';
-import '../../../viewModels/auth_view_model.dart';
 import '../../widgets/green_button.dart';
+import '../../widgets/modal_barrier.dart';
+
+final smsCodeControllerProvider = StateProvider.autoDispose((ref) => TextEditingController(text: ''));
+final enableProvider = StateProvider.autoDispose((ref) => false);
 
 class TelSmsCodePage extends ConsumerWidget {
   const TelSmsCodePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-    String smsCode = '';
+    final phoneVerificationState = ref.watch(phoneVerificationStateProvider); // 認証処理の状況を監視
+
     final appBarColorIndex = ref.watch(colorProvider);
+    final smsCodeController = ref.watch(smsCodeControllerProvider);
+    final smsCodeIsNotEmpty = ref.watch(enableProvider);
 
-    return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
+    final bodyWidget = GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: titleBox("認証コード", context),
-          backgroundColor: themeColorChoice[appBarColorIndex],
-        ),
         body: SingleChildScrollView(
           child: Center(
             child: Column(
@@ -87,11 +87,13 @@ class TelSmsCodePage extends ConsumerWidget {
                             width: getW(context, 5),
                           ),
                           Expanded (
-                            child: TextField(
+                            child: TextFormField(
+                              controller: smsCodeController,
+                              keyboardType: TextInputType.number,
+                              autofocus: true,
                               style: TextStyle(
                                 color: isDarkMode ? Colors.white : textIconColor,
                               ),
-                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
@@ -100,12 +102,13 @@ class TelSmsCodePage extends ConsumerWidget {
                                 ),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: isDarkMode ? Colors.white : textIconColor,
+                                    color: themeColorChoice[appBarColorIndex],
                                   ),
                                 ),
                               ),
-                              onChanged: (String value){
-                                smsCode = value;
+                              onChanged: (value) {
+                                final bool = smsCodeController.text.isNotEmpty ? true : false;
+                                ref.read(enableProvider.notifier).state = bool;
                               },
                             ),
                           ),
@@ -126,24 +129,39 @@ class TelSmsCodePage extends ConsumerWidget {
                 GreenButton(
                   text: '完了',
                   fontSize: 18,
-                  onPressed: () async{
-                    try {
-                      // ref.read(authControllerProvider.notifier).signInWithTel(verificationId, smsCode);
-                      final verificationId = ref.watch(verificationIdRepositoryProvider);
-                      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                        verificationId: verificationId,
-                        smsCode: smsCode
-                      );
-                      await ref.read(authViewModelProvider.notifier).signInWithCredential(credential);
-                    } catch(e){
-                      debugPrint(e.toString());
+                  onPressed: smsCodeIsNotEmpty
+                    ? () async {
+                      await ref.watch(phoneVerificationProvider).verification(context, smsCodeController);
                     }
-                  },
+                    : null,
                 ),
               ]
             ),
           ),
         ),
+      ),
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        title: titleBox("端末認証", context),
+        backgroundColor: themeColorChoice[appBarColorIndex],
+      ),
+      body: phoneVerificationState.when(
+        data: (value) {
+          return bodyWidget;
+        },
+        error: (err, _) {
+          return Center(child: Text(err.toString()));
+        },
+        loading: () {
+          return Stack(
+            children: [
+              bodyWidget,
+              modalBarrier
+            ]
+          );
+        }
       ),
     );
   }

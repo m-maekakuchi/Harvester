@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../commons/address_master.dart';
 import '../commons/app_const.dart';
 import '../handlers/card_edit_handler.dart';
+import '../handlers/phone_verification_handler.dart';
 import '../handlers/user_handler.dart';
 
 // ローカルに登録したマイカード情報を保持（例： [{"id": "00-101-A001", "favorite": true}]）
@@ -12,6 +13,10 @@ final StateProvider<List<Map<String, dynamic>>> myCardIdAndFavoriteListProvider 
 final StateProvider<List<String>> myCardNumberListProvider = StateProvider((ref) => []);
 // ローディング状態を保持
 final loadingIndicatorProvider = StateProvider((ref) => false);
+
+/// 電話番号認証画面
+final phoneVerificationProvider = Provider((ref) => PhoneVerification(ref));  // refを使うためにProviderでラップ
+final phoneVerificationStateProvider = StateProvider((_) => const AsyncValue.data(null));
 
 /// bottom_bar
 final bottomBarIndexProvider = StateProvider((ref) => 0);

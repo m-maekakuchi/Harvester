@@ -12,6 +12,8 @@ class WelcomePage extends ConsumerWidget {
     bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
+      // キーボードの表示領域を追加で取らず画面の上に被せて表示、電話番号入力画面からキーボード表示されたまま戻ってきたときのoverflow対策
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,7 +49,7 @@ class WelcomePage extends ConsumerWidget {
                   text: '電話番号',
                   fontSize: 20,
                   onPressed: () {
-                    context.go('/register/tel_identification_page');
+                    context.push('/register/tel_identification_page');
                   },
                 ),
                 SizedBox(height: getH(context, 2)),

@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:harvester/views/widgets/text_message_dialog.dart';
+
 import '../../../commons/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
+import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../provider/providers.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../widgets/green_button.dart';
 
-class TelIdentificationPage extends ConsumerStatefulWidget {
+final phoneNumberControllerProvider = StateProvider.autoDispose((ref) => TextEditingController(text: ''));
+final enableProvider = StateProvider.autoDispose((ref) => false);
+
+class TelIdentificationPage extends ConsumerWidget {
   const TelIdentificationPage({super.key});
-
-  @override
-  ConsumerState createState() => _TelIdentificationPage();
-}
-
-class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
-
-  String iphone = '';
   
   @override
-  Widget build(BuildContext context) {
-    bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final appBarColorIndex = ref.watch(colorProvider);
+    final phoneNumberController = ref.watch(phoneNumberControllerProvider);
+    final telNumberIsNotEmpty = ref.watch(enableProvider);
 
     return GestureDetector( // キーボードの外側をタップしたらキーボードを閉じる設定
       onTap: () {
@@ -32,17 +31,18 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
       child: Scaffold(
         appBar: AppBar(
           title: titleBox("電話番号認証", context),
-          actions: [
-            IconButton(
-              onPressed: () {
-                context.go('/top_page');
-              },
-              icon: const Icon(
-                Icons.clear_rounded,
-                size: 40
-              ),
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     onPressed: () {
+          //       primaryFocus?.unfocus();
+          //       context.go('/top_page');
+          //     },
+          //     icon: const Icon(
+          //       Icons.clear_rounded,
+          //       size: 40
+          //     ),
+          //   ),
+          // ],
           backgroundColor: themeColorChoice[appBarColorIndex],
         ),
         body: SingleChildScrollView(
@@ -104,7 +104,9 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                           ),
                           Expanded(
                             child: TextFormField(
+                              controller: phoneNumberController,
                               keyboardType: TextInputType.phone,
+                              autofocus: true,
                               style: TextStyle( // 入力された文字の色
                                 color: isDarkMode ? Colors.white : textIconColor,
                               ),
@@ -112,7 +114,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                                 prefixIcon: const Icon(
                                   Icons.local_phone_rounded,
                                 ),
-                                prefixIconColor:isDarkMode ? Colors.white : textIconColor,
+                                prefixIconColor: isDarkMode ? Colors.white : textIconColor,
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: isDarkMode ? Colors.white : textIconColor,
@@ -120,13 +122,14 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                                 ),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: isDarkMode ? Colors.white : textIconColor,
+                                    color: themeColorChoice[appBarColorIndex],
                                   ),
                                 ),
                               ),
                               onChanged: (value) {
-                                iphone = value;
-                              }
+                                final bool = phoneNumberController.text.isNotEmpty ? true : false;
+                                ref.read(enableProvider.notifier).state = bool;
+                              },
                             ),
                           ),
                           SizedBox(
@@ -143,7 +146,7 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                             width: getW(context, 5),
                           ),
                           const Text(
-                            "※ ハイフンなし",
+                            "※ ハイフンなし, 11桁",
                             style: TextStyle(
                               fontSize: 16,
                             ),
@@ -162,10 +165,21 @@ class _TelIdentificationPage extends ConsumerState<TelIdentificationPage> {
                 GreenButton(
                   text: '次へ',
                   fontSize: 18,
-                  onPressed: () async{
-                    final phoneNumber = "+81 $iphone";
-                    await ref.read(authViewModelProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
-                  },
+                  onPressed: telNumberIsNotEmpty
+                    ? () async {
+                      /// **************最後に復活させる**************
+                      // if (phoneNumberController.text.length != 11) {
+                      //   textMessageDialog(context, telNumberLengthErrorMessage);
+                      //   return;
+                      // }
+                      try {
+                        final phoneNumber = "+81 ${phoneNumberController.text}";
+                        await ref.read(authViewModelProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
+                      } catch(e) {
+                        debugPrint(e.toString());
+                      }
+                    }
+                    : null,
                 ),
               ]
             ),
