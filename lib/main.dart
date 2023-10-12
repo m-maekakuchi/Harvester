@@ -9,7 +9,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:harvester/router.dart';
+import 'package:harvester/views/widgets/ad_banner.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
 import 'commons/app_color.dart';
@@ -17,6 +19,8 @@ import 'repositories/local_storage_repository.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  // AdMobの初期化
+  MobileAds.instance.initialize();
   // Firebaseの初期化
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -54,6 +58,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);  // 縦向きのみ許可
+    bannerAd.load();  // バナー広告の読み込み
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,  // 画面右上の「DEBUG」表示を消す
