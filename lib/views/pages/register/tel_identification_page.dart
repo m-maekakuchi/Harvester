@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/views/widgets/text_message_dialog.dart';
 
-import '../../../commons/app_bar_contents.dart';
+import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';

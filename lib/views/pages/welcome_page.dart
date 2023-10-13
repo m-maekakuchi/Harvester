@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../handlers/att_handler.dart';
 import '../../handlers/padding_handler.dart';
 import '../widgets/green_button.dart';
 
-class WelcomePage extends ConsumerWidget {
+class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  WelcomePageState createState() => WelcomePageState();
+}
+
+class WelcomePageState extends State<WelcomePage> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Build後にATTの確認のダイアログを出す、設定済みであれば表示されない
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) => ATTHelper().attCheck());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(

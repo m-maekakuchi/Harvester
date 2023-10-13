@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../commons/app_bar_contents.dart';
+import '../../components/app_bar_contents.dart';
 import '../../../commons/app_const.dart';
 import '../../../handlers/padding_handler.dart';
 
