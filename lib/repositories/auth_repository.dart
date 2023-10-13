@@ -96,7 +96,7 @@ class AuthRepository implements BaseAuthRepository {
         //verificationId:打ち込んだ電話番号に対する紐付けするID
         _ref.read(verificationIdRepositoryProvider.notifier).state = verificationId;
         // _ref.read(isAuthActionProvider.notifier).state = true;
-        context.go('/register/tel_smsCode_page');
+        context.push('/register/tel_smsCode_page');
       },
 
       // Androidデバイスで自動SMSコード処理が失敗したときのタイムアウトを処理します。

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../commons/app_bar_contents.dart';
+import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../handlers/convert_data_type_handler.dart';
@@ -18,7 +18,7 @@ import '../../../repositories/photo_repository.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../components/shimmer_loading_card_detail.dart';
-import '../../widgets/carousel_slider_photos.dart';
+import '../../components/carousel_slider_photos.dart';
 import '../../widgets/text_message_dialog.dart';
 import '../../widgets/white_button.dart';
 import '../collections/my_card_edit_page.dart';

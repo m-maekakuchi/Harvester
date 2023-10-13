@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:harvester/repositories/local_storage_repository.dart';
 
-import '../../../commons/app_bar_contents.dart';
+import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';

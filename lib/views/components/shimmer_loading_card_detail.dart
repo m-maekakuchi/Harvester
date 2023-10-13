@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
-import '../../commons/app_bar_contents.dart';
+import 'app_bar_contents.dart';
 import '../../commons/app_color.dart';
 import '../../provider/providers.dart';
 import '../widgets/shimmer.dart';

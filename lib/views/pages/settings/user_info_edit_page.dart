@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:harvester/provider/providers.dart';
 
 import '../../../commons/address_master.dart';
-import '../../../commons/app_bar_contents.dart';
+import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
 import '../../widgets/message_dialog_two_actions.dart';

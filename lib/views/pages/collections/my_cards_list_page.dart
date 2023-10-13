@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/provider/providers.dart';
 
-import '../../../commons/app_bar_contents.dart';
+import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
