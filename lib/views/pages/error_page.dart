@@ -7,7 +7,8 @@ import '../../handlers/padding_handler.dart';
 import '../widgets/green_button.dart';
 
 class ErrorPage extends StatelessWidget {
-  const ErrorPage({super.key});
+  final String? errorCode;
+  const ErrorPage(this.errorCode, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +23,9 @@ class ErrorPage extends StatelessWidget {
             size: 60,
           )),
           SizedBox(height: getH(context, 2)),
-          const Text(
-            undefinedErrorMessage,
-            style: TextStyle(fontSize: 16),
+          Text(
+            errorCode != null ? "$undefinedErrorMessage$errorCode" : undefinedErrorMessage,
+            style: const TextStyle(fontSize: 16),
           ),
           const Text(
             "しばらく経ってからご利用ください。",

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,10 +15,32 @@ class PhoneVerification {
   final Ref ref;
   PhoneVerification(this.ref);
 
+  Future<void> verifyPhoneNumber(
+    BuildContext context,
+    TextEditingController phoneNumberController
+    ) async {
+
+    final notifier = ref.read(phoneVerificationStateProvider.notifier);
+    notifier.state = const AsyncValue.loading();
+
+    // await Future.delayed(const Duration(seconds: 5));
+    try {
+      final phoneNumber = "+81 ${phoneNumberController.text}";
+      await ref.read(authViewModelProvider.notifier).verifyPhoneNumberNative(phoneNumber, context);
+      notifier.state = const AsyncValue.data(null);
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+      notifier.state = const AsyncValue.data(null);
+      if (context.mounted) context.go("/error_page");
+    }
+  }
+
+
   Future<void> verification(
     BuildContext context,
     TextEditingController smsCodeController
-  ) async {
+    ) async {
+
     final notifier = ref.read(phoneVerificationStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
@@ -32,19 +55,19 @@ class PhoneVerification {
       // throw Exception("FirebaseAuthException以外のエラー");
       await ref.read(authViewModelProvider.notifier).signInWithCredential(credential);
       notifier.state = const AsyncValue.data(null);
-    } on FirebaseAuthException catch (e, stackTrace) {
+    } on FirebaseAuthException catch (e) {
       debugPrint(e.toString());
       final errorMessage = AuthExceptionHandler.exceptionMessage(e);
       notifier.state = const AsyncValue.data(null);
       if (errorMessage == undefinedErrorMessage) {
-        context.go("/error_page");
+        if (context.mounted) context.go("/error_page", extra: e.code);
       } else {
-        textMessageDialog(context, errorMessage);
+        if (context.mounted) textMessageDialog(context, errorMessage);
       }
-    } catch(e) {
+    } catch (e) {
       debugPrint(e.toString());
       notifier.state = const AsyncValue.data(null);
-      context.go("/error_page");
+      if (context.mounted) context.go("/error_page");
     }
   }
 }

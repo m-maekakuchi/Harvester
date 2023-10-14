@@ -80,11 +80,14 @@ class AuthRepository implements BaseAuthRepository {
           print('-------verificationFailed-------${e.code}');
           print(e.message);
         }
-        if (e.code == 'invalid-phone-number') {
+        if (e.code == 'invalid-phone-number') { // 電話番号は空白や11桁以外を排除しているので、このエラーが発生することは本番はない
           if (kDebugMode) {
-            print('The provided phone number is not valid.');
+            print('無効な電話番号です。');
           }
+        } else {
+          throw e;
         }
+        return;
       },
       // コードがFirebaseからデバイスに送信されたときに処理し、ユーザーにコードの入力を求めるために使用されます。 =====================
       // firebaseのrobot後に呼ばれる

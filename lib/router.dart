@@ -90,7 +90,7 @@ Provider<GoRouter> router() {
         GoRoute(
           path: '/error_page',
           builder: (BuildContext context, GoRouterState state) {
-            return const ErrorPage();
+            return ErrorPage(state.extra as String?);
           },
         ),
         GoRoute(
