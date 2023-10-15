@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,30 +34,34 @@ Provider<GoRouter> router() {
         // AuthControllerメソッド呼ぶときnotifierつける
         final user = ref.watch(authViewModelProvider.notifier).getCurrentUser();
         String requestPagePath = state.subloc;
-        print("リダイレクトパス：$requestPagePath");
+        if (kDebugMode) print("リダイレクトパス：$requestPagePath");
         // アクセスしようとしているパスがnotLoginSignInPathに入ってるか
         final goingToSignIn = RedirectPath.notLoginSignInPath.contains(requestPagePath);
         // サインインしてない && notLoginSignInPath以外に入ろうとしてる
         if (!isSignedIn && !goingToSignIn) {
-          print('----サインインしていない && notLoginSignInPathに入ろうとしている----');
+          if (kDebugMode) print('----サインインしていない && notLoginSignInPathに入ろうとしている----');
           return '/';
         } else if (isSignedIn) {
-          print('----サインインしている----');
+          if (kDebugMode) print('----サインインしている----');
           // サインインしてるのに、トップとか電話番号認証に入ろうとしてる
           if (requestPagePath == '/' || goingToSignIn) {
-            print('----入ってはいけないページにアクセスしようとしている。----');
+            if(kDebugMode) print('----入ってはいけないページにアクセスしようとしている。----');
             final result = await user!.getIdTokenResult(true);
             // print("*****************************************************");
             // print(result);
             // print("*****************************************************");
             await ref.watch(authViewModelProvider.notifier).reload();
             final registerCustomState = result.claims!['registerStatus'];
-            print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-            print("ユーザー情報の登録が完了済か: $registerCustomState");
-            print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            if (kDebugMode) {
+              print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+              print("ユーザー情報の登録が完了済か: $registerCustomState");
+              print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            }
             final themeColorIndex = result.claims!['colorIndex'];
-            print("選択中のテーマカラー$themeColorIndex");
-            print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            if (kDebugMode) {
+              print("選択中のテーマカラー$themeColorIndex");
+              print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            }
             if (themeColorIndex != null) {
               ref.read(colorProvider.notifier).state = themeColorIndex;
             }
