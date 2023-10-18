@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 import '../models/card_model.dart';
 
@@ -93,15 +94,26 @@ class CardRepository {
         toFirestore: (CardModel cardModel, options) => cardModel.toFirestore(),
       )
       .doc(docName);
-    transaction.set(docRef, cardModel);
-    return db.collection("cards").doc(docName);
+    try {
+      // throw FirebaseException(plugin: '');
+      transaction.set(docRef, cardModel);
+      return db.collection("cards").doc(docName);
+    } on FirebaseException {
+      debugPrint("*****cardsコレクションへのドキュメント登録に失敗しました*****");
+      rethrow;
+    }
   }
 
-  // ドキュメント名からドキュメント削除
+  // ドキュメント名を使ってドキュメント削除
   Future<void> deleteDocument(String docName, Transaction transaction) async {
     final collectionRef = db.collection("cards");
     final cardDocRef = collectionRef.doc(docName);
-    transaction.delete(cardDocRef);
+    try {
+      transaction.delete(cardDocRef);
+    } on FirebaseException {
+      debugPrint("*****cardsコレクション内のドキュメント削除に失敗しました*****");
+      rethrow;
+    }
   }
 
 }

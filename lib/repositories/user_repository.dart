@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/user_info_model.dart';
 
@@ -65,10 +66,12 @@ class UserRepository {
         toFirestore: (UserInfoModel userInfoModel, options) => userInfoModel.toFirestore(),
       )
       .doc(userInfoModel.firebaseAuthUid);
-    await docRef.set(userInfoModel).then(
-      (value) => print("DocumentSnapshot successfully set!"),
-      onError: (e) => print("Error setting document $e")
-    );
+    try {
+      await docRef.set(userInfoModel);
+    } on Exception {
+      debugPrint("*****usersコレクションへのユーザー情報の登録が失敗しました*****");
+      rethrow;
+    }
   }
 
   Future<void> deleteFromFireStore(String userUid,  Transaction transaction) async {
@@ -79,7 +82,12 @@ class UserRepository {
         toFirestore: (UserInfoModel userInfoModel, options) => userInfoModel.toFirestore(),
       )
       .doc(userUid);
-    transaction.delete(docRef);
+    try {
+      transaction.delete(docRef);
+    } on Exception {
+      debugPrint("*****usersコレクションのユーザー情報の削除に失敗しました*****");
+      rethrow;
+    }
   }
 
   // 値が変わらないフィールドは更新されない
@@ -87,20 +95,29 @@ class UserRepository {
     final washingtonRef = db
       .collection("users")
       .doc(userInfoModel.firebaseAuthUid);
-    await washingtonRef.update(userInfoModel.toFirestore()).then(
-      (value) => print("DocumentSnapshot successfully updated!"),
-      onError: (e) => print("Error updating document $e")
-    );
+    try {
+      await washingtonRef.update(userInfoModel.toFirestore());
+    } on Exception {
+      debugPrint("*****usersコレクションのユーザー情報の更新に失敗しました*****");
+      rethrow;
+    }
   }
 
+  // cardsフィールドにカードを追加
   Future<void> updateCardsFireStore(UserInfoModel userInfoModel, Transaction transaction) async {
     final collectionRef = db
       .collection("users");
     final docRef = collectionRef.doc(userInfoModel.firebaseAuthUid);
 
-    transaction.update(docRef, {
-      "cards": FieldValue.arrayUnion(userInfoModel.cards!),
-    });
+    try {
+      // throw FirebaseException(plugin: "");
+      transaction.update(docRef, {
+        "cards": FieldValue.arrayUnion(userInfoModel.cards!),
+      });
+    } on FirebaseException {
+      debugPrint("*****usersコレクションのドキュメント内のcardsフィールドの更新に失敗しました*****");
+      rethrow;
+    }
   }
 
   Future<void> removeElementOfCards(String uid, DocumentReference removeDocRef, Transaction transaction) async {

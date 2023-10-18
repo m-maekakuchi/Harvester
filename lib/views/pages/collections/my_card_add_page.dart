@@ -7,10 +7,10 @@ import '../../../commons/app_color.dart';
 import '../../../commons/app_const.dart';
 import '../../../commons/message.dart';
 import '../../../provider/providers.dart';
-import '../../../viewModels/card_view_model.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../components/date_picker.dart';
+import '../../components/error_body.dart';
 import '../../widgets/done_message_dialog.dart';
 import '../../components/accordion_card_masters.dart';
 import '../../components/pick_and_crop_image_container.dart';
@@ -21,23 +21,18 @@ import '../../widgets/bookmark_button.dart';
 import '../../widgets/green_button.dart';
 import '../../widgets/modal_barrier.dart';
 
-final cardProvider = StateProvider((ref) => noSelectOptionMessage);
-final dateProvider = StateProvider((ref) => DateTime.now());
-final bookmarkProvider = StateProvider((ref) => false);
-
 class MyCardAddPage extends ConsumerWidget {
   const MyCardAddPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final selectedCard = ref.watch(cardProvider);
-    final selectedDay = ref.watch(dateProvider);
-    final selectedImageList = ref.watch(imageListProvider);
-    final bookmark = ref.watch(bookmarkProvider);
-    final appBarColorIndex = ref.watch(colorProvider);
+    final cardAddState = ref.watch(cardAddStateProvider);
 
-    AsyncValue<bool> cardAddState = ref.watch(cardViewModelProvider);
+    final selectedCard = ref.watch(cardAddPageCardProvider);
+    final selectedDay = ref.watch(cardAddPageCollectDayProvider);
+    final selectedImageList = ref.watch(imageListProvider);
+    final appBarColorIndex = ref.watch(colorProvider);
 
     Widget bodyWidget = SingleChildScrollView(
       child: Column(
@@ -62,7 +57,7 @@ class MyCardAddPage extends ConsumerWidget {
               showWhiteModalBottomSheet(
                 context: context,
                 widget: AccordionCardMasters(
-                  provider: cardProvider,
+                  provider: cardAddPageCardProvider,
                 ),
               );
             },
@@ -75,14 +70,14 @@ class MyCardAddPage extends ConsumerWidget {
               final selectedDayFromCalendar = await DatePicker(context: context, colorIndex: appBarColorIndex).showDate(selectedDay);
               // 日付が選択された場合
               if (selectedDayFromCalendar != null) {
-                final notifier = ref.read(dateProvider.notifier);
+                final notifier = ref.read(cardAddPageCollectDayProvider.notifier);
                 notifier.state = selectedDayFromCalendar;
               }
             },
           ),
           SizedBox(height: getH(context, 2)),
           // お気に入り選択
-          BookMarkButton(provider: bookmarkProvider),
+          BookMarkButton(provider: cardAddPageFavoriteProvider),
           SizedBox(height: getH(context, 2)),
           GreenButton(
             text: '登録',
@@ -94,13 +89,13 @@ class MyCardAddPage extends ConsumerWidget {
                 // return;
                 ref.read(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
 
-                await ref.watch(cardViewModelProvider.notifier).cardAdd(selectedCard, selectedImageList, selectedDay, bookmark, ref, context);
-                if (ref.read(cardViewModelProvider).value != false) {  // 最後まで登録処理ができた場合
+                await ref.watch(cardAddProvider).cardAdd(context);
+                if (ref.read(cardAddStateProvider).value == true) {  // 最後まで登録処理ができた場合
                   // プロバイダをリセット
                   await ref.read(imageListProvider.notifier).init();
-                  ref.read(cardProvider.notifier).state = noSelectOptionMessage;
-                  ref.read(dateProvider.notifier).state = DateTime.now();
-                  ref.read(bookmarkProvider.notifier).state = false;
+                  ref.read(cardAddPageCardProvider.notifier).state = noSelectOptionMessage;
+                  ref.read(cardAddPageCollectDayProvider.notifier).state = DateTime.now();
+                  ref.read(cardAddPageFavoriteProvider.notifier).state = false;
 
                   Future.delayed(   // 1秒後にダイアログを閉じる
                     const Duration(seconds: 1),
@@ -129,7 +124,14 @@ class MyCardAddPage extends ConsumerWidget {
           return bodyWidget;
         },
         error: (err, _) {
-          return Center(child: Text(err.toString()));
+          return ErrorBody(
+            onPressed: () {
+              final notifier = ref.read(cardAddStateProvider.notifier);
+              notifier.state = const AsyncValue.data(false);
+              ref.read(loadingIndicatorProvider.notifier).state = false;
+            },
+            err: err
+          );
         },
         loading: () {
           return Stack(

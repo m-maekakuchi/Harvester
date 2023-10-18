@@ -9,6 +9,7 @@ import '../../../commons/address_master.dart';
 import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
 import '../../../commons/message.dart';
+import '../../components/error_body.dart';
 import '../../widgets/message_dialog_two_actions.dart';
 import '../../widgets/modal_barrier.dart';
 import '../../widgets/text_message_dialog.dart';
@@ -24,13 +25,13 @@ import '../../components/user_select_item_container.dart';
 import '../../widgets/item_cupertino_picker.dart';
 
 // TextEditingControllerのtextでTextFormFieldの初期値を設定
-final textControllerProvider = StateProvider((ref) =>
+final textControllerProvider = StateProvider.autoDispose((ref) =>
   TextEditingController(text: ref.watch(userViewModelProvider).name)
 );
-final addressIndexProvider = StateProvider((ref) =>
+final addressIndexProvider = StateProvider.autoDispose((ref) =>
   ref.watch(userViewModelProvider).addressIndex
 );
-final birthdayProvider = StateProvider((ref) =>
+final birthdayProvider = StateProvider.autoDispose((ref) =>
   convertDateTimeToString(ref.watch(userViewModelProvider).birthday!)
 );
 
@@ -207,14 +208,12 @@ class UserInfoEditPage extends ConsumerWidget {
                   dialogPopText,
                   dialogDeleteAuthPushText,
                   () async {
-                    ref.watch(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
+                    ref.watch(loadingIndicatorProvider.notifier).state = true;    // onPressedの処理が全て終わるまでローディング中の状態にする
                     context.pop();
                     // ユーザー全データの削除処理
                     await ref.watch(userEditProvider).delete();
-
                     // 最後まで削除処理ができた場合（loadingやerrorではないとき）
-                    if (ref.read(userEditStateProvider).value == null) {
-                      await ref.watch(authViewModelProvider.notifier).delete();
+                    if (ref.read(userEditStateProvider) == const AsyncValue.data(null)) {
                       ref.watch(loadingIndicatorProvider.notifier).state = false; // ローディング終了の状態にする
                       ref.read(colorProvider.notifier).state = 4;                 // テーマカラーの初期化
                       ref.read(bottomBarIndexProvider.notifier).state = 0;        // bottomBarのインデックスの初期化
@@ -241,16 +240,8 @@ class UserInfoEditPage extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              // 戻るボタンを押した場合、編集情報は初期値に戻す
-              // 次にまた編集画面開いたときに編集途中の情報が表示されると、それが登録されていると勘違いさせてしまいそう
-              ref.read(textControllerProvider.notifier).state = TextEditingController(text: ref.read(userViewModelProvider).name);
-              ref.read(addressIndexProvider.notifier).state = ref.read(userViewModelProvider).addressIndex;
-              ref.read(birthdayProvider.notifier).state = convertDateTimeToString(ref.read(userViewModelProvider).birthday!);
-              context.pop();
-            },
+          automaticallyImplyLeading: userUpdateState.when(  // error状態になったらバックアイコンを表示しないようにする
+            data: (value) => true, error: (err, _) => false, loading: () => true
           ),
           title: titleBox("アカウント編集", context),
           backgroundColor: themeColorChoice[appBarColorIndex],
@@ -260,7 +251,16 @@ class UserInfoEditPage extends ConsumerWidget {
             return bodyWidget;
           },
           error: (err, _) {
-            return Center(child: Text(err.toString()));
+            return ErrorBody(
+              onPressed: () {
+                final notifier = ref.read(userEditStateProvider.notifier);
+                notifier.state = const AsyncValue.data(null);
+                ref.read(loadingIndicatorProvider.notifier).state = false;
+
+                context.pop();
+              },
+              err: err
+            );
           },
           loading: () {
             return Stack(

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,34 +33,30 @@ Provider<GoRouter> router() {
         // AuthControllerメソッド呼ぶときnotifierつける
         final user = ref.watch(authViewModelProvider.notifier).getCurrentUser();
         String requestPagePath = state.subloc;
-        if (kDebugMode) print("リダイレクトパス：$requestPagePath");
+        debugPrint("リダイレクトパス：$requestPagePath");
         // アクセスしようとしているパスがnotLoginSignInPathに入ってるか
         final goingToSignIn = RedirectPath.notLoginSignInPath.contains(requestPagePath);
         // サインインしてない && notLoginSignInPath以外に入ろうとしてる
         if (!isSignedIn && !goingToSignIn) {
-          if (kDebugMode) print('----サインインしていない && notLoginSignInPathに入ろうとしている----');
+          debugPrint('----サインインしていない && notLoginSignInPathに入ろうとしている----');
           return '/';
         } else if (isSignedIn) {
-          if (kDebugMode) print('----サインインしている----');
+          debugPrint('----サインインしている----');
           // サインインしてるのに、トップとか電話番号認証に入ろうとしてる
           if (requestPagePath == '/' || goingToSignIn) {
-            if(kDebugMode) print('----入ってはいけないページにアクセスしようとしている。----');
+            debugPrint('----入ってはいけないページにアクセスしようとしている。----');
             final result = await user!.getIdTokenResult(true);
-            // print("*****************************************************");
-            // print(result);
-            // print("*****************************************************");
+            // debugPrint("*****************************************************");
+            // debugPrint(result);
+            // debugPrint("*****************************************************");
             await ref.watch(authViewModelProvider.notifier).reload();
             final registerCustomState = result.claims!['registerStatus'];
-            if (kDebugMode) {
-              print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-              print("ユーザー情報の登録が完了済か: $registerCustomState");
-              print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-            }
+            debugPrint("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
+            debugPrint("ユーザー情報の登録が完了済か: $registerCustomState");
+            debugPrint("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
             final themeColorIndex = result.claims!['colorIndex'];
-            if (kDebugMode) {
-              print("選択中のテーマカラー$themeColorIndex");
-              print("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
-            }
+            debugPrint("選択中のテーマカラー$themeColorIndex");
+            debugPrint("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
             if (themeColorIndex != null) {
               ref.read(colorProvider.notifier).state = themeColorIndex;
             }

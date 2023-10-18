@@ -72,7 +72,11 @@ class AuthViewModel extends StateNotifier<AsyncValue<User?>> {
   }
 
   Future<void> registerCustomStatus() async {
-    await _ref.read(authRepositoryProvider).registerCustomStatus();
+    try {
+      await _ref.read(authRepositoryProvider).registerCustomStatus();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> registerColorIndex(int index) async {

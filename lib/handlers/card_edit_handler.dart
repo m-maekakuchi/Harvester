@@ -41,7 +41,7 @@ class CardEdit {
 
     try {
       // Storageに登録されていた画像をすべて削除してから新しい画像を登録
-      await ImageRepository().deleteDirectoryFromFireStore("$uid/${cardMasterModel.serialNumber}");
+      await ImageRepository().deleteDirectoryFromStorage("$uid/${cardMasterModel.serialNumber}");
 
       final imageModelList = ref.read(imageListProvider);
       // imageListProviderの各imageModelのfilePathを設定
@@ -60,7 +60,7 @@ class CardEdit {
       List<DocumentReference> photoDocRefs = cardModel.photos!;
       await PhotoRepository().deleteDocument(photoDocRefs, transaction);
 
-      final photoModelList = convertListData(ref.read(imageListProvider), ref);
+      final photoModelList = convertListData(ref.read(imageListProvider), uid);
       List<DocumentReference> photoDocRefList = await PhotoRepository().setToFireStore(photoModelList, transaction);
 
       final updateCardModel = CardModel(
@@ -85,7 +85,7 @@ class CardEdit {
       },
       onError: (err, stackTrace) async {
         print("***********Error updating document $err***********");
-        await ImageRepository().deleteDirectoryFromFireStore("$uid/${cardMasterModel.serialNumber}");
+        await ImageRepository().deleteDirectoryFromStorage("$uid/${cardMasterModel.serialNumber}");
         print("error発生時$preImageModelList");
         await ImageRepository().uploadImageToFirebase(preImageModelList);
         notifier.state = AsyncValue.error(err, stackTrace);
@@ -109,7 +109,7 @@ class CardEdit {
 
     // storageから画像を削除
     try {
-      await ImageRepository().deleteDirectoryFromFireStore("$uid/${cardMasterModel.serialNumber}");
+      await ImageRepository().deleteDirectoryFromStorage("$uid/${cardMasterModel.serialNumber}");
     } catch (err, stackTrace) {
       print("***********Error updating document $err***********");
       notifier.state = AsyncValue.error(err, stackTrace);

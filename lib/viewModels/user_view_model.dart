@@ -27,18 +27,34 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
   }
 
   Future<void> setToFireStore() async {
-    await repository.setToFireStore(state);
+    try {
+      await repository.setToFireStore(state);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> deleteFromFireStore(String userUid, Transaction transaction) async {
-    await repository.deleteFromFireStore(userUid, transaction);
+    try {
+      await repository.deleteFromFireStore(userUid, transaction);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> updateProfileFireStore() async {
-    await repository.updateProfileFireStore(state);
+    try {
+      await repository.updateProfileFireStore(state);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> updateCardsFireStore(Transaction transaction) async {
-    await repository.updateCardsFireStore(state, transaction);
+    try {
+      await repository.updateCardsFireStore(state, transaction);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

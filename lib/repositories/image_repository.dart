@@ -1,6 +1,5 @@
-import 'dart:typed_data';
-
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/image_model.dart';
@@ -23,10 +22,12 @@ class ImageRepository {
           .putData(imageModel.imageFile!, metadata);
         uploadTasks.add(uploadTask);
       }
+      // throw FirebaseException(plugin: '');
       // 全てのファイルのアップロードを並列処理で実行
       await Future.wait(uploadTasks);
-    } on FirebaseException catch (e){
-      print(e);
+    } on FirebaseException {
+      debugPrint("*****storageへの画像の登録に失敗しました。*****");
+      rethrow;
     }
   }
 
@@ -41,21 +42,23 @@ class ImageRepository {
       }
       // 全てのファイルの削除を並列処理で実行
       await Future.wait(deleteTasks);
-    } on FirebaseException catch (e){
-      print(e);
+    } on FirebaseException {
+      debugPrint("*****storageの画像の削除に失敗しました。*****");
+      rethrow;
     }
   }
 
   // ディレクトリ内の画像をすべて削除
-  Future<void> deleteDirectoryFromFireStore(String path) async{
+  Future<void> deleteDirectoryFromStorage(String path) async{
     try {
       await FirebaseStorage.instance.ref(path).listAll().then((value) {
         for (var element in value.items) {
           FirebaseStorage.instance.ref(element.fullPath).delete();
         }
       });
-    } on FirebaseException catch (e){
-      print(e);
+    } on FirebaseException {
+      debugPrint("*****storageのディレクトリ内の画像（ユーザーが登録したもの全て）の削除に失敗しました*****");
+      rethrow;
     }
   }
 
@@ -66,7 +69,7 @@ class ImageRepository {
       String fileFullPath = "$uid/$dir/$img";
       final imageUrl = await storageRef.child(fileFullPath).getDownloadURL();
       return imageUrl;
-    } on FirebaseException catch (e){
+    } on FirebaseException catch (e) {
       print(e);
       return null;
     }

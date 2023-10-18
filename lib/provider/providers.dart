@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../commons/address_master.dart';
 import '../commons/app_const.dart';
+import '../commons/message.dart';
 import '../handlers/card_edit_handler.dart';
 import '../handlers/phone_verification_handler.dart';
 import '../handlers/user_handler.dart';
+import '../handlers/card_add_handler.dart';
 
 // ローカルに登録したマイカード情報を保持（例： [{"id": "00-101-A001", "favorite": true}]）
 final StateProvider<List<Map<String, dynamic>>> myCardIdAndFavoriteListProvider = StateProvider((ref) => []);
@@ -37,6 +39,13 @@ final myCardsPagePrefectureProvider = StateProvider((ref) => addressList[12]);
 
 /// カード詳細画面
 final carouselSliderIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+
+/// カード追加画面
+final cardAddProvider = Provider((ref) => CardAdd(ref));  // refを使うためにProviderでラップ
+final cardAddStateProvider = StateProvider((_) => const AsyncValue.data(false));
+final cardAddPageCardProvider = StateProvider((ref) => noSelectOptionMessage);
+final cardAddPageCollectDayProvider = StateProvider((ref) => DateTime.now());
+final cardAddPageFavoriteProvider = StateProvider((ref) => false);
 
 /// カード編集画面
 final cardEditProvider = Provider((ref) => CardEdit(ref));  // refを使うためにProviderでラップ
