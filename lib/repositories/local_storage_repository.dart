@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 
 import '../models/user_info_model.dart';
@@ -36,9 +37,9 @@ class LocalStorageRepository {
         "addressIndex": userInfoModel.addressIndex,
         "birthday": userInfoModel.birthday,
       });
-    } catch (e, stackTrace) {
-      print("エラー発生：$e");
-      print(stackTrace);
+    } catch (e) {
+      debugPrint("*****ローカルのユーザー情報の登録に失敗しました*****");
+      rethrow;
     }
   }
 
@@ -46,9 +47,9 @@ class LocalStorageRepository {
     try {
       var box = await Hive.openBox('userBox');
       box.delete("userInfo");
-    } catch (e, stackTrace) {
-      print("エラー発生：$e");
-      print(stackTrace);
+    } catch (e) {
+      debugPrint("*****ローカルのユーザー情報の削除に失敗しました*****");
+      rethrow;
     }
   }
 
@@ -71,6 +72,7 @@ class LocalStorageRepository {
         return null;
       }
     } catch (e, stackTrace) {
+      // debugPrint("*****ローカルに保存済のマイカードの番号とお気に入り登録有無の取得に失敗しました*****");
       print("エラー発生：$e");
       print(stackTrace);
       return null;
@@ -81,9 +83,9 @@ class LocalStorageRepository {
     try {
       var box = await Hive.openBox('cardBox');
       await box.put('myCardNumber', cardNumberList);
-    } catch (e, stackTrace) {
-      print("エラー発生：$e");
-      print(stackTrace);
+    } catch (e) {
+      debugPrint("*****ローカルのマイカード情報の登録に失敗しました*****");
+      rethrow;
     }
   }
 
@@ -91,9 +93,9 @@ class LocalStorageRepository {
     try {
       var box = await Hive.openBox('cardBox');
       box.delete("myCardNumber");
-    } catch (e, stackTrace) {
-      print("エラー発生：$e");
-      print(stackTrace);
+    } catch (e) {
+      debugPrint("*****ローカルのマイカード情報の削除に失敗しました*****");
+      rethrow;
     }
   }
 

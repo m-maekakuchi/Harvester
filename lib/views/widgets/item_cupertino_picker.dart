@@ -7,7 +7,7 @@ const double _kItemExtent = 32.0;
 class ItemCupertinoPicker extends ConsumerWidget {
 
   final List<String> itemAry;
-  final StateProvider provider;
+  final AutoDisposeStateProvider provider;
 
   const ItemCupertinoPicker({
     super.key,

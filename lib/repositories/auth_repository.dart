@@ -63,8 +63,10 @@ class AuthRepository implements BaseAuthRepository {
     return _ref.read(firebaseAuthProvider).currentUser?.uid != null;
   }
 
-  Future<void> verifyPhoneNumberNative(String phoneNumber,
-      BuildContext context) async {
+  Future<void> verifyPhoneNumberNative(
+      String phoneNumber,
+      BuildContext context,
+    ) async {
     await _ref.read(firebaseAuthProvider).verifyPhoneNumber(
       phoneNumber: phoneNumber,
       // AndroidデバイスでのSMSコードの自動処理 =====================
@@ -139,11 +141,13 @@ class AuthRepository implements BaseAuthRepository {
       final result = await FirebaseFunctions.instance
         .httpsCallable('registerCustomState')
         .call({"registerStatus": 1});
-      print(result.data['state']);
+      // print(result.data['state']);
     } on FirebaseFunctionsException catch (error) {
-      print(error.code);
-      print(error.details);
-      print(error.message);
+      debugPrint("*****CustomClaimへプロフィール登録状況の登録に失敗しました*****");
+      debugPrint(error.code);
+      debugPrint(error.details);
+      debugPrint(error.message);
+      rethrow;
     }
   }
 
@@ -152,11 +156,11 @@ class AuthRepository implements BaseAuthRepository {
       final result = await FirebaseFunctions.instance
         .httpsCallable('registerColorIndex')
         .call({"colorIndex": index});
-      print(result.data['state']);
+      // print(result.data['state']);
     } on FirebaseFunctionsException catch (error) {
-      print(error.code);
-      print(error.details);
-      print(error.message);
+      debugPrint(error.code);
+      debugPrint(error.details);
+      debugPrint(error.message);
     }
   }
 

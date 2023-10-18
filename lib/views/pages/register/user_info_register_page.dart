@@ -13,6 +13,7 @@ import '../../../models/user_info_model.dart';
 import '../../../viewModels/auth_view_model.dart';
 import '../../../handlers/convert_data_type_handler.dart';
 import '../../../handlers/padding_handler.dart';
+import '../../components/error_body.dart';
 import '../../components/title_container.dart';
 import '../../components/user_select_item_container.dart';
 import '../../widgets/green_button.dart';
@@ -20,9 +21,9 @@ import '../../widgets/modal_barrier.dart';
 import '../../widgets/item_cupertino_picker.dart';
 import '../../widgets/text_message_dialog.dart';
 
-final textControllerProvider = StateProvider((ref) => TextEditingController());
-final addressProvider = StateProvider((ref) => 12);
-final birthdayProvider = StateProvider((ref) => noSelectOptionMessage);
+final textControllerProvider = StateProvider.autoDispose((ref) => TextEditingController());
+final addressIndexProvider = StateProvider.autoDispose((ref) => 12);
+final birthdayProvider = StateProvider.autoDispose((ref) => noSelectOptionMessage);
 
 class UserInfoRegisterPage extends ConsumerWidget {
   const UserInfoRegisterPage({super.key});
@@ -32,10 +33,10 @@ class UserInfoRegisterPage extends ConsumerWidget {
     bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     final textController = ref.watch(textControllerProvider);
-    final selectedAddressIndex = ref.watch(addressProvider);
+    final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
-    final userUpdateState = ref.watch(userEditStateProvider);
+    final userRegisterState = ref.watch(userEditStateProvider);
     final loadingState = ref.read(loadingIndicatorProvider);
     final appBarColorIndex = ref.watch(colorProvider);
 
@@ -111,7 +112,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
             onPressed: () => showDialog(
               ItemCupertinoPicker(
                 itemAry: addressList,
-                provider: addressProvider,
+                provider: addressIndexProvider,
               ),
             ),
           ),
@@ -189,12 +190,19 @@ class UserInfoRegisterPage extends ConsumerWidget {
           title: titleBox("ユーザー登録", context),
           backgroundColor: themeColorChoice[appBarColorIndex],
         ),
-        body: userUpdateState.when(
+        body: userRegisterState.when(
           data: (value) {
             return bodyWidget;
           },
           error: (err, _) {
-            return Center(child: Text(err.toString()));
+            return ErrorBody(
+              onPressed: () {
+                final notifier = ref.read(userEditStateProvider.notifier);
+                notifier.state = const AsyncValue.data(null);
+                ref.read(loadingIndicatorProvider.notifier).state = false;
+              },
+              err: err
+            );
           },
           loading: () {
             return Stack(

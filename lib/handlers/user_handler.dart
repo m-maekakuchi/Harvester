@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/user_info_model.dart';
@@ -18,27 +19,25 @@ class UserHandler {
     final notifier = ref.read(userEditStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
-    // await Future.delayed(   // 1秒後にダイアログを閉じる
-    //   const Duration(seconds: 5),
-    // );
-
+    // await Future.delayed(const Duration(seconds: 5));
     try {
+      // throw Exception("エラー発生");
       // userViewModelProviderの状態を変更してFireStoreに登録する
-      ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
-      ref.watch(userViewModelProvider.notifier).setToFireStore();
+      await ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
+      await ref.watch(userViewModelProvider.notifier).setToFireStore();
 
       // Hiveでローカルにユーザー情報を保存
       await LocalStorageRepository().putUserInfo(userInfoModel);
 
       // ユーザ情報の登録が完了したことをCustom Claimに登録
       await ref.read(authViewModelProvider.notifier).registerCustomStatus();
-
+      debugPrint("*****ユーザー登録処理が全て成功しました*****");
+      notifier.state = const AsyncValue.data(null);
     } catch(err, stackTrace) {
-      print("***********Error registering document $err***********");
       notifier.state = AsyncValue.error(err, stackTrace);
-      return;
+      print(err);
+      print(stackTrace);
     }
-    notifier.state = const AsyncValue.data(null);
   }
 
   Future<void> update(UserInfoModel userInfoModel) async {
@@ -47,48 +46,49 @@ class UserHandler {
 
     try {
       // 2つの機能を並列処理
-      Future.wait([
+      // Future.wait([
         // userViewModelProviderの状態を変更してFireStoreを更新する
-        ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
+        await ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
           await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
-        }),
+        });
         // Hiveでローカルにユーザー情報を保存
-        LocalStorageRepository().putUserInfo(userInfoModel),
-      ]);
+        await LocalStorageRepository().putUserInfo(userInfoModel);
+      // ]);
       // throw Exception("エラー発生");
+      debugPrint("*****ユーザーの更新処理が全て成功しました*****");
+      notifier.state = const AsyncValue.data(null);
     } catch(err, stackTrace) {
-      print("***********Error updating document $err***********");
       notifier.state = AsyncValue.error(err, stackTrace);
-      return;
+      print(err);
+      print(stackTrace);
     }
-    notifier.state = const AsyncValue.data(null);
   }
 
-  // 退会ボタンが押されたときに、ユーザーが登録したデータを全て削除
   Future<void> delete() async {
 
     final notifier = ref.read(userEditStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
-    // await Future.delayed(   // 1秒後にダイアログを閉じる
-    //   const Duration(seconds: 5),
-    // );
+    // await Future.delayed(const Duration(seconds: 5));
 
     final uid = ref.read(authViewModelProvider.notifier).getUid();
     final myCardNumberList = ref.read(myCardNumberListProvider);
 
     // storageから画像を削除
     try {
-      Future.forEach(myCardNumberList, (myCardNumber) async {
-        await ImageRepository().deleteDirectoryFromFireStore("$uid/$myCardNumber");
+      // throw Exception("エラー発生");
+      await Future.forEach(myCardNumberList, (myCardNumber) async {
+        await ImageRepository().deleteDirectoryFromStorage("$uid/$myCardNumber");
       });
+      debugPrint("*****ユーザーが登録した全ての画像の削除が成功しました*****");
     } catch (err, stackTrace) {
-      print("***********Error deleting document $err***********");
       notifier.state = AsyncValue.error(err, stackTrace);
+      print(err);
+      print(stackTrace);
       return;
     }
 
-    // トランザクションで、FireStoreにマイカード削除を管理
+    // トランザクションで、FireStoreのマイカード関連のデータ削除の管理
     await FirebaseFirestore.instance.runTransaction((transaction) async {
 
       await Future.forEach(myCardNumberList, (myCardNumber) async {
@@ -101,27 +101,41 @@ class UserHandler {
           }
           await PhotoRepository().deleteDocument(photoDocList, transaction);
         }
-
         // cardsコレクションの該当ドキュメントを削除
         await CardRepository().deleteDocument("$uid$myCardNumber", transaction);
       });
-
-      // usersコレクションから該当ドキュメントを削除
+      // usersコレクションの該当ドキュメントを削除
       await ref.watch(userViewModelProvider.notifier).deleteFromFireStore(uid, transaction);
 
+      // Authenticationのユーザーを削除し、削除されたアカウントのuidをfireStoreに登録する
+      final deletedData = {
+        "uid": uid,
+        "deletedAt": DateTime.now(),
+      };
+      await FirebaseFirestore.instance.collection('deleted_users').add(deletedData);
+    }).then(
+      (value) async {
+        debugPrint("*****FireStore内の全てのデータを削除し、deleted_usersコレクションへの登録に成功しました*****");
+      },
+      onError: (err, stackTrace) async {
+        notifier.state = AsyncValue.error(err, stackTrace);
+        print(err);
+        print(stackTrace);
+        return;
+      },
+    );
+
+    try {
       // ローカルの情報を削除
       await LocalStorageRepository().deleteUserInfo();
       await LocalStorageRepository().deleteMyCardIdAndFavorites();
 
-      // throw Exception("エラー発生");
-    }).then(
-      (value) async {
-        notifier.state = const AsyncValue.data(null);
-      },
-      onError: (err, stackTrace) async {
-        print("***********Error deleting document $err***********");
-        notifier.state = AsyncValue.error(err, stackTrace);
-      },
-    );
+      notifier.state = const AsyncValue.data(null);
+      debugPrint("*****退会処理が全て成功しました*****");
+    } catch (err, stackTrace) {
+      notifier.state = AsyncValue.error(err, stackTrace);
+      print(err);
+      print(stackTrace);
+    }
   }
 }
