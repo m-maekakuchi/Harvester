@@ -8,7 +8,7 @@ import '../viewModels/auth_view_model.dart';
 class ImageRepository {
   final storageRef = FirebaseStorage.instance.ref();
 
-  Future uploadImageToFirebase(List<ImageModel> imageModelList) async {
+  Future uploadImageToStorage(List<ImageModel> imageModelList) async {
     try {
       final List<Future> uploadTasks = [];
       for (ImageModel imageModel in imageModelList) {
@@ -31,7 +31,7 @@ class ImageRepository {
     }
   }
 
-  Future<void> deleteImageFromFireStore(List<ImageModel> imageModelList) async{
+  Future<void> deleteImageFromStorage(List<ImageModel> imageModelList) async{
     final deleteTasks = <Future>[];
     try {
       for (ImageModel imageModel in imageModelList) {
@@ -51,10 +51,10 @@ class ImageRepository {
   // ディレクトリ内の画像をすべて削除
   Future<void> deleteDirectoryFromStorage(String path) async{
     try {
-      await FirebaseStorage.instance.ref(path).listAll().then((value) {
-        for (var element in value.items) {
-          FirebaseStorage.instance.ref(element.fullPath).delete();
-        }
+      await FirebaseStorage.instance.ref(path).listAll().then((value) async {
+        await Future.forEach(value.items, (element) async {
+          await FirebaseStorage.instance.ref(element.fullPath).delete();  // この行にawaitつけると画像一つずつ消すので時間かかる？
+        });
       });
     } on FirebaseException {
       debugPrint("*****storageのディレクトリ内の画像（ユーザーが登録したもの全て）の削除に失敗しました*****");
@@ -63,7 +63,7 @@ class ImageRepository {
   }
 
   // Storageから画像のURLを取得するメソッド
-  Future<String?> downloadOneImageFromFireStore(String dir, String img, WidgetRef ref) async{
+  Future<String?> downloadOneImageFromStorage(String dir, String img, WidgetRef ref) async{
     try {
       String uid = ref.read(authViewModelProvider.notifier).getUid();
       String fileFullPath = "$uid/$dir/$img";
@@ -76,21 +76,21 @@ class ImageRepository {
   }
 
   // Storageから画像のURLのリストを取得するメソッド
-  Future<List<String>> downloadAllImageFromFireStore(String dir, WidgetRef ref) async{
-    String uid = ref.read(authViewModelProvider.notifier).getUid();
-    String fileFullPath = "$uid/$dir";
-    final pathReference = storageRef.child(fileFullPath);
-    final listResult = await pathReference.listAll();
-
-    List<String> result = [];
-    for (var item in listResult.items) {
-      result.add(await item.getDownloadURL());
-    }
-    return result;
-  }
+  // Future<List<String>> downloadAllImageFromFireStore(String dir, WidgetRef ref) async{
+  //   String uid = ref.read(authViewModelProvider.notifier).getUid();
+  //   String fileFullPath = "$uid/$dir";
+  //   final pathReference = storageRef.child(fileFullPath);
+  //   final listResult = await pathReference.listAll();
+  //
+  //   List<String> result = [];
+  //   for (var item in listResult.items) {
+  //     result.add(await item.getDownloadURL());
+  //   }
+  //   return result;
+  // }
 
   //  Storageから画像をメモリ（UInt8List）にダウンロード
-  Future<Uint8List?> downloadImageToMemoryFromFireStore(String dir, String img, WidgetRef ref) async {
+  Future<Uint8List?> downloadImageToMemoryFromStorage(String dir, String img, WidgetRef ref) async {
     String uid = ref.read(authViewModelProvider.notifier).getUid();
     final islandRef = storageRef.child("$uid/$dir/$img");
     try {

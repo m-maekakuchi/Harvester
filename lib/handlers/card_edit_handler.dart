@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/card_master_model.dart';
@@ -23,7 +24,6 @@ class CardEdit {
     CardModel cardModel,
     List<ImageModel> preImageModelList  // Storageから画像を削除した後にFireStoreの処理でエラーが発生した場合に備えて、元のimageModelを格納
   ) async {
-
     final notifier = ref.read(cardEditStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
@@ -31,6 +31,7 @@ class CardEdit {
     final selectedCollectDay = ref.read(cardEditPageCollectDayProvider);
     final selectedFavorite = ref.read(cardEditPageFavoriteProvider);
 
+    // ローカルに登録しているマイカード番号リストの中で、更新対象のカードのインデックスを探す
     final localMyCardNumberList = ref.read(myCardNumberListProvider);
     int updateCardsIndex = 0;
     localMyCardNumberList.asMap().forEach((index, value) {
@@ -48,10 +49,11 @@ class CardEdit {
       for (ImageModel model in imageModelList) {
         model.filePath = "$uid/${cardMasterModel.serialNumber}";
       }
-      await ref.read(imageListProvider.notifier).uploadImageToFirebase();
+      await ref.read(imageListProvider.notifier).uploadImageToStorage();
     } catch (err, stackTrace) {
-      print("***********Error updating document $err***********");
       notifier.state = AsyncValue.error(err, stackTrace);
+      print(err);
+      print(stackTrace);
       return;
     }
 
@@ -71,6 +73,7 @@ class CardEdit {
         createdAt: cardModel.createdAt,
         updatedAt: DateTime.now(),
       );
+      // cardsコレクションのマイカードを更新
       final cardDocRef = await CardRepository().setToFireStore(updateCardModel, "$uid${cardMasterModel.serialNumber}", transaction);
 
       // ローカルのマイカード情報を変更
@@ -78,22 +81,26 @@ class CardEdit {
       myCardIdAndFavoriteList.addAll(ref.read(myCardIdAndFavoriteListProvider));
       myCardIdAndFavoriteList[updateCardsIndex]["favorite"] = selectedFavorite;
       await LocalStorageRepository().putMyCardIdAndFavorites(myCardIdAndFavoriteList);
-      // throw Exception("エラー発生");
     }).then(
-        (value) async {
+      (value) async {
         notifier.state = const AsyncValue.data(null);
+        debugPrint("マイカードの更新に必要な処理が全て成功しました");
       },
       onError: (err, stackTrace) async {
-        print("***********Error updating document $err***********");
-        await ImageRepository().deleteDirectoryFromStorage("$uid/${cardMasterModel.serialNumber}");
-        print("error発生時$preImageModelList");
-        await ImageRepository().uploadImageToFirebase(preImageModelList);
         notifier.state = AsyncValue.error(err, stackTrace);
+        // FireStoreの更新が失敗したら、Storageに元の画像を登録する（元に戻す）
+        await ImageRepository().deleteDirectoryFromStorage("$uid/${cardMasterModel.serialNumber}");
+        await ImageRepository().uploadImageToStorage(preImageModelList);
+        print(err);
+        print(stackTrace);
       },
     );
   }
 
-  Future<void> remove(CardMasterModel cardMasterModel) async {
+  Future<void> remove(
+    CardMasterModel cardMasterModel,
+    List<ImageModel> preImageModelList  // Storageから画像を削除した後にFireStoreの処理でエラーが発生した場合に備えて、元のimageModelを格納
+  ) async {
     final notifier = ref.read(cardEditStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
@@ -111,44 +118,50 @@ class CardEdit {
     try {
       await ImageRepository().deleteDirectoryFromStorage("$uid/${cardMasterModel.serialNumber}");
     } catch (err, stackTrace) {
-      print("***********Error updating document $err***********");
       notifier.state = AsyncValue.error(err, stackTrace);
+      print(err);
+      print(stackTrace);
       return;
     }
 
     // トランザクションで、FireStoreにマイカード削除を管理
     await FirebaseFirestore.instance.runTransaction((transaction) async {
-      // photoコレクションの該当ドキュメントを削除
-      final card = await CardRepository().getDocument("$uid${cardMasterModel.serialNumber}");
-      if (card != null) {
-        List<DocumentReference> photoDocList = [];
-        for (DocumentReference docRef in card["photos"]) {
-          photoDocList.add(docRef);
-        }
-        await PhotoRepository().deleteDocument(photoDocList, transaction);
-      }
-
-      // cardsコレクションの該当ドキュメントを削除
-      await CardRepository().deleteDocument("$uid${cardMasterModel.serialNumber}", transaction);
-
-      // usersコレクションのcardsフィールドの該当インデックスを削除
-      final docSnapshot = await FirebaseFirestore.instance.collection("users").doc(uid).get();
-      final cardField = docSnapshot.data()!["cards"][deleteCardsIndex] as DocumentReference;
-      await UserRepository().removeElementOfCards(uid, cardField, transaction);
+      // FireStoreの３つのコレクションのドキュメント削除を並列処理する
+      await Future.wait([
+        // photoコレクションの該当ドキュメントを削除
+        CardRepository().getDocument("$uid${cardMasterModel.serialNumber}").then((card) async {
+          if (card != null) {
+            List<DocumentReference> photoDocList = [];
+            for (DocumentReference docRef in card["photos"]) {
+              photoDocList.add(docRef);
+            }
+            await PhotoRepository().deleteDocument(photoDocList, transaction);
+          }
+        }),
+        // cardsコレクションの該当ドキュメントを削除
+        CardRepository().deleteDocument("$uid${cardMasterModel.serialNumber}", transaction),
+        // usersコレクションのcardsフィールドの該当インデックスを削除
+        UserRepository().getCardsFieldReferenceFromFireStore(uid, deleteCardsIndex).then((cardField) async {
+          UserRepository().removeElementOfCards(uid, cardField, transaction);
+        }),
+      ]);
 
       // ローカルのマイカード情報を変更
       final List<Map<String, dynamic>> myCardIdAndFavoriteList = [];
       myCardIdAndFavoriteList.addAll(ref.read(myCardIdAndFavoriteListProvider));
       myCardIdAndFavoriteList.removeAt(deleteCardsIndex);
-      // throw Exception("エラー発生");
       await LocalStorageRepository().putMyCardIdAndFavorites(myCardIdAndFavoriteList);
     }).then(
       (value) async {
         notifier.state = const AsyncValue.data(null);
+        debugPrint("マイカードの削除に必要な処理が全て成功しました");
       },
       onError: (err, stackTrace) async {
-        print("***********Error updating document $err***********");
+        // FireStoreの処理が失敗したら、Storageの元の画像を登録する（元に戻す）
+        await ImageRepository().uploadImageToStorage(preImageModelList);
         notifier.state = AsyncValue.error(err, stackTrace);
+        print(err);
+        print(stackTrace);
       },
     );
   }

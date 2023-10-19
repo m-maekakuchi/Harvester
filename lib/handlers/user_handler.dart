@@ -21,14 +21,13 @@ class UserHandler {
 
     // await Future.delayed(const Duration(seconds: 5));
     try {
-      // throw Exception("エラー発生");
       // userViewModelProviderの状態を変更してFireStoreに登録する
       await ref.watch(userViewModelProvider.notifier).setState(userInfoModel);
       await ref.watch(userViewModelProvider.notifier).setToFireStore();
 
       // Hiveでローカルにユーザー情報を保存
       await LocalStorageRepository().putUserInfo(userInfoModel);
-
+      
       // ユーザ情報の登録が完了したことをCustom Claimに登録
       await ref.read(authViewModelProvider.notifier).registerCustomStatus();
       debugPrint("*****ユーザー登録処理が全て成功しました*****");
@@ -45,16 +44,13 @@ class UserHandler {
     notifier.state = const AsyncValue.loading();
 
     try {
-      // 2つの機能を並列処理
-      // Future.wait([
-        // userViewModelProviderの状態を変更してFireStoreを更新する
-        await ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
-          await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
-        });
-        // Hiveでローカルにユーザー情報を保存
-        await LocalStorageRepository().putUserInfo(userInfoModel);
-      // ]);
-      // throw Exception("エラー発生");
+      // userViewModelProviderの状態を変更してFireStoreを更新する
+      await ref.watch(userViewModelProvider.notifier).setState(userInfoModel).then((_) async {
+        await ref.read(userViewModelProvider.notifier).updateProfileFireStore();
+      });
+      // Hiveでローカルにユーザー情報を保存
+      await LocalStorageRepository().putUserInfo(userInfoModel);
+
       debugPrint("*****ユーザーの更新処理が全て成功しました*****");
       notifier.state = const AsyncValue.data(null);
     } catch(err, stackTrace) {
@@ -76,7 +72,6 @@ class UserHandler {
 
     // storageから画像を削除
     try {
-      // throw Exception("エラー発生");
       await Future.forEach(myCardNumberList, (myCardNumber) async {
         await ImageRepository().deleteDirectoryFromStorage("$uid/$myCardNumber");
       });
@@ -93,17 +88,23 @@ class UserHandler {
 
       await Future.forEach(myCardNumberList, (myCardNumber) async {
         // photoコレクションの該当ドキュメントを削除
-        final card = await CardRepository().getDocument("$uid$myCardNumber");
-        if (card != null) {
-          List<DocumentReference> photoDocList = [];
-          for (DocumentReference docRef in card["photos"]) {
-            photoDocList.add(docRef);
-          }
-          await PhotoRepository().deleteDocument(photoDocList, transaction);
-        }
-        // cardsコレクションの該当ドキュメントを削除
-        await CardRepository().deleteDocument("$uid$myCardNumber", transaction);
+
+        await Future.wait([
+          // photoコレクションの該当ドキュメントを削除
+          CardRepository().getDocument("$uid$myCardNumber").then((card) async {
+            if (card != null) {
+              List<DocumentReference> photoDocList = [];
+              for (DocumentReference docRef in card["photos"]) {
+                photoDocList.add(docRef);
+              }
+              await PhotoRepository().deleteDocument(photoDocList, transaction);
+            }
+          }),
+          // cardsコレクションの該当ドキュメントを削除
+          CardRepository().deleteDocument("$uid$myCardNumber", transaction),
+        ]);
       });
+
       // usersコレクションの該当ドキュメントを削除
       await ref.watch(userViewModelProvider.notifier).deleteFromFireStore(uid, transaction);
 

@@ -54,20 +54,16 @@ class CardRepository {
     return cardModel;
   }
 
-  // ドキュメント名からドキュメント内容を取得
+  // ドキュメント名からドキュメントを取得
   Future<Map<String, dynamic>?> getDocument(String docName) async {
     final docRef = db.collection("cards").doc(docName);
-    Map<String, dynamic>? data;
-    await docRef.get().then(
-      (DocumentSnapshot<Map<String, dynamic>> doc) {
-        data = doc.data();
-      },
-      onError: (e) {
-        print("Error getting document: $e");
-        data = null;
-      }
-    );
-    return data;
+    try {
+      final doc = await docRef.get();
+      return doc.data();
+    } on FirebaseException {
+      debugPrint("*****cardsコレクションからドキュメントを取得できませんでした*****");
+      rethrow;
+    }
   }
 
   // ドキュメント名から収集日のみ取得

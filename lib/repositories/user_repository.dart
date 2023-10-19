@@ -58,6 +58,22 @@ class UserRepository {
     return userInfoModel;
   }
 
+  // cardsフィールドの配列から、指定インデックスに格納されている参照先を取得
+  Future<DocumentReference> getCardsFieldReferenceFromFireStore(String uid, int index) async{
+    final ref = db
+      .collection("users")
+      .doc(uid);
+    try {
+      // throw FirebaseException(plugin: '');
+      final docSnap = await ref.get();
+      final cardField = docSnap.data()!["cards"][index] as DocumentReference;
+      return cardField;
+    } on FirebaseException {
+      debugPrint("userコレクションからcardsフィールドの参照を取得できませんでした");
+      rethrow;
+    }
+  }
+
   Future<void> setToFireStore(UserInfoModel userInfoModel) async {
     final docRef = db
       .collection("users")
@@ -68,7 +84,7 @@ class UserRepository {
       .doc(userInfoModel.firebaseAuthUid);
     try {
       await docRef.set(userInfoModel);
-    } on Exception {
+    } on FirebaseException {
       debugPrint("*****usersコレクションへのユーザー情報の登録が失敗しました*****");
       rethrow;
     }
@@ -84,7 +100,7 @@ class UserRepository {
       .doc(userUid);
     try {
       transaction.delete(docRef);
-    } on Exception {
+    } on FirebaseException {
       debugPrint("*****usersコレクションのユーザー情報の削除に失敗しました*****");
       rethrow;
     }
@@ -97,7 +113,7 @@ class UserRepository {
       .doc(userInfoModel.firebaseAuthUid);
     try {
       await washingtonRef.update(userInfoModel.toFirestore());
-    } on Exception {
+    } on FirebaseException {
       debugPrint("*****usersコレクションのユーザー情報の更新に失敗しました*****");
       rethrow;
     }
@@ -124,9 +140,14 @@ class UserRepository {
     final docRef = db
       .collection("users")
       .doc(uid);
-
-    transaction.update(docRef, {
-      "cards": FieldValue.arrayRemove([removeDocRef]),
-    });
+    try {
+      // throw FirebaseException(plugin: "");
+      transaction.update(docRef, {
+        "cards": FieldValue.arrayRemove([removeDocRef]),
+      });
+    } on FirebaseException {
+      debugPrint("*****usersコレクションのcardsフィールドから指定要素を削除できませんでした*****");
+      rethrow;
+    }
   }
 }

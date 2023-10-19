@@ -27,9 +27,16 @@ class ErrorBody extends StatelessWidget {
           size: 60,
         )),
         SizedBox(height: getH(context, 2)),
-        Text(
-          "$undefinedErrorMessage\n${err.toString()}",
-          style: const TextStyle(fontSize: 16),
+        const Text(
+          undefinedErrorMessage,
+          style: TextStyle(fontSize: 16),
+        ),
+        SizedBox(
+          width: getW(context, 80),
+          child: Text(
+            err.toString(),
+            style: const TextStyle(fontSize: 16),
+          ),
         ),
         SizedBox(height: getH(context, 4)),
         const Text(
