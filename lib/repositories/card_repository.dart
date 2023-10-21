@@ -8,35 +8,38 @@ class CardRepository {
 
   Future<CardModel> getPhotosReferences(Map<String, dynamic> card) async{
     List? list = card['photos'];
-    List<DocumentReference<Map<String, dynamic>>> docRefList = [];
+    List<DocumentReference<Map<String, dynamic>>>? docRefList;
     if (list != null && list.isNotEmpty) {
-      // for(DocumentReference<Map<String, dynamic>> docRef in list) {
+      docRefList = [];
       await Future.forEach(list, (docRef) async {
-        docRefList.add(docRef);
+        docRefList!.add(docRef);
       });
     }
     return CardModel(
       cardMaster: card['card_master'],
       collectDay: card['collect_day'].toDate(),
       favorite: card['favorite'],
-      photos: docRefList.isEmpty ? null : docRefList,
+      photos: docRefList,
       createdAt: card['created_at'].toDate(),
     );
   }
 
   // ドキュメント参照からCardModelを取得
   Future<CardModel?> getFromFireStoreUsingDocRef(DocumentReference<Map<String, dynamic>> docRef) async {
-    final docSnapshot = await docRef.get();
-    final card = docSnapshot.data();
+    try {
+      // throw FirebaseException(plugin: "");
+      final docSnapshot = await docRef.get();
+      final card = docSnapshot.data();
 
-    CardModel? cardModel;
-    if (card != null) {
-      cardModel = await getPhotosReferences(card);
-    } else {
-      print("No such document.");
-      cardModel = null;
+      CardModel? cardModel;
+      if (card != null) {
+        cardModel = await getPhotosReferences(card);
+      }
+      return cardModel;
+    } on FirebaseException {
+      debugPrint("*****card情報の取得に失敗しました*****");
+      rethrow;
     }
-    return cardModel;
   }
 
   // ドキュメント名からCardModelを取得

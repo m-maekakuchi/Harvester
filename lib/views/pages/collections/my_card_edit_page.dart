@@ -217,6 +217,7 @@ class MyCardEditPage extends ConsumerWidget {
         },
         error: (err, _) {
           return ErrorBody(
+            errMessage: undefinedErrorMessage,
             onPressed: () {
               final notifier = ref.read(cardEditStateProvider.notifier);
               notifier.state = const AsyncValue.data(null);

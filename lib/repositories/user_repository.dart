@@ -30,35 +30,34 @@ class UserRepository {
     return userInfoModel;
   }
 
-  // マイカード情報のみを取得
-  Future<UserInfoModel?> getOnlyCardsFromFireStore(String userUid) async {
+  // cardsフィールドのみ取得
+  Future<List<DocumentReference<Map<String, dynamic>>>?> getCardReferencesFromFireStore(String userUid) async {
     final ref = db
-        .collection("users")
-        .doc(userUid);
-    final docSnap = await ref.get();
-    final user = docSnap.data();
+      .collection("users")
+      .doc(userUid);
+    try {
+      // throw FirebaseException(plugin: "");
+      final docSnap = await ref.get();
+      final user = docSnap.data();
 
-    UserInfoModel? userInfoModel;
-    if (user != null) {
-      List? list = user['cards'];
-      List<DocumentReference<Map<String, dynamic>>> docRefList = [];
-      if (list != null && list.isNotEmpty) {
-        for(DocumentReference<Map<String, dynamic>> docRef in list) {
-          docRefList.add(docRef);
+      List<DocumentReference<Map<String, dynamic>>>? docRefList;
+      if (user != null) {
+        List? list = user['cards'];
+        if (list != null && list.isNotEmpty) {
+          docRefList = [];
+          for (DocumentReference<Map<String, dynamic>> docRef in list) {
+            docRefList.add(docRef);
+          }
         }
       }
-      userInfoModel = UserInfoModel(
-        firebaseAuthUid: user['firebase_auth_uid'],
-        cards: docRefList.isEmpty ? null : docRefList,
-      );
-    } else {
-      print("No such document.");
-      userInfoModel = null;
+      return docRefList;
+    } on FirebaseException {
+      debugPrint("userコレクションからcardsフィールドの参照先を取得できませんでした");
+      rethrow;
     }
-    return userInfoModel;
   }
 
-  // cardsフィールドの配列から、指定インデックスに格納されている参照先を取得
+  // cardsフィールドから、指定インデックスに格納されている参照先を取得
   Future<DocumentReference> getCardsFieldReferenceFromFireStore(String uid, int index) async{
     final ref = db
       .collection("users")
