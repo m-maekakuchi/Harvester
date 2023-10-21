@@ -57,7 +57,7 @@ class LocalStorageRepository {
     try {
       var box = await Hive.openBox('cardBox');
       final myCardInfoList = box.get('myCardNumber');
-      List<Map<String, dynamic>> result;
+      List<Map<String, dynamic>>? result;
       if (myCardInfoList != null) {
         result = [];
         for (Map<dynamic, dynamic> myCardInfo in myCardInfoList) {
@@ -67,15 +67,11 @@ class LocalStorageRepository {
           };
           result.add(myCardInfoMap);
         }
-        return result;
-      } else {
-        return null;
       }
-    } catch (e, stackTrace) {
-      // debugPrint("*****ローカルに保存済のマイカードの番号とお気に入り登録有無の取得に失敗しました*****");
-      print("エラー発生：$e");
-      print(stackTrace);
-      return null;
+      return result;
+    } catch (e) {
+      debugPrint("*****ローカルに保存済のマイカードの番号とお気に入り登録有無の取得に失敗しました*****");
+      rethrow;
     }
   }
 

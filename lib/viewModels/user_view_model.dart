@@ -21,11 +21,6 @@ class UserViewModel extends StateNotifier<UserInfoModel> {
     if (userInfoModel != null) state = userInfoModel;
   }
 
-  Future<void> getOnlyCardsFromFireStore(String userUid) async {
-    final userInfoModel = await repository.getOnlyCardsFromFireStore(userUid);
-    if (userInfoModel != null) state = userInfoModel;
-  }
-
   Future<void> setToFireStore() async {
     try {
       await repository.setToFireStore(state);

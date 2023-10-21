@@ -7,11 +7,13 @@ import '../widgets/green_button.dart';
 
 class ErrorBody extends StatelessWidget {
 
+  final String errMessage;
   final GestureTapCallback? onPressed;
-  final Object err;
+  final Object? err;
 
   const ErrorBody({
     super.key,
+    required this.errMessage,
     required this.onPressed,
     required this.err,
   });
@@ -28,8 +30,15 @@ class ErrorBody extends StatelessWidget {
         )),
         SizedBox(height: getH(context, 2)),
         Text(
-          "$undefinedErrorMessage\n${err.toString()}",
+          errMessage,
           style: const TextStyle(fontSize: 16),
+        ),
+        SizedBox(
+          width: getW(context, 80),
+          child: Text(
+            err.toString(),
+            style: const TextStyle(fontSize: 16),
+          ),
         ),
         SizedBox(height: getH(context, 4)),
         const Text(

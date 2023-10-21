@@ -29,7 +29,7 @@ class MyCardListPerCollectDayState extends ConsumerState<MyCardListPerCollectDay
     int tabIndex = DefaultTabController.of(context).index;
     final uid = ref.read(authViewModelProvider.notifier).getUid();
 
-    await ref.read(userViewModelProvider.notifier).getOnlyCardsFromFireStore(uid);
+    // await ref.read(userViewModelProvider.notifier).getOnlyCardsFromFireStore(uid);
     final myCardDocRefList = ref.read(userViewModelProvider).cards as List<DocumentReference<Map<String, dynamic>>>?;
 
     if (myCardDocRefList != null) {

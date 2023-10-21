@@ -14,6 +14,7 @@ const invalidVerificationIdErrorMessage   = "電話の認証情報の作成に�
 const invalidVerificationCodeErrorMessage = "認証コードが異なります。再入力してください。";
 const tooManyRequestsErrorMessage         = "アクセスが集中しています。少し時間を置いてから再度お試しください。";
 const undefinedErrorMessage               = "エラーが発生しました。";
+const failGetDataErrorMessage             = "情報を取得できませんでした";
 
 const telNumberLengthErrorMessage         = "半角英数11桁で\n入力してください。";
 const smsCodeErrorMessage                 = "認証コードが異なります。再入力してください。";

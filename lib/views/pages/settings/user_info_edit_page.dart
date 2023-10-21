@@ -252,6 +252,7 @@ class UserInfoEditPage extends ConsumerWidget {
           },
           error: (err, _) {
             return ErrorBody(
+              errMessage: undefinedErrorMessage,
               onPressed: () {
                 final notifier = ref.read(userEditStateProvider.notifier);
                 notifier.state = const AsyncValue.data(null);

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../commons/app_const.dart';
@@ -46,13 +47,19 @@ class CardMasterRepository {
 
   // ドキュメント参照から、CardMasterModel 1つを取得
   Future<CardMasterModel?> getCardMasterUsingDocRef(DocumentReference<Map<String, dynamic>> docRef) async {
-    final ref = docRef.withConverter(
-      fromFirestore: CardMasterModel.fromFirestore,
-      toFirestore: (CardMasterModel cardMasterModel, _) => cardMasterModel.toFirestore(),
-    );
-    final docSnapshot = await ref.get();
-    final cardMasterModel = docSnapshot.data();
-    return cardMasterModel;
+    try {
+      final ref = docRef.withConverter(
+        fromFirestore: CardMasterModel.fromFirestore,
+        toFirestore: (CardMasterModel cardMasterModel, _) =>
+          cardMasterModel.toFirestore(),
+      );
+      final docSnapshot = await ref.get();
+      final cardMasterModel = docSnapshot.data();
+      return cardMasterModel;
+    } on FirebaseException {
+      debugPrint("マスターカードの取得に失敗しました。");
+      rethrow;
+    }
   }
 
   // ドキュメント名から、CardMasterModel 1つを取得

@@ -56,10 +56,10 @@ class CardDetailPage extends ConsumerWidget {
             final photoModel = await PhotoRepository().getFromFireStore(photoDocRef as DocumentReference<Map<String, dynamic>>);
             if (photoModel != null) {
               // 画像URLのリストを作成
-              final imgUrl = await ImageRepository().downloadOneImageFromFireStore(cardMasterModel.serialNumber, photoModel.fileName!, ref);
+              final imgUrl = await ImageRepository().downloadOneImageFromStorage(cardMasterModel.serialNumber, photoModel.fileName!, ref);
               imgUrlList.add(imgUrl);
               // メモリにダウンロードした画像リストを作成
-              final data = await ImageRepository().downloadImageToMemoryFromFireStore(cardMasterModel.serialNumber, photoModel.fileName!, ref);
+              final data = await ImageRepository().downloadImageToMemoryFromStorage(cardMasterModel.serialNumber, photoModel.fileName!, ref);
               final imgModel = ImageModel(
                 fileName: photoModel.fileName,
                 filePath: photoModel.filePath,

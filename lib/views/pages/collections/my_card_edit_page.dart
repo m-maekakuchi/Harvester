@@ -15,6 +15,7 @@ import '../../../models/image_model.dart';
 import '../../../provider/providers.dart';
 import '../../../viewModels/image_view_model.dart';
 import '../../components/date_picker.dart';
+import '../../components/error_body.dart';
 import '../../components/pick_and_crop_image_container.dart';
 import '../../components/shimmer_loading_card_detail.dart';
 import '../../widgets/bookmark_button.dart';
@@ -170,7 +171,7 @@ class MyCardEditPage extends ConsumerWidget {
                           ref.read(loadingIndicatorProvider.notifier).state = true;  // onPressedの処理が全て終わるまでローディング中の状態にする
 
                           // カードの削除処理
-                          await ref.read(cardEditProvider).remove(cardMasterModel);
+                          await ref.read(cardEditProvider).remove(cardMasterModel, preImageModelList);
 
                           // 最後まで削除処理ができた場合（cardRemoveStateがloadingやerrorではないとき）
                           if (ref.read(cardEditStateProvider).value == null) {  // watchだと全部nullになる…
@@ -215,7 +216,15 @@ class MyCardEditPage extends ConsumerWidget {
           return bodyWidget;
         },
         error: (err, _) {
-          return Center(child: Text(err.toString()));
+          return ErrorBody(
+            errMessage: undefinedErrorMessage,
+            onPressed: () {
+              final notifier = ref.read(cardEditStateProvider.notifier);
+              notifier.state = const AsyncValue.data(null);
+              ref.read(loadingIndicatorProvider.notifier).state = false;
+            },
+            err: err
+          );
         },
         loading: () {
           return Stack(

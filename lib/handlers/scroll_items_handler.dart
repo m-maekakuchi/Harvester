@@ -57,7 +57,7 @@ Future<void> getAllCardsPageScrollItemList(
         // 画像が取得できたら
         if (photoModel != null) {
           // 画像URLを取得
-          final imgUrl = await ImageRepository().downloadOneImageFromFireStore(newCardMasterModelList[i].serialNumber, photoModel.fileName!, ref);
+          final imgUrl = await ImageRepository().downloadOneImageFromStorage(newCardMasterModelList[i].serialNumber, photoModel.fileName!, ref);
           imgUrlList.add(imgUrl);
         } else {
           imgUrlList.add(null);
@@ -121,7 +121,7 @@ Future<void> getMyCardsPageScrollItemListAndSetIndex (
       // 画像が取得できたら
       if (photoModel != null) {
         // 画像URLを取得
-        final imgUrl = await ImageRepository().downloadOneImageFromFireStore(sortedMyCardNumberList[i], photoModel.fileName!, ref);
+        final imgUrl = await ImageRepository().downloadOneImageFromStorage(sortedMyCardNumberList[i], photoModel.fileName!, ref);
         imgUrlList.add(imgUrl);
       } else {
         imgUrlList.add(null);

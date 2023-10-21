@@ -26,14 +26,15 @@ class CardAdd{
     BuildContext context
   ) async {
     final notifier = ref.read(cardAddStateProvider.notifier);
+    notifier.state = const AsyncValue.loading();
 
     final selectedCard = ref.read(cardAddPageCardProvider);
     final selectedImageList = ref.read(imageListProvider);
     final selectedDay = ref.read(cardAddPageCollectDayProvider);
     final favorite = ref.read(cardAddPageFavoriteProvider);
 
-    List<String> cardNumberList = [];                           // ローカルに登録されているカード番号を格納する配列
-    List<Map<String, dynamic>> localMyCardInfoList = [];        // ローカルに登録されているマイカード情報を格納する配列
+    List<String> cardNumberList = [];                           // ローカルに登録されているカード番号を格納
+    List<Map<String, dynamic>> localMyCardInfoList = [];        // ローカルに登録されているマイカード情報を格納
     List<PhotoModel> photoModelList = [];
     final uid = ref.watch(authViewModelProvider.notifier).getUid();
 
@@ -44,30 +45,23 @@ class CardAdd{
     RegExp regex = RegExp(r'\s');
     final selectedCardMasterNumber = selectedCard.split(regex)[0];
 
+    debugPrint("*****追加前のローカルに保存されているマイカード番号：$cardNumberList*****");
+
+    // 追加しようとしているカードが既に登録されていたらダイアログで警告
+    if (cardNumberList.contains(selectedCardMasterNumber)) {
+      notifier.state = const AsyncValue.data(false);
+      if (context.mounted) await textMessageDialog(context, registeredCardErrorMessage);
+      return;
+    }
+
+    // imageListProviderの各imageModelのfilePathを設定
+    for (ImageModel model in selectedImageList) {
+      model.filePath = "$uid/$selectedCardMasterNumber";
+    }
+
     try {
-      notifier.state = const AsyncValue.loading();
-
-      // throw Exception("エラー発生");
-      debugPrint("*****追加前のローカルに保存されているマイカード番号：$cardNumberList*****");
-
-      // 追加しようとしているカードが既に登録されていたらダイアログで警告
-      if (cardNumberList.contains(selectedCardMasterNumber)) {
-        notifier.state = const AsyncValue.data(false);
-        if (context.mounted) await textMessageDialog(context, registeredCardErrorMessage);
-        return;
-      }
-
-      // imageListProviderの各imageModelのfilePathを設定
-      for (ImageModel model in selectedImageList) {
-        model.filePath = "$uid/$selectedCardMasterNumber";
-      }
-
       // 画像をstorageに登録
-      await ref.read(imageListProvider.notifier).uploadImageToFirebase();
-
-      // photoモデルリストの作成
-      photoModelList = convertListData(ref.read(imageListProvider), uid);
-      debugPrint("*****画像の登録に成功しました*****");
+      await ref.read(imageListProvider.notifier).uploadImageToStorage();
     } catch (err, stackTrace) {
       notifier.state = AsyncValue.error(err, stackTrace);
       print(err);
@@ -77,6 +71,8 @@ class CardAdd{
 
     // トランザクションでFireStoreにマイカードを登録
     await FirebaseFirestore.instance.runTransaction((transaction) async {
+      // photoモデルリストの作成
+      photoModelList = convertListData(ref.read(imageListProvider), uid);
       // photosコレクションに登録（戻り値：ドキュメント参照の配列）
       List<DocumentReference> photoDocRefList = await PhotoRepository().setToFireStore(photoModelList, transaction);
 
@@ -101,21 +97,7 @@ class CardAdd{
       await ref.read(userViewModelProvider.notifier).setState(userModel);
       // cardの情報をFireStoreに登録
       await ref.read(userViewModelProvider.notifier).updateCardsFireStore(transaction);
-    }).then(
-      // トランザクションが成功したとき
-      (value) async {
-        debugPrint("*****FireStoreへの全ての登録処理が成功しました*****");
-      },
-      // トランザクションが失敗したとき
-      onError: (err, stackTrace) async {
-        await ref.read(imageListProvider.notifier).deleteImageFromFireStore();
-        notifier.state = AsyncValue.error(err, stackTrace);
-        print(err);
-        print(stackTrace);
-      },
-    );
 
-    try {
       // ローカルのマイカード情報にカードを追加
       final localMyCardInfo = {
         "id": selectedCardMasterNumber,
@@ -130,13 +112,19 @@ class CardAdd{
       ref.read(myCardIdAndFavoriteListProvider.notifier).state.add(localMyCardInfo);
       ref.read(myCardNumberListProvider.notifier).state.add(selectedCardMasterNumber);
       debugPrint("*****追加後のローカルに保存されているマイカード番号：${ref.read(myCardNumberListProvider)}*****");
-
-      notifier.state = const AsyncValue.data(true);
-    } catch (err, stackTrace) {
-      notifier.state = AsyncValue.error(err, stackTrace);
-      debugPrint("StorageとFireStoreへの登録はできましたが、ローカルへの登録ができませんでした");
-      print(err);
-      print(stackTrace);
-    }
+    }).then(
+      // トランザクションが成功したとき
+      (value) async {
+        notifier.state = const AsyncValue.data(true);
+        debugPrint("*****FireStoreへの全ての登録とローカルへの登録処理が成功しました*****");
+      },
+      // トランザクションが失敗したとき
+      onError: (err, stackTrace) async {
+        await ref.read(imageListProvider.notifier).deleteImageFromStorage();
+        notifier.state = AsyncValue.error(err, stackTrace);
+        print(err);
+        print(stackTrace);
+      },
+    );
   }
 }
