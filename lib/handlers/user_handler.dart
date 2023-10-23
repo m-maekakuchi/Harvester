@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../commons/message.dart';
 import '../models/user_info_model.dart';
 import '../provider/providers.dart';
 import '../repositories/card_repository.dart';
@@ -10,13 +11,41 @@ import '../repositories/local_storage_repository.dart';
 import '../repositories/photo_repository.dart';
 import '../viewModels/auth_view_model.dart';
 import '../viewModels/user_view_model.dart';
+import '../views/widgets/text_message_dialog.dart';
 
 class UserHandler {
   final Ref ref;
   UserHandler(this.ref);
 
+  Future<void> fetch(BuildContext context) async {
+    final notifier = ref.read(userHandlerStateProvider.notifier);
+    notifier.state = const AsyncValue.loading();
+
+    try {
+      // ローカルに保存されたユーザー情報を取得
+      var userInfoModel = await LocalStorageRepository().fetchUserInfo();
+      // ローカルにユーザー情報が保存されていない場合、Firebaseから取得
+      if (userInfoModel == null) {
+        final uid = ref.watch(authViewModelProvider.notifier).getUid();
+        await ref.read(userViewModelProvider.notifier).getOnlyInfoFromFireStore(uid);
+      } else {
+        // ローカルにユーザー情報があった場合は、UserViewModelにセット
+        await ref.read(userViewModelProvider.notifier).setState(userInfoModel);
+      }
+      notifier.state = const AsyncValue.data(null);
+    } catch (err, stackTrace) {
+      notifier.state = AsyncValue.error(err, stackTrace);
+      print(err);
+      print(stackTrace);
+      textMessageDialog(
+        context,
+        "$undefinedErrorMessage$tryAgainLaterMessage"
+      );
+    }
+  }
+
   Future<void> register(UserInfoModel userInfoModel) async {
-    final notifier = ref.read(userEditStateProvider.notifier);
+    final notifier = ref.read(userHandlerStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
     // await Future.delayed(const Duration(seconds: 5));
@@ -40,7 +69,7 @@ class UserHandler {
   }
 
   Future<void> update(UserInfoModel userInfoModel) async {
-    final notifier = ref.read(userEditStateProvider.notifier);
+    final notifier = ref.read(userHandlerStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
     try {
@@ -62,7 +91,7 @@ class UserHandler {
 
   Future<void> delete() async {
 
-    final notifier = ref.read(userEditStateProvider.notifier);
+    final notifier = ref.read(userHandlerStateProvider.notifier);
     notifier.state = const AsyncValue.loading();
 
     // await Future.delayed(const Duration(seconds: 5));

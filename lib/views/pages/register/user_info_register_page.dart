@@ -36,7 +36,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
     final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
-    final userRegisterState = ref.watch(userEditStateProvider);
+    final userRegisterState = ref.watch(userHandlerStateProvider);
     final loadingState = ref.read(loadingIndicatorProvider);
     final appBarColorIndex = ref.watch(colorProvider);
 
@@ -169,9 +169,9 @@ class UserInfoRegisterPage extends ConsumerWidget {
                 );
 
                 // ユーザーの登録処理
-                await ref.watch(userEditProvider).register(userInfoModel);
+                await ref.watch(userHandlerProvider).register(userInfoModel);
                 // 最後まで登録処理ができた場合（loadingやerrorではないとき）
-                if (ref.read(userEditStateProvider).value == null) {
+                if (ref.read(userHandlerStateProvider).value == null) {
                   ref.watch(loadingIndicatorProvider.notifier).state = false;  // ローディング終了の状態にする
                   if (context.mounted) context.go('/bottom_bar');
                 }
@@ -198,7 +198,7 @@ class UserInfoRegisterPage extends ConsumerWidget {
             return ErrorBody(
               errMessage: undefinedErrorMessage,
               onPressed: () {
-                final notifier = ref.read(userEditStateProvider.notifier);
+                final notifier = ref.read(userHandlerStateProvider.notifier);
                 notifier.state = const AsyncValue.data(null);
                 ref.read(loadingIndicatorProvider.notifier).state = false;
               },

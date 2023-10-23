@@ -22,10 +22,9 @@ class LocalStorageRepository {
           birthday: userInfo['birthday'],
         );
       }
-    } catch (e, stackTrace) {
-      print("エラー発生：$e");
-      print(stackTrace);
-      return null;
+    } catch (e) {
+      debugPrint("*****ローカルのユーザー情報の取得に失敗しました*****");
+      rethrow;
     }
   }
 

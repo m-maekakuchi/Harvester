@@ -13,21 +13,24 @@ class UserRepository {
     final ref = db
       .collection("users")
       .doc(userUid);
-    final docSnap = await ref.get();
-    final user = docSnap.data();
+    try {
+      final docSnap = await ref.get();
+      final user = docSnap.data();
 
-    if (user != null) {
-      userInfoModel = UserInfoModel(
-        firebaseAuthUid: user['firebase_auth_uid'],
-        name: user['name'],
-        addressIndex: user['address_index'],
-        birthday: user['birthday'].toDate(),
-      );
-    } else {
-      print("No such document.");
-      userInfoModel = null;
+      UserInfoModel? userInfoModel;
+      if (user != null) {
+        userInfoModel = UserInfoModel(
+          firebaseAuthUid: user['firebase_auth_uid'],
+          name: user['name'],
+          addressIndex: user['address_index'],
+          birthday: user['birthday'].toDate(),
+        );
+      }
+      return userInfoModel;
+    } on FirebaseException {
+      debugPrint("*****userコレクションからユーザー情報を取得できませんでした*****");
+      rethrow;
     }
-    return userInfoModel;
   }
 
   // cardsフィールドのみ取得
