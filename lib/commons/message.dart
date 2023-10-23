@@ -8,13 +8,15 @@ const selectPrefectureMessage             = "都道府県を選択してくだ�
 const noMyCardMessage                     = "登録されたマイカードはありません";
 const noFavoriteMyCard                    = "お気に入りに登録された\nマイカードはありません";
 const selectColorMessage                  = "色を選択してください";
+const tryAgainLaterMessage                = "しばらく時間をおいてから再度お試しください。";
 
 const userDisabledErrorMessage            = "このアカウントは無効になっています。";
 const invalidVerificationIdErrorMessage   = "電話の認証情報の作成に使用された確認 ID が無効です。";
 const invalidVerificationCodeErrorMessage = "認証コードが異なります。再入力してください。";
 const tooManyRequestsErrorMessage         = "アクセスが集中しています。少し時間を置いてから再度お試しください。";
 const undefinedErrorMessage               = "エラーが発生しました。";
-const failGetDataErrorMessage             = "情報を取得できませんでした";
+const networkErrorMessage                 = "通信エラー";
+const failGetDataErrorMessage             = "サーバーとの通信中にエラーが発生しました。";
 
 const telNumberLengthErrorMessage         = "半角英数11桁で\n入力してください。";
 const smsCodeErrorMessage                 = "認証コードが異なります。再入力してください。";

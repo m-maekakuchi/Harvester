@@ -57,7 +57,7 @@ class CardMasterRepository {
       final cardMasterModel = docSnapshot.data();
       return cardMasterModel;
     } on FirebaseException {
-      debugPrint("マスターカードの取得に失敗しました。");
+      debugPrint("*****マスターカードの取得に失敗しました。*****");
       rethrow;
     }
   }
@@ -68,8 +68,13 @@ class CardMasterRepository {
       fromFirestore: CardMasterModel.fromFirestore,
       toFirestore: (CardMasterModel cardMasterModel, _) => cardMasterModel.toFirestore(),
     );
-    final docSnapshot = await ref.get();
-    final cardMasterModel = docSnapshot.data();
-    return cardMasterModel;
+    try {
+      final docSnapshot = await ref.get();
+      final cardMasterModel = docSnapshot.data();
+      return cardMasterModel;
+    } catch (e) {
+      debugPrint("*****マスターカードの取得に失敗しました。*****");
+      rethrow;
+    }
   }
 }

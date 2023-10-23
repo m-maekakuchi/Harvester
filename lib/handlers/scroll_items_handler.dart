@@ -21,8 +21,8 @@ Future<void> getAllCardsPageScrollItemList(
   List<String?> imgUrlList,
   List<bool?> favoriteList,
 ) async {
-  final myCardIdAndFavoriteList = ref.read(myCardIdAndFavoriteListProvider);   // マイカード情報リスト（例： [{"id": "00-101-A001", "favorite": true}]）
-  final myCardNumberList = ref.read(myCardNumberListProvider);  // マイカードの番号リスト
+  final myCardIdAndFavoriteList = ref.read(myCardIdAndFavoriteListProvider);  // マイカード情報リスト（例： [{"id": "00-101-A001", "favorite": true}]）
+  final myCardNumberList = ref.read(myCardNumberListProvider);                // マイカードの番号リスト
   final uid = ref.read(authViewModelProvider.notifier).getUid();
   int tabIndex = DefaultTabController.of(context).index;
 
@@ -57,7 +57,7 @@ Future<void> getAllCardsPageScrollItemList(
         // 画像が取得できたら
         if (photoModel != null) {
           // 画像URLを取得
-          final imgUrl = await ImageRepository().downloadOneImageFromStorage(newCardMasterModelList[i].serialNumber, photoModel.fileName!, ref);
+          final imgUrl = await ImageRepository().downloadOneImageFromStorage(newCardMasterModelList[i].serialNumber, photoModel.fileName!, uid);
           imgUrlList.add(imgUrl);
         } else {
           imgUrlList.add(null);
@@ -95,6 +95,9 @@ Future<void> getMyCardsPageScrollItemListAndSetIndex (
   List<String?> imgUrlList,
   List<bool?> favoriteList,
 ) async {
+  // この関数の処理の途中でエラーになったときに備えて、追加前のリストの要素数を記憶しておく
+  final preLength = cardMasterModelList.length;
+
   final uid = ref.read(authViewModelProvider.notifier).getUid();
 
   //  ローディング数の設定
@@ -102,44 +105,59 @@ Future<void> getMyCardsPageScrollItemListAndSetIndex (
   final firstIndex = ref.read(myCardsPageFirstIndexProvider)[tabIndex];
   final restNum = sortedMyCardNumberList.length - firstIndex; // 残りの個数
   // 残りのアイテムがloadingNumより小さければ、残りの個数をローディング数にする
-  if (restNum > loadingMyCardsNum) {
-    myCardLoadingNum = loadingMyCardsNum;
-  } else {
-    myCardLoadingNum = restNum;
-  }
+  myCardLoadingNum = restNum > loadingMyCardsNum ? loadingMyCardsNum : restNum;
+  try {
+    for (int i = firstIndex; i < firstIndex + myCardLoadingNum; i++) {
+      final cardMasterModel = await CardMasterRepository().getOneCardMasterUsingDocName(sortedMyCardNumberList[i]);
+      cardMasterModelList.add(cardMasterModel!);
 
-  for (int i = firstIndex; i < firstIndex + myCardLoadingNum; i++) {
-    final cardMasterModel = await CardMasterRepository().getOneCardMasterUsingDocName(sortedMyCardNumberList[i]);
-    cardMasterModelList.add(cardMasterModel!);
-
-    // マイカードに一番最初に登録されている画像URLを取得し、リストに追加（取得に失敗したらnull）
-    final cardModel = await CardRepository().getFromFireStoreUsingDocName("$uid${sortedMyCardNumberList[i]}");
-    if (cardModel != null && cardModel.photos!.isNotEmpty) {
-      // 登録されている画像の1つ目を取得
-      final photoFirstDocRef = cardModel.photos![0] as DocumentReference<Map<String, dynamic>>;
-      final photoModel = await PhotoRepository().getFromFireStore(photoFirstDocRef);
-      // 画像が取得できたら
-      if (photoModel != null) {
-        // 画像URLを取得
-        final imgUrl = await ImageRepository().downloadOneImageFromStorage(sortedMyCardNumberList[i], photoModel.fileName!, ref);
-        imgUrlList.add(imgUrl);
+      // マイカードに一番最初に登録されている画像URLを取得し、リストに追加（取得に失敗したらnull）
+      final cardModel = await CardRepository().getFromFireStoreUsingDocName(
+          "$uid${sortedMyCardNumberList[i]}");
+      if (cardModel != null && cardModel.photos!.isNotEmpty) {
+        // 登録されている画像の1つ目を取得
+        final photoFirstDocRef = cardModel.photos![0] as DocumentReference<
+            Map<String, dynamic>>;
+        final photoModel = await PhotoRepository().getFromFireStore(
+            photoFirstDocRef);
+        // 画像が取得できたら
+        if (photoModel != null) {
+          // 画像URLを取得
+          final imgUrl = await ImageRepository().downloadOneImageFromStorage(
+              sortedMyCardNumberList[i], photoModel.fileName!, uid);
+          imgUrlList.add(imgUrl);
+        } else {
+          imgUrlList.add(null);
+        }
       } else {
         imgUrlList.add(null);
       }
-    } else {
-      imgUrlList.add(null);
-    }
 
-    //  カードモデルが取得できていたらお気に入り登録の有無を取得してリストに追加
-    if (cardModel != null) {
-      favoriteList.add(cardModel.favorite);
-    } else {
-      favoriteList.add(null);
-    }
+      //  カードモデルが取得できていたらお気に入り登録の有無を取得してリストに追加
+      if (cardModel != null) {
+        favoriteList.add(cardModel.favorite);
+      } else {
+        favoriteList.add(null);
+      }
 
-    // マイカード一覧なので、trueを追加
-    myCardContainList.add(true);
+      // マイカード一覧なので、trueを追加
+      myCardContainList.add(true);
+    }
+  } catch (e) {
+    // エラーが発生したら、追加された分を削除する
+    if (cardMasterModelList.length != preLength) removeElement(cardMasterModelList, preLength);
+    if (myCardContainList.length != preLength) removeElement(myCardContainList, preLength);
+    if (imgUrlList.length != preLength) removeElement(imgUrlList, preLength);
+    if (favoriteList.length != preLength) removeElement(favoriteList, preLength);
+    rethrow;
   }
 
   ref.read(myCardsPageFirstIndexProvider.notifier).state[tabIndex] += myCardLoadingNum;
+}
+
+void removeElement(List list, int preLength) {
+  final addItemNum = list.length - preLength;
+  for(int i = 0; i < addItemNum; i++) {
+    list.removeLast();
+  }
 }

@@ -52,7 +52,7 @@ class UserRepository {
       }
       return docRefList;
     } on FirebaseException {
-      debugPrint("userコレクションからcardsフィールドの参照先を取得できませんでした");
+      debugPrint("*****userコレクションからcardsフィールドの参照先を取得できませんでした*****");
       rethrow;
     }
   }
@@ -68,7 +68,7 @@ class UserRepository {
       final cardField = docSnap.data()!["cards"][index] as DocumentReference;
       return cardField;
     } on FirebaseException {
-      debugPrint("userコレクションからcardsフィールドの参照を取得できませんでした");
+      debugPrint("*****userコレクションからcardsフィールドの参照を取得できませんでした*****");
       rethrow;
     }
   }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nil/nil.dart';
 
+import '../../commons/message.dart';
 import '../../handlers/padding_handler.dart';
 import '../../models/card_master_model.dart';
 import '../components/card_short_info_container.dart';
 import 'shimmer.dart';
+import 'text_message_with_title_dialog.dart';
 
 // スクロール可能なListView
 class InfinityListView extends ConsumerStatefulWidget {
@@ -41,26 +44,39 @@ class InfinityListViewState extends ConsumerState<InfinityListView> {
   void initState() {
     _scrollController = ScrollController();
     // スクロール状態を監視するリスナーを登録
-    _scrollController.addListener(() async {
-      // 現在のスクロール位置が、最大スクロールの0.95の位置を超えた、かつ読み込み中でない時
-      // 全データ（全国タブ：全カード、都道府県タブ：各都道府県の全カード）を取得したら実行しない
-      if (
-        widget.favoriteList.length != widget.listAllItemLength
-        && _scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent * 0.95
-        && !_isLoading
-      ) {
-        _isLoading = true;
+      _scrollController.addListener(() async {
+        // 現在のスクロール位置が、最大スクロールの0.95の位置を超えた、かつ読み込み中でない時
+        // 全データ（全国タブ：全カード、都道府県タブ：各都道府県の全カード）を取得したら実行しない
+        try {
+          if (
+            widget.favoriteList.length != widget.listAllItemLength
+              && _scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent * 0.95
+              && !_isLoading
+          ) {
+            _isLoading = true;
 
-        await widget.getListItems();
-
-        // データ取得内容を反映
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    });
-    super.initState();
+            await widget.getListItems();
+            // データ取得内容を反映
+            setState(() {
+              _isLoading = false;
+            });
+          }
+        } catch (e, stackTrace) {
+          print(e);
+          print(stackTrace);
+          textMessageWithTitleDialog(
+            context,
+            networkErrorMessage,
+            "$failGetDataErrorMessage$tryAgainLaterMessage",
+            () {
+              _isLoading = false;
+              context.pop();
+            }
+          );
+        }
+      });
+      super.initState();
   }
 
   // ScrollControllerの破棄

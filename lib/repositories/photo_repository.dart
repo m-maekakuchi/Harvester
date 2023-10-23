@@ -11,9 +11,14 @@ class PhotoRepository {
       fromFirestore: PhotoModel.fromFirestore,
       toFirestore: (PhotoModel photoModel, _) => photoModel.toFirestore(),
     );
-    final docSnapshot = await ref.get();
-    final photoModel = docSnapshot.data();
-    return photoModel;
+    try {
+      final docSnapshot = await ref.get();
+      final photoModel = docSnapshot.data();
+      return photoModel;
+    } on FirebaseException {
+      debugPrint("*****photoコレクションのドキュメント取得に失敗しました*****");
+      rethrow;
+    }
   }
 
   Future<List<DocumentReference>> setToFireStore(List<PhotoModel> list, Transaction transaction) async {
@@ -32,7 +37,7 @@ class PhotoRepository {
       }
       return docList;
     } on FirebaseException {
-      debugPrint("photoコレクションへのドキュメント登録に失敗しました");
+      debugPrint("*****photoコレクションへのドキュメント登録に失敗しました*****");
       rethrow;
     }
   }

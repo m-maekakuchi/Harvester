@@ -223,7 +223,6 @@ class MyCardEditPage extends ConsumerWidget {
               notifier.state = const AsyncValue.data(null);
               ref.read(loadingIndicatorProvider.notifier).state = false;
             },
-            err: err
           );
         },
         loading: () {

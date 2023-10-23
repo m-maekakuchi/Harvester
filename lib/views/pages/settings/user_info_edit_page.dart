@@ -260,7 +260,6 @@ class UserInfoEditPage extends ConsumerWidget {
 
                 context.pop();
               },
-              err: err
             );
           },
           loading: () {

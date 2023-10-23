@@ -37,24 +37,27 @@ class CardRepository {
       }
       return cardModel;
     } on FirebaseException {
-      debugPrint("*****card情報の取得に失敗しました*****");
+      debugPrint("*****マイカードの取得に失敗しました*****");
       rethrow;
     }
   }
 
   // ドキュメント名からCardModelを取得
   Future<CardModel?> getFromFireStoreUsingDocName(String docName) async {
-    final docSnapshot = await db.collection("cards").doc(docName).get();
-    final card = docSnapshot.data();
+    try {
+      // throw FirebaseException(plugin: "");
+      final docSnapshot = await db.collection("cards").doc(docName).get();
+      final card = docSnapshot.data();
 
-    CardModel? cardModel;
-    if (card != null) {
-      cardModel = await getPhotosReferences(card);
-    } else {
-      print("No such document.");
-      cardModel = null;
+      CardModel? cardModel;
+      if (card != null) {
+        cardModel = await getPhotosReferences(card);
+      }
+      return cardModel;
+    } on FirebaseException {
+      debugPrint("*****マイカードの取得に失敗しました*****");
+      rethrow;
     }
-    return cardModel;
   }
 
   // ドキュメント名からドキュメントを取得
@@ -70,19 +73,19 @@ class CardRepository {
   }
 
   // ドキュメント名から収集日のみ取得
-  Future<DateTime?> getCollectDay(String docName) async {
-    final docSnapshot = await db.collection("cards").doc(docName).get();
-    final card = docSnapshot.data();
-
-    DateTime? collectDay;
-    if (card != null) {
-      collectDay = card["collect_day"].toDate();
-    } else {
-      print("No such document.");
-      collectDay = null;
-    }
-    return collectDay;
-  }
+  // Future<DateTime?> getCollectDay(String docName) async {
+  //   final docSnapshot = await db.collection("cards").doc(docName).get();
+  //   final card = docSnapshot.data();
+  //
+  //   DateTime? collectDay;
+  //   if (card != null) {
+  //     collectDay = card["collect_day"].toDate();
+  //   } else {
+  //     print("No such document.");
+  //     collectDay = null;
+  //   }
+  //   return collectDay;
+  // }
 
   Future<DocumentReference> setToFireStore(CardModel cardModel, String docName, Transaction transaction) async {
     final collectionRef = db.collection("cards");

@@ -63,15 +63,14 @@ class ImageRepository {
   }
 
   // Storageから画像のURLを取得するメソッド
-  Future<String?> downloadOneImageFromStorage(String dir, String img, WidgetRef ref) async{
+  Future<String?> downloadOneImageFromStorage(String dir, String img, String uid) async{
     try {
-      String uid = ref.read(authViewModelProvider.notifier).getUid();
       String fileFullPath = "$uid/$dir/$img";
       final imageUrl = await storageRef.child(fileFullPath).getDownloadURL();
       return imageUrl;
-    } on FirebaseException catch (e) {
-      print(e);
-      return null;
+    } on FirebaseException {
+      debugPrint("*****storageの画像のURL取得に失敗しました*****");
+      rethrow;
     }
   }
 
