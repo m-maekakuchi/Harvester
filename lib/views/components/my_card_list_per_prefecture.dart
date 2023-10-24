@@ -10,6 +10,7 @@ import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
 import '../widgets/white_button.dart';
 import 'accordion_prefectures.dart';
+import 'error_body.dart';
 import 'shimmer_loading_card_list.dart';
 import 'white_show_modal_bottom_sheet.dart';
 
@@ -92,7 +93,15 @@ class MyCardListPerPrefectureState extends ConsumerState<MyCardListPerPrefecture
           return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
-          return Text('${snapshot.stackTrace}');
+          print(snapshot.error);
+          print(snapshot.stackTrace);
+          // 「都道府県の選択」ボタンを押したときのリスト取得でエラーになったらここに入る
+          return ErrorBody(
+            errMessage: failGetDataErrorMessage,
+            onPressed: () async {
+              setState(() {});
+            },
+          );
         }
         return Column(
           children: [

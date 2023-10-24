@@ -21,68 +21,79 @@ Future<void> getAllCardsPageScrollItemList(
   List<String?> imgUrlList,
   List<bool?> favoriteList,
 ) async {
+  // この関数の処理の途中でエラーになったときに備えて、追加前のリストの要素数を記憶しておく
+  final preLength = cardMasterModelList.length;
+
   final myCardIdAndFavoriteList = ref.read(myCardIdAndFavoriteListProvider);  // マイカード情報リスト（例： [{"id": "00-101-A001", "favorite": true}]）
   final myCardNumberList = ref.read(myCardNumberListProvider);                // マイカードの番号リスト
   final uid = ref.read(authViewModelProvider.notifier).getUid();
   int tabIndex = DefaultTabController.of(context).index;
 
-  // 設定したローディング数分のマスターカードを取得してリストにセット（都道府県タブ選択中であれば、選択された都道府県で絞る）
-  List<CardMasterModel> newCardMasterModelList = await CardMasterRepository().getLimitCountCardMasters(ref, tabIndex);
-  for (CardMasterModel model in newCardMasterModelList) {
-    cardMasterModelList.add(model);
-  }
+  try {
+    // 設定したローディング数分のマスターカードを取得してリストにセット（都道府県タブ選択中であれば、選択された都道府県で絞る）
+    List<CardMasterModel> newCardMasterModelList = await CardMasterRepository().getLimitCountCardMasters(ref, tabIndex);
+    for (CardMasterModel model in newCardMasterModelList) {
+      cardMasterModelList.add(model);
+    }
 
-  // 取得したマスターカードが、マイカードに含まれているかどうかを判定し、リストにセット
-  List<bool> newMyCardContainList = [];
-  for (CardMasterModel cardMasterModel in newCardMasterModelList) {
-    final myCardContain = myCardNumberList.contains(cardMasterModel.serialNumber);
-    newMyCardContainList.add(myCardContain);
-  }
-  for (bool myCardContain in newMyCardContainList) {
-    myCardContainList.add(myCardContain);
-  }
+    // 取得したマスターカードが、マイカードに含まれているかどうかを判定し、リストにセット
+    List<bool> newMyCardContainList = [];
+    for (CardMasterModel cardMasterModel in newCardMasterModelList) {
+      final myCardContain = myCardNumberList.contains(cardMasterModel.serialNumber);
+      newMyCardContainList.add(myCardContain);
+    }
+    for (bool myCardContain in newMyCardContainList) {
+      myCardContainList.add(myCardContain);
+    }
 
-  // 取得したマスターカードがマイカードに含まれていた場合、一番最初に登録されている画像URLを取得し、リストにセット（マイカードになければnull）
-  int i = 0;
-  /// ListのforEachでasync, awaitを使用するときはFuture.forEachじゃないと処理順番が期待通りにならない
-  await Future.forEach(newCardMasterModelList, (item) async {
-    // マイカードに含まれているか
-    if (newMyCardContainList[i]) {
-      CardModel? cardModel = await CardRepository().getFromFireStoreUsingDocName("$uid${newCardMasterModelList[i].serialNumber}");
-      // マイカードが取得できて、photoフィールドが空ではないとき
-      if (cardModel != null && cardModel.photos!.isNotEmpty) {
-        // 登録されている画像の1つ目を取得
-        final photoFirstDocRef = cardModel.photos![0] as DocumentReference<Map<String, dynamic>>;
-        final photoModel = await PhotoRepository().getFromFireStore(photoFirstDocRef);
-        // 画像が取得できたら
-        if (photoModel != null) {
-          // 画像URLを取得
-          final imgUrl = await ImageRepository().downloadOneImageFromStorage(newCardMasterModelList[i].serialNumber, photoModel.fileName!, uid);
-          imgUrlList.add(imgUrl);
+    // 取得したマスターカードがマイカードに含まれていた場合、一番最初に登録されている画像URLを取得し、リストにセット（マイカードになければnull）
+    int i = 0;
+    /// ListのforEachでasync, awaitを使用するときはFuture.forEachじゃないと処理順番が期待通りにならない
+    await Future.forEach(newCardMasterModelList, (item) async {
+      // マイカードに含まれているか
+      if (newMyCardContainList[i]) {
+        CardModel? cardModel = await CardRepository().getFromFireStoreUsingDocName("$uid${newCardMasterModelList[i].serialNumber}");
+        // マイカードが取得できて、photoフィールドが空ではないとき
+        if (cardModel != null && cardModel.photos!.isNotEmpty) {
+          // 登録されている画像の1つ目を取得
+          final photoFirstDocRef = cardModel.photos![0] as DocumentReference<Map<String, dynamic>>;
+          final photoModel = await PhotoRepository().getFromFireStore(photoFirstDocRef);
+          // 画像が取得できたら
+          if (photoModel != null) {
+            // 画像URLを取得
+            final imgUrl = await ImageRepository().downloadOneImageFromStorage(newCardMasterModelList[i].serialNumber, photoModel.fileName!, uid);
+            imgUrlList.add(imgUrl);
+          } else {
+            imgUrlList.add(null);
+          }
         } else {
           imgUrlList.add(null);
         }
       } else {
-        imgUrlList.add(null);
+        // マイカードに登録されていない場合はGitHubにアップした画像URLを追加
+        imgUrlList.add('https://github.com/m-maekakuchi/Harvester-images/blob/main/${newCardMasterModelList[i].serialNumber}.jpg?raw=true');
       }
-    } else {
-      // マイカードに登録されていない場合はGitHubにアップした画像URLを追加
-      imgUrlList.add('https://github.com/m-maekakuchi/Harvester-images/blob/main/${newCardMasterModelList[i].serialNumber}.jpg?raw=true');
-    }
-    i++;
-  });
+      i++;
+    });
 
-  // 取得したマスターカードがマイカードに含まれていた場合、お気に入りされているかどうかを取得してリストにセット（マイカードになければnull）
-  for (CardMasterModel cardMasterModel in newCardMasterModelList) {
-    if (myCardNumberList.contains(cardMasterModel.serialNumber)) {
-      // ローカルのマイカード情報は追加した順で登録されているので、インデックス検索する
-      int index = myCardIdAndFavoriteList.indexWhere((element) => element["id"] == cardMasterModel.serialNumber);
-      favoriteList.add(myCardIdAndFavoriteList[index]["favorite"]);
-    } else {
-      favoriteList.add(null);
+    // 取得したマスターカードがマイカードに含まれていた場合、お気に入りされているかどうかを取得してリストにセット（マイカードになければnull）
+    for (CardMasterModel cardMasterModel in newCardMasterModelList) {
+      if (myCardNumberList.contains(cardMasterModel.serialNumber)) {
+        // ローカルのマイカード情報は追加した順で登録されているので、インデックス検索する
+        int index = myCardIdAndFavoriteList.indexWhere((element) => element["id"] == cardMasterModel.serialNumber);
+        favoriteList.add(myCardIdAndFavoriteList[index]["favorite"]);
+      } else {
+        favoriteList.add(null);
+      }
     }
+  } catch (e) {
+    // エラーが発生したら、追加された分を削除する
+    if (cardMasterModelList.length != preLength) removeElement(cardMasterModelList, preLength);
+    if (myCardContainList.length != preLength) removeElement(myCardContainList, preLength);
+    if (imgUrlList.length != preLength) removeElement(imgUrlList, preLength);
+    if (favoriteList.length != preLength) removeElement(favoriteList, preLength);
+    rethrow;
   }
-
 }
 
 //  マイカード一覧画面のスクロールアイテムを取得するメソッド

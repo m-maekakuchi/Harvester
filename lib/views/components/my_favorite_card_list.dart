@@ -7,6 +7,7 @@ import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
+import 'error_body.dart';
 import 'shimmer_loading_card_list.dart';
 
 class MyFavoriteCardList extends ConsumerStatefulWidget {
@@ -73,7 +74,15 @@ class MyFavoriteCardListState extends ConsumerState<MyFavoriteCardList> with Aut
           return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
-          return Text('${snapshot.stackTrace}');
+          print(snapshot.error);
+          print(snapshot.stackTrace);
+          // bottomBarの「マイカード」ボタンを押してすぐエラーになったときにここに入る
+          return ErrorBody(
+            errMessage: failGetDataErrorMessage,
+            onPressed: () async {
+              setState(() {});
+            },
+          );
         }
         return cardMasterModelList.isNotEmpty
           ? InfinityListView(

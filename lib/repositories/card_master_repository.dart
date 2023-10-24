@@ -19,25 +19,29 @@ class CardMasterRepository {
     final selectedPrefecture = ref.read(allCardsPagePrefectureProvider);
 
     final List<CardMasterModel> cardMasterList = [];
+    try {
+      var query = collRef.limit(loadingNum);
+      // 都道府県タブが選択中であれば絞り込み検索
+      if (tabIndex == 1) {
+        query = query.where("prefecture", isEqualTo: selectedPrefecture);
+      }
+      // 前回取得したドキュメントの次のドキュメントから取得
+      if (lastDocument != null) {
+        query = query.startAfterDocument(lastDocument);
+      }
 
-    var query = collRef.limit(loadingNum);
-    // 都道府県タブが選択中であれば絞り込み検索
-    if (tabIndex == 1) {
-      query = query.where("prefecture", isEqualTo: selectedPrefecture);
+      final querySnapshot = await query.get();
+      for (var docSnapshot in querySnapshot.docs) {
+        cardMasterList.add(docSnapshot.data());
+      }
+
+      ref.read(allCardsPageLastDocumentProvider.notifier).state[tabIndex] = querySnapshot.docs.last;
+
+      return cardMasterList;
+    } on FirebaseException {
+      debugPrint("*****マスターカードの取得に失敗しました*****");
+      rethrow;
     }
-    // 前回取得したドキュメントの次のドキュメントから取得
-    if (lastDocument != null) {
-      query = query.startAfterDocument(lastDocument);
-    }
-
-    final querySnapshot = await query.get();
-    for (var docSnapshot in querySnapshot.docs) {
-      cardMasterList.add(docSnapshot.data());
-    }
-
-    ref.read(allCardsPageLastDocumentProvider.notifier).state[tabIndex] = querySnapshot.docs.last;
-
-    return cardMasterList;
   }
 
   // ドキュメント参照を取得
