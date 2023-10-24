@@ -17,10 +17,12 @@ class ImageRepository {
         // アップロードしたいファイルのメタデータ
         final metadata = SettableMetadata(contentType: "image/jpeg");
 
-        final uploadTask = imageRef
-          .child(imageModel.fileName!)
-          .putData(imageModel.imageFile!, metadata);
-        uploadTasks.add(uploadTask);
+        if (imageModel.fileName != null && imageModel.imageFile != null) {
+          final uploadTask = imageRef
+            .child(imageModel.fileName!)
+            .putData(imageModel.imageFile!, metadata);
+          uploadTasks.add(uploadTask);
+        }
       }
       // throw FirebaseException(plugin: '');
       // 全てのファイルのアップロードを並列処理で実行
@@ -63,15 +65,14 @@ class ImageRepository {
   }
 
   // Storageから画像のURLを取得するメソッド
-  Future<String?> downloadOneImageFromStorage(String dir, String img, WidgetRef ref) async{
+  Future<String?> downloadOneImageFromStorage(String dir, String img, String uid) async{
     try {
-      String uid = ref.read(authViewModelProvider.notifier).getUid();
       String fileFullPath = "$uid/$dir/$img";
       final imageUrl = await storageRef.child(fileFullPath).getDownloadURL();
       return imageUrl;
-    } on FirebaseException catch (e) {
-      print(e);
-      return null;
+    } on FirebaseException {
+      debugPrint("*****storageの画像のURL取得に失敗しました*****");
+      rethrow;
     }
   }
 
@@ -90,16 +91,16 @@ class ImageRepository {
   // }
 
   //  Storageから画像をメモリ（UInt8List）にダウンロード
-  Future<Uint8List?> downloadImageToMemoryFromStorage(String dir, String img, WidgetRef ref) async {
-    String uid = ref.read(authViewModelProvider.notifier).getUid();
+  Future<Uint8List?> downloadImageToMemoryFromStorage(String dir, String img, String uid) async {
     final islandRef = storageRef.child("$uid/$dir/$img");
+    final Uint8List? data;
     try {
       const oneMegabyte = 1024 * 1024;
-      final Uint8List? data = await islandRef.getData(oneMegabyte);
+      data = await islandRef.getData(oneMegabyte);
       return data;
-    } on FirebaseException catch (e) {
-      print(e);
-      return null;
+    } on FirebaseException {
+      debugPrint("*****ストレージからの画像の取得に失敗しました*****");
+      rethrow;
     }
   }
 

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/app_const.dart';
+import '../../commons/message.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../widgets/infinity_list_view.dart';
+import 'error_body.dart';
 import 'shimmer_loading_card_list.dart';
 
 class AllCardList extends ConsumerStatefulWidget {
@@ -42,7 +44,15 @@ class AllCardsListState extends ConsumerState<AllCardList> with AutomaticKeepAli
           return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
-          return Text('${snapshot.stackTrace}');
+          print(snapshot.error);
+          print(snapshot.stackTrace);
+          // bottomBarの「全カード」ボタンを押してすぐエラーになったときにここに入る
+          return ErrorBody(
+            errMessage: failGetDataErrorMessage,
+            onPressed: () async {
+              setState(() {});
+            },
+          );
         }
         return InfinityListView(
           cardMasterModelList: cardMasterModelList,

@@ -88,7 +88,6 @@ class HomePageState extends ConsumerState<HomePage> {
               myCardIdAndFavoriteList = createListItems();
             });
           },
-          err: snapshot.error
         );
       } else {
         return SingleChildScrollView(

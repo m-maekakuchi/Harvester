@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../commons/message.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
+import 'error_body.dart';
 import 'shimmer_loading_card_list.dart';
 
 class MyCardList extends ConsumerStatefulWidget {
@@ -34,7 +36,7 @@ class MyCardListState extends ConsumerState<MyCardList> with AutomaticKeepAliveC
 
   Future<void> getListItems() async {
     int tabIndex = DefaultTabController.of(context).index;
-
+    
     await getMyCardsPageScrollItemListAndSetIndex(
       tabIndex,
       ref,
@@ -57,7 +59,15 @@ class MyCardListState extends ConsumerState<MyCardList> with AutomaticKeepAliveC
           return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
-          return Text('${snapshot.error}');
+          print(snapshot.error);
+          print(snapshot.stackTrace);
+          // bottomBarの「マイカード」ボタンを押してすぐエラーになったときにここに入る
+          return ErrorBody(
+            errMessage: failGetDataErrorMessage,
+            onPressed: () async {
+              setState(() {});
+            },
+          );
         }
         return InfinityListView(
           cardMasterModelList: cardMasterModelList,

@@ -9,13 +9,11 @@ class ErrorBody extends StatelessWidget {
 
   final String errMessage;
   final GestureTapCallback? onPressed;
-  final Object? err;
 
   const ErrorBody({
     super.key,
     required this.errMessage,
     required this.onPressed,
-    required this.err,
   });
 
   @override
@@ -33,16 +31,8 @@ class ErrorBody extends StatelessWidget {
           errMessage,
           style: const TextStyle(fontSize: 16),
         ),
-        SizedBox(
-          width: getW(context, 80),
-          child: Text(
-            err.toString(),
-            style: const TextStyle(fontSize: 16),
-          ),
-        ),
-        SizedBox(height: getH(context, 4)),
         const Text(
-          "しばらく経ってからご利用ください。",
+          tryAgainLaterMessage,
           style: TextStyle(fontSize: 16),
         ),
         SizedBox(height: getH(context, 2)),

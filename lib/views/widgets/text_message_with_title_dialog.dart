@@ -1,19 +1,22 @@
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../commons/message.dart';
 
-Future<void> textMessageDialog(BuildContext context, String text) {
+Future<void> textMessageWithTitleDialog(
+    BuildContext context,
+    String title,
+    String content,
+    GestureTapCallback onPressed
+  ) {
   return showCupertinoModalPopup<void>(
     context: context,
     builder: (BuildContext context) => CupertinoAlertDialog(
-      content: Text(text, style: const TextStyle(fontSize: 16)),
+      title: Text(title),
+      content: Text(content, style: const TextStyle(fontSize: 14)),
       actions: <CupertinoDialogAction>[
         CupertinoDialogAction(
           isDefaultAction: true,
-          onPressed: () {
-            context.pop();
-          },
+          onPressed: onPressed,
           child: const Text(dialogConfirmText),
         ),
       ],

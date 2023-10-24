@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:harvester/repositories/local_storage_repository.dart';
 
 import '../../components/app_bar_contents.dart';
 import '../../../commons/app_color.dart';
@@ -9,7 +8,6 @@ import '../../../commons/message.dart';
 import '../../../handlers/padding_handler.dart';
 import '../../../provider/providers.dart';
 import '../../../viewModels/auth_view_model.dart';
-import '../../../viewModels/user_view_model.dart';
 import '../../widgets/message_dialog_two_actions.dart';
 
 class SettingPage extends ConsumerWidget {
@@ -158,17 +156,10 @@ class SettingPage extends ConsumerWidget {
           itemComponent(
             '編集',
             () async {
-              // ローカルに保存されたユーザー情報を取得
-              var userInfoModel = await LocalStorageRepository().fetchUserInfo();
-              // ローカルにユーザー情報が保存されていない場合、Firebaseから取得
-              if (userInfoModel == null) {
-                final uid = ref.watch(authViewModelProvider.notifier).getUid();
-                await ref.read(userViewModelProvider.notifier).getOnlyInfoFromFireStore(uid);
-              } else {
-                // ローカルにユーザー情報があった場合は、UserViewModelにセット
-                await ref.read(userViewModelProvider.notifier).setState(userInfoModel);
+              await ref.read(userHandlerProvider).fetch(context);
+              if (ref.read(userHandlerStateProvider) == const AsyncValue.data(null)) {
+                if (context.mounted) context.push("/settings/user_info_edit_page");
               }
-              if (context.mounted) context.push("/settings/user_info_edit_page");
             },
           ),
           itemBorder,

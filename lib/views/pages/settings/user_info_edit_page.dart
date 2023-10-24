@@ -46,7 +46,7 @@ class UserInfoEditPage extends ConsumerWidget {
     final selectedAddressIndex = ref.watch(addressIndexProvider);
     final selectedBirthday = ref.watch(birthdayProvider);
 
-    final userUpdateState = ref.watch(userEditStateProvider);
+    final userUpdateState = ref.watch(userHandlerStateProvider);
     final loadingState = ref.read(loadingIndicatorProvider);
     final appBarColorIndex = ref.watch(colorProvider);
 
@@ -177,10 +177,10 @@ class UserInfoEditPage extends ConsumerWidget {
                 );
 
                 // ユーザー情報の更新処理（DBとローカル）
-                await ref.read(userEditProvider).update(userInfoModel);
+                await ref.read(userHandlerProvider).update(userInfoModel);
 
                 // 最後まで更新処理ができた場合（loadingやerrorではないとき）
-                if (ref.read(userEditStateProvider).value == null) {
+                if (ref.read(userHandlerStateProvider).value == null) {
                   Future.delayed(   // 1秒後にダイアログを閉じる
                     const Duration(seconds: 1),
                     () {
@@ -211,9 +211,9 @@ class UserInfoEditPage extends ConsumerWidget {
                     ref.watch(loadingIndicatorProvider.notifier).state = true;    // onPressedの処理が全て終わるまでローディング中の状態にする
                     context.pop();
                     // ユーザー全データの削除処理
-                    await ref.watch(userEditProvider).delete();
+                    await ref.watch(userHandlerProvider).delete();
                     // 最後まで削除処理ができた場合（loadingやerrorではないとき）
-                    if (ref.read(userEditStateProvider) == const AsyncValue.data(null)) {
+                    if (ref.read(userHandlerStateProvider) == const AsyncValue.data(null)) {
                       ref.watch(loadingIndicatorProvider.notifier).state = false; // ローディング終了の状態にする
                       ref.read(colorProvider.notifier).state = 4;                 // テーマカラーの初期化
                       ref.read(bottomBarIndexProvider.notifier).state = 0;        // bottomBarのインデックスの初期化
@@ -254,13 +254,12 @@ class UserInfoEditPage extends ConsumerWidget {
             return ErrorBody(
               errMessage: undefinedErrorMessage,
               onPressed: () {
-                final notifier = ref.read(userEditStateProvider.notifier);
+                final notifier = ref.read(userHandlerStateProvider.notifier);
                 notifier.state = const AsyncValue.data(null);
                 ref.read(loadingIndicatorProvider.notifier).state = false;
 
                 context.pop();
               },
-              err: err
             );
           },
           loading: () {

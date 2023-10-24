@@ -131,7 +131,6 @@ class MyCardAddPage extends ConsumerWidget {
               notifier.state = const AsyncValue.data(false);
               ref.read(loadingIndicatorProvider.notifier).state = false;
             },
-            err: err
           );
         },
         loading: () {

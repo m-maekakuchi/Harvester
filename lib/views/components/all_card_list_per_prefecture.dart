@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../commons/address_master.dart';
 import '../../commons/card_master_option_list.dart';
+import '../../commons/message.dart';
 import '../../handlers/scroll_items_handler.dart';
 import '../../models/card_master_model.dart';
 import '../../provider/providers.dart';
 import '../widgets/infinity_list_view.dart';
 import '../widgets/white_button.dart';
 import 'accordion_prefectures.dart';
+import 'error_body.dart';
 import 'shimmer_loading_card_list.dart';
 import 'white_show_modal_bottom_sheet.dart';
 
@@ -50,7 +52,15 @@ class AllCardsListPerPrefectureState extends ConsumerState<AllCardListPerPrefect
           return const ShimmerLoadingCardList();
         }
         if (snapshot.hasError) {
-          return Text('${snapshot.stackTrace}');
+          print(snapshot.error);
+          print(snapshot.stackTrace);
+          // bottomBarの「全カード」ボタンを押してすぐエラーになったときにここに入る
+          return ErrorBody(
+            errMessage: failGetDataErrorMessage,
+            onPressed: () async {
+              setState(() {});
+            },
+          );
         }
         return Column(
           children: [
