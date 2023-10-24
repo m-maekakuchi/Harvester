@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:harvester/handlers/padding_handler.dart';
 
-import 'app_bar_contents.dart';
-import '../../commons/app_color.dart';
-import '../../provider/providers.dart';
 import '../widgets/shimmer.dart';
 
 class ShimmerLoadingCardDetail extends ConsumerWidget {
@@ -13,14 +10,7 @@ class ShimmerLoadingCardDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final appBarColorIndex = ref.watch(colorProvider);
-
     return Scaffold(
-      appBar: AppBar(
-        title: titleBox('Manhole Card', context),
-        actions: actionList(context),
-        backgroundColor: themeColorChoice[appBarColorIndex],
-      ),
       body: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),  // スクロール不可にする
         child: Center(
